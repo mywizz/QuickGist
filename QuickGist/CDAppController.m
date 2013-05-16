@@ -37,7 +37,7 @@
 #import "CDStatusView.h"
 #import "GitHub.h"
 
-#import "Config.h" /** =========== REMOVE THIS LINE =========== */
+#import "Config.h"
 
 /** ----------------------------------------------------------------------- */
 #ifndef CONFIG
