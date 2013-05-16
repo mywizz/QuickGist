@@ -37,7 +37,7 @@
 #import "CDStatusView.h"
 #import "GitHub.h"
 
-#import "Config.h" /** <== Comment out or remove this line. */
+#import "Config.h" /** <== Comment out or remove this line since I didn't give it to you. ;-) */
 
 #ifndef CONFIG
 @interface Config : NSObject
@@ -46,6 +46,7 @@
 @end
 
 @implementation Config
+#error - Define you app id and secret
 + (NSString *)clientId { return @"<YOUR GITHUB APP ID>"; }
 + (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
 @end
