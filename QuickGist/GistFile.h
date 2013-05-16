@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  GistFile.h
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -33,9 +33,14 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import <Foundation/Foundation.h>
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@interface GistFile : NSObject
+
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *type;
+@property (nonatomic, strong) NSString *language;
+@property (nonatomic, strong) NSString *raw_url;
+@property (nonatomic) NSInteger size;
 
 @end

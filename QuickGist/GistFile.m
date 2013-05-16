@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  GistFile.m
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -33,9 +33,34 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import "GistFile.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@implementation GistFile
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    /** I need to implement a way to convert data from version 1.0 since there
+     have been changes to the Gist object properties. */
+    
+    self = [super init];
+    if (self) {
+        self.filename   = [aDecoder decodeObjectForKey:@"filename"];
+        self.type       = [aDecoder decodeObjectForKey:@"type"];
+        self.language   = [aDecoder decodeObjectForKey:@"language"];
+        self.raw_url    = [aDecoder decodeObjectForKey:@"raw_url"];
+        self.size       = [aDecoder decodeIntegerForKey:@"size"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.filename  forKey:@"filename"];
+    [aCoder encodeObject:self.type      forKey:@"type"];
+    [aCoder encodeObject:self.language  forKey:@"language"];
+    [aCoder encodeObject:self.raw_url   forKey:@"raw_url"];
+    [aCoder encodeInteger:self.size     forKey:@"size"];
+}
 
 @end

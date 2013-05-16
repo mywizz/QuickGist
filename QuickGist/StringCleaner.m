@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  StringCleaner.m
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -33,9 +33,24 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import "StringCleaner.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@implementation StringCleaner
+
+#pragma mark - Public
++ (NSString *)cleanString:(NSString *)string
+{
+    string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+    string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+    string = [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    return string;
+}
+
++ (NSString *)cleanGistNameAndDescriptionString:(NSString *)string
+{
+    string = [string stringByReplacingOccurrencesOfString:@"," withString:@"."];
+    string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
+    return string;
+}
 
 @end

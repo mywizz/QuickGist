@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  Options.m
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -33,9 +33,30 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import "Options.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@implementation Options
+
+#pragma mark - Public
++ (id)sharedInstance
+{
+    /** Create shared instance. */
+    static Options *options = nil;
+    static dispatch_once_t onceToken;
+    
+    /** Thread safe singleton. */
+    dispatch_once(&onceToken, ^{
+        options = [[self alloc] init];
+        
+        /** Update the singleton */
+        [options update];
+    });
+    return options;
+}
+
+- (void)update
+{
+    
+}
 
 @end

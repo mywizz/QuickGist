@@ -7,6 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9414332517446E4200DB98D8 /* CDAppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9414332417446E4200DB98D8 /* CDAppController.m */; };
+		945DAC3C17446AE700BF034E /* CDStatusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2917446AE700BF034E /* CDStatusView.m */; };
+		945DAC3D17446AE700BF034E /* Gist.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2B17446AE700BF034E /* Gist.m */; };
+		945DAC3E17446AE700BF034E /* GistFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2D17446AE700BF034E /* GistFile.m */; };
+		945DAC3F17446AE700BF034E /* GitHub.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2F17446AE700BF034E /* GitHub.m */; };
+		945DAC4017446AE700BF034E /* LaunchAtLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC3117446AE700BF034E /* LaunchAtLogin.m */; };
+		945DAC4117446AE700BF034E /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC3317446AE700BF034E /* NSData+Base64.m */; };
+		945DAC4217446AE700BF034E /* NSWindow+canBecomeKeyWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC3517446AE700BF034E /* NSWindow+canBecomeKeyWindow.m */; };
+		945DAC4317446AE700BF034E /* Options.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC3717446AE700BF034E /* Options.m */; };
+		945DAC4417446AE700BF034E /* StringCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC3917446AE700BF034E /* StringCleaner.m */; };
+		945DAC4617446B3300BF034E /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 945DAC4517446B3300BF034E /* Defaults.plist */; };
+		945DAC4B17446B4C00BF034E /* app.icns in Resources */ = {isa = PBXBuildFile; fileRef = 945DAC4817446B4C00BF034E /* app.icns */; };
+		945DAC4C17446B4C00BF034E /* menu-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 945DAC4917446B4C00BF034E /* menu-icon.png */; };
+		945DAC4D17446B4C00BF034E /* menu-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 945DAC4A17446B4C00BF034E /* menu-icon@2x.png */; };
+		945DAC4F17446B8C00BF034E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 945DAC4E17446B8C00BF034E /* README.md */; };
+		945DAC5217446CCE00BF034E /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 945DAC5117446CCE00BF034E /* WebKit.framework */; };
+		945DAC5417446CD900BF034E /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 945DAC5317446CD900BF034E /* ServiceManagement.framework */; };
 		94E101271744699E005F1C51 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E101261744699E005F1C51 /* Cocoa.framework */; };
 		94E101311744699E005F1C51 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94E1012F1744699E005F1C51 /* InfoPlist.strings */; };
 		94E101331744699E005F1C51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E101321744699E005F1C51 /* main.m */; };
@@ -16,6 +33,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9414332417446E4200DB98D8 /* CDAppController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDAppController.m; sourceTree = "<group>"; };
+		945DAC2317446A9900BF034E /* QuickGist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = QuickGist.entitlements; sourceTree = "<group>"; };
+		945DAC2417446AE700BF034E /* CDAppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDAppController.h; sourceTree = "<group>"; };
+		945DAC2817446AE700BF034E /* CDStatusView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDStatusView.h; sourceTree = "<group>"; };
+		945DAC2917446AE700BF034E /* CDStatusView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDStatusView.m; sourceTree = "<group>"; };
+		945DAC2A17446AE700BF034E /* Gist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gist.h; sourceTree = "<group>"; };
+		945DAC2B17446AE700BF034E /* Gist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Gist.m; sourceTree = "<group>"; };
+		945DAC2C17446AE700BF034E /* GistFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GistFile.h; sourceTree = "<group>"; };
+		945DAC2D17446AE700BF034E /* GistFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GistFile.m; sourceTree = "<group>"; };
+		945DAC2E17446AE700BF034E /* GitHub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHub.h; sourceTree = "<group>"; };
+		945DAC2F17446AE700BF034E /* GitHub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitHub.m; sourceTree = "<group>"; };
+		945DAC3017446AE700BF034E /* LaunchAtLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchAtLogin.h; sourceTree = "<group>"; };
+		945DAC3117446AE700BF034E /* LaunchAtLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchAtLogin.m; sourceTree = "<group>"; };
+		945DAC3217446AE700BF034E /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		945DAC3317446AE700BF034E /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		945DAC3417446AE700BF034E /* NSWindow+canBecomeKeyWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+canBecomeKeyWindow.h"; sourceTree = "<group>"; };
+		945DAC3517446AE700BF034E /* NSWindow+canBecomeKeyWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+canBecomeKeyWindow.m"; sourceTree = "<group>"; };
+		945DAC3617446AE700BF034E /* Options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
+		945DAC3717446AE700BF034E /* Options.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Options.m; sourceTree = "<group>"; };
+		945DAC3817446AE700BF034E /* StringCleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringCleaner.h; sourceTree = "<group>"; };
+		945DAC3917446AE700BF034E /* StringCleaner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringCleaner.m; sourceTree = "<group>"; };
+		945DAC4517446B3300BF034E /* Defaults.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Defaults.plist; sourceTree = "<group>"; };
+		945DAC4817446B4C00BF034E /* app.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = app.icns; sourceTree = "<group>"; };
+		945DAC4917446B4C00BF034E /* menu-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-icon.png"; sourceTree = "<group>"; };
+		945DAC4A17446B4C00BF034E /* menu-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-icon@2x.png"; sourceTree = "<group>"; };
+		945DAC4E17446B8C00BF034E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		945DAC5117446CCE00BF034E /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		945DAC5317446CD900BF034E /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		94E101231744699E005F1C51 /* QuickGist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickGist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E101261744699E005F1C51 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		94E101291744699E005F1C51 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -36,6 +81,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				945DAC5417446CD900BF034E /* ServiceManagement.framework in Frameworks */,
+				945DAC5217446CCE00BF034E /* WebKit.framework in Frameworks */,
 				94E101271744699E005F1C51 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,9 +90,110 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9414332617446F8D00DB98D8 /* App Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				94E101381744699E005F1C51 /* CDAppDelegate.h */,
+				94E101391744699E005F1C51 /* CDAppDelegate.m */,
+			);
+			name = "App Delegate";
+			sourceTree = "<group>";
+		};
+		9414332717446F9800DB98D8 /* User Interface */ = {
+			isa = PBXGroup;
+			children = (
+				94E1013B1744699E005F1C51 /* MainMenu.xib */,
+			);
+			name = "User Interface";
+			sourceTree = "<group>";
+		};
+		9414332817446FA100DB98D8 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				945DAC2417446AE700BF034E /* CDAppController.h */,
+				9414332417446E4200DB98D8 /* CDAppController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		9414332917446FA900DB98D8 /* Sub Classes */ = {
+			isa = PBXGroup;
+			children = (
+				945DAC2817446AE700BF034E /* CDStatusView.h */,
+				945DAC2917446AE700BF034E /* CDStatusView.m */,
+			);
+			name = "Sub Classes";
+			sourceTree = "<group>";
+		};
+		9414332A17446FB500DB98D8 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				9414332E1744701400DB98D8 /* Singletons */,
+				9414332917446FA900DB98D8 /* Sub Classes */,
+				9414332D17446FFD00DB98D8 /* Supporting Classes */,
+				945DAC2A17446AE700BF034E /* Gist.h */,
+				945DAC2B17446AE700BF034E /* Gist.m */,
+				945DAC2C17446AE700BF034E /* GistFile.h */,
+				945DAC2D17446AE700BF034E /* GistFile.m */,
+				945DAC2E17446AE700BF034E /* GitHub.h */,
+				945DAC2F17446AE700BF034E /* GitHub.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		9414332B17446FC700DB98D8 /* Third Party */ = {
+			isa = PBXGroup;
+			children = (
+				945DAC3217446AE700BF034E /* NSData+Base64.h */,
+				945DAC3317446AE700BF034E /* NSData+Base64.m */,
+			);
+			name = "Third Party";
+			sourceTree = "<group>";
+		};
+		9414332C17446FE100DB98D8 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				9414332B17446FC700DB98D8 /* Third Party */,
+				945DAC3417446AE700BF034E /* NSWindow+canBecomeKeyWindow.h */,
+				945DAC3517446AE700BF034E /* NSWindow+canBecomeKeyWindow.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
+		9414332D17446FFD00DB98D8 /* Supporting Classes */ = {
+			isa = PBXGroup;
+			children = (
+				945DAC3017446AE700BF034E /* LaunchAtLogin.h */,
+				945DAC3117446AE700BF034E /* LaunchAtLogin.m */,
+				945DAC3817446AE700BF034E /* StringCleaner.h */,
+				945DAC3917446AE700BF034E /* StringCleaner.m */,
+			);
+			name = "Supporting Classes";
+			sourceTree = "<group>";
+		};
+		9414332E1744701400DB98D8 /* Singletons */ = {
+			isa = PBXGroup;
+			children = (
+				945DAC3617446AE700BF034E /* Options.h */,
+				945DAC3717446AE700BF034E /* Options.m */,
+			);
+			name = Singletons;
+			sourceTree = "<group>";
+		};
+		945DAC4717446B4C00BF034E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				945DAC4817446B4C00BF034E /* app.icns */,
+				945DAC4917446B4C00BF034E /* menu-icon.png */,
+				945DAC4A17446B4C00BF034E /* menu-icon@2x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		94E1011A1744699E005F1C51 = {
 			isa = PBXGroup;
 			children = (
+				945DAC4E17446B8C00BF034E /* README.md */,
 				94E1012C1744699E005F1C51 /* QuickGist */,
 				94E101251744699E005F1C51 /* Frameworks */,
 				94E101241744699E005F1C51 /* Products */,
@@ -63,6 +211,8 @@
 		94E101251744699E005F1C51 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				945DAC5317446CD900BF034E /* ServiceManagement.framework */,
+				945DAC5117446CCE00BF034E /* WebKit.framework */,
 				94E101261744699E005F1C51 /* Cocoa.framework */,
 				94E101281744699E005F1C51 /* Other Frameworks */,
 			);
@@ -82,9 +232,12 @@
 		94E1012C1744699E005F1C51 /* QuickGist */ = {
 			isa = PBXGroup;
 			children = (
-				94E101381744699E005F1C51 /* CDAppDelegate.h */,
-				94E101391744699E005F1C51 /* CDAppDelegate.m */,
-				94E1013B1744699E005F1C51 /* MainMenu.xib */,
+				9414332617446F8D00DB98D8 /* App Delegate */,
+				9414332717446F9800DB98D8 /* User Interface */,
+				9414332817446FA100DB98D8 /* Controllers */,
+				9414332A17446FB500DB98D8 /* Classes */,
+				9414332C17446FE100DB98D8 /* Categories */,
+				945DAC4717446B4C00BF034E /* Resources */,
 				94E1012D1744699E005F1C51 /* Supporting Files */,
 			);
 			path = QuickGist;
@@ -93,6 +246,8 @@
 		94E1012D1744699E005F1C51 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				945DAC4517446B3300BF034E /* Defaults.plist */,
+				945DAC2317446A9900BF034E /* QuickGist.entitlements */,
 				94E1012E1744699E005F1C51 /* QuickGist-Info.plist */,
 				94E1012F1744699E005F1C51 /* InfoPlist.strings */,
 				94E101321744699E005F1C51 /* main.m */,
@@ -157,6 +312,11 @@
 				94E101311744699E005F1C51 /* InfoPlist.strings in Resources */,
 				94E101371744699E005F1C51 /* Credits.rtf in Resources */,
 				94E1013D1744699E005F1C51 /* MainMenu.xib in Resources */,
+				945DAC4617446B3300BF034E /* Defaults.plist in Resources */,
+				945DAC4B17446B4C00BF034E /* app.icns in Resources */,
+				945DAC4C17446B4C00BF034E /* menu-icon.png in Resources */,
+				945DAC4D17446B4C00BF034E /* menu-icon@2x.png in Resources */,
+				945DAC4F17446B8C00BF034E /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +329,16 @@
 			files = (
 				94E101331744699E005F1C51 /* main.m in Sources */,
 				94E1013A1744699E005F1C51 /* CDAppDelegate.m in Sources */,
+				945DAC3C17446AE700BF034E /* CDStatusView.m in Sources */,
+				945DAC3D17446AE700BF034E /* Gist.m in Sources */,
+				945DAC3E17446AE700BF034E /* GistFile.m in Sources */,
+				945DAC3F17446AE700BF034E /* GitHub.m in Sources */,
+				945DAC4017446AE700BF034E /* LaunchAtLogin.m in Sources */,
+				945DAC4117446AE700BF034E /* NSData+Base64.m in Sources */,
+				945DAC4217446AE700BF034E /* NSWindow+canBecomeKeyWindow.m in Sources */,
+				945DAC4317446AE700BF034E /* Options.m in Sources */,
+				945DAC4417446AE700BF034E /* StringCleaner.m in Sources */,
+				9414332517446E4200DB98D8 /* CDAppController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +434,8 @@
 		94E101411744699E005F1C51 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = QuickGist/QuickGist.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
@@ -276,6 +448,8 @@
 		94E101421744699E005F1C51 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = QuickGist/QuickGist.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
@@ -304,6 +478,7 @@
 				94E101421744699E005F1C51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

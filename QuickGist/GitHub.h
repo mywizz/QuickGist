@@ -1,8 +1,8 @@
 //
-//  CDAppDelegate.h
+//  GitHub.h
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/14/13.
+//  Created by Rob Johnson on 5/15/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,9 +33,17 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import <Foundation/Foundation.h>
+#import "Gist.h"
+#import "GistFile.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@protocol GitHubAPIDelegate <NSObject>
+
+
+@end
+
+@interface GitHub : NSObject
+@property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
+
 
 @end

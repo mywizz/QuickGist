@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  LaunchAtLogin.m
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -33,9 +33,25 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import "LaunchAtLogin.h"
+#import <ServiceManagement/ServiceManagement.h>
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+
+@implementation LaunchAtLogin
+
+#pragma mark - Public
++ (void)toggleLaunchAtLogin:(BOOL)toggle
+{
+    if (toggle) {
+        if (!SMLoginItemSetEnabled ((__bridge CFStringRef)@"com.corndogcomputers.QuickGistHelper", YES))
+            NSLog(@"Couldn't add Helper App to launch at login item list.");
+    }    
+    else {
+        if (!SMLoginItemSetEnabled ((__bridge CFStringRef)@"com.corndogcomputers.QuickGistHelper", NO))
+            NSLog(@"Couldn't remove Helper App from launch at login item list.");
+    }
+}
+
+
 
 @end

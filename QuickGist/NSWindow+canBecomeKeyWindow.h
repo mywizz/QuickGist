@@ -1,8 +1,8 @@
 //
-//  CDAppDelegate.h
+//  NSWindow+canBecomeKeyWindow.h
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/14/13.
+//  Created by Rob Johnson on 5/15/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -34,8 +34,7 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@interface NSWindow (canBecomeKeyWindow)
 
 @end

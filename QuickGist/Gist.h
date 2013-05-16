@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  Gist.h
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -33,9 +33,36 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
+#import <Foundation/Foundation.h>
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@interface Gist : NSObject
+
+@property (nonatomic, strong) NSString *gistId;
+@property (nonatomic, strong) NSString *description;
+@property (nonatomic, strong) NSString *url;
+@property (nonatomic, strong) NSString *forks_url;
+@property (nonatomic, strong) NSString *commits_url;
+@property (nonatomic, strong) NSString *git_pull_url;
+@property (nonatomic, strong) NSString *git_push_url;
+@property (nonatomic, strong) NSString *html_url;
+@property (nonatomic, strong) NSString *comments_url;
+@property (nonatomic, strong) NSString *created_at;
+@property (nonatomic, strong) NSString *updated_at;
+
+@property (nonatomic, strong) NSDictionary *files;
+@property (nonatomic, strong) NSDictionary *gistUser;
+
+@property (nonatomic) NSInteger comments;
+
+@property (nonatomic) BOOL pub;
+@property (nonatomic) BOOL anonymous;
+
+/** Version 1.0 compatability 
+ ------------------------------------------------- */
+@property (nonatomic, strong) NSString *gistID;
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *type;
+@property (nonatomic, strong) NSString *language;
+@property (nonatomic, strong) NSString *user;
 
 @end

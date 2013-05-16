@@ -1,5 +1,5 @@
 //
-//  CDAppDelegate.h
+//  CDStatusView.h
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/14/13.
@@ -34,8 +34,19 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import "NSWindow+canBecomeKeyWindow.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@protocol StatusViewDelegate <NSObject>
+
+- (void)createGistFromDrop:(NSPasteboard *)pboard;
+- (void)downloadGists;
+
+@end
+
+@interface CDStatusView : NSView
+@property (nonatomic, strong) id<StatusViewDelegate> delegate;
+@property (nonatomic, strong) NSImage *image;
+@property (nonatomic, strong) NSImage *alternateImage;
+
+- (id)initWithStatusItem:(NSStatusItem *)statusItem;
 
 @end

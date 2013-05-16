@@ -1,8 +1,8 @@
 //
-//  CDAppDelegate.h
+//  NSWindow+canBecomeKeyWindow.m
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/14/13.
+//  Created by Rob Johnson on 5/15/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,9 +33,44 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
 #import "NSWindow+canBecomeKeyWindow.h"
 
-@interface CDAppDelegate : NSObject <NSApplicationDelegate>
+@implementation NSWindow (canBecomeKeyWindow)
+
+
+/** This is to fix a bug with 10.7 where an NSPopover with a
+ text field cannot be edited if its parent window won't become key.
+ 
+ The pragma statements disable the corresponding warning for overriding
+ an already-implemented method. 
+ 
+ Original parts from @bobesh at:
+ http://stackoverflow.com/questions/7214273/nstextfield-on-nspopover
+ 
+ */
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
+
+- (BOOL)canBecomeKeyWindow
+{
+    /** This works pretty well, but feels so wrong. Doing deep
+     introspection to get the status of the NSPopover from
+     the AppController. */
+    
+    if ([self class] == NSClassFromString(@"NSStatusBarWindow"))
+    {
+        /** The StatusItem's view delegate is the CDAppController which
+         has a popoverIsShown BOOL property. */
+
+        BOOL popoverIsShown = (BOOL)[[[self contentView] delegate]
+                                     performSelector:@selector(popoverIsShown)];
+        return popoverIsShown;
+    }
+    
+    return YES;
+}
+
+#pragma clang diagnostic pop
 
 @end
