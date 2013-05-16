@@ -40,9 +40,6 @@
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    /** I need to implement a way to convert data from version 1.0 since there
-     have been changes to the Gist object properties. */
-    
     self = [super init];
     if (self) {
         self.gistId         = [aDecoder decodeObjectForKey:@"gistId"];
@@ -64,15 +61,6 @@
         
         self.pub            = [aDecoder decodeBoolForKey:@"pub"];
         self.anonymous      = [aDecoder decodeBoolForKey:@"anonymous"];
-        
-        
-        /** Version 1.0 compatability
-         ------------------------------------------------- */
-        self.gistID         = [aDecoder decodeObjectForKey:@"gistID"];
-        self.filename       = [aDecoder decodeObjectForKey:@"filename"];
-        self.type           = [aDecoder decodeObjectForKey:@"type"];
-        self.language       = [aDecoder decodeObjectForKey:@"language"];
-        self.user           = [aDecoder decodeObjectForKey:@"user"];
     }
     
     return self;
@@ -99,15 +87,6 @@
     
     [aCoder encodeBool:self.pub             forKey:@"pub"];
     [aCoder encodeBool:self.anonymous       forKey:@"anonymous"];
-    
-    
-    /** Version 1.0 compatability
-     ------------------------------------------------- */
-    [aCoder encodeObject:self.gistID    forKey:@"gistID"];
-    [aCoder encodeObject:self.filename  forKey:@"filename"];
-    [aCoder encodeObject:self.type      forKey:@"type"];
-    [aCoder encodeObject:self.language  forKey:@"language"];
-    [aCoder encodeObject:self.user      forKey:@"user"];
 }
 
 

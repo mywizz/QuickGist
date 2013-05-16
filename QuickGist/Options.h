@@ -43,7 +43,6 @@
 #define kPublic         @"SecretGists"
 #define kOpenURL        @"OpenURLAfterPost"
 #define kAnonymous      @"anonymous"
-#define kPrompt         @"ShowPrompt"
 #define kNotification   @"ShowDesktopNotifications"
 #define kGitHubUser     @"GitHubUser"
 #define kLastCheck      @"LastCheck"
@@ -52,7 +51,6 @@
 
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) NSString *useragent;
-@property (nonatomic, strong) NSString *userName;
 @property (nonatomic, strong) NSString *lastCheck;
 @property (nonatomic, strong) NSArray  *gists;
 @property (nonatomic, strong) NSArray  *anonGists;
@@ -63,7 +61,6 @@
 @property (nonatomic) BOOL login;
 @property (nonatomic) BOOL secret;
 @property (nonatomic) BOOL openURL;
-@property (nonatomic) BOOL prompt;
 @property (nonatomic) BOOL notice;
 @property (nonatomic) BOOL anonymous;
 

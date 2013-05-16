@@ -39,18 +39,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [self oldUserPrefsDataCheck];
     [self checkNotificationCenterActivation:aNotification];
-    [self registerUserDefaults];
-}
-
-- (void)oldUserPrefsDataCheck
-{
-    /** This is me cleaning up my mess. I set the old data storage
-     incorectly for Gists, and so now I need to clean up my mess
-     for the new version. This will be removed in future versions.
-     */
-    
 }
 
 - (void)checkNotificationCenterActivation:(NSNotification *)aNotification
@@ -72,15 +61,6 @@
          
          */
     }
-}
-
-- (void)registerUserDefaults
-{
-    
-    /** Register user defaults. */
-    [[NSUserDefaults standardUserDefaults] registerDefaults:
-     [NSDictionary dictionaryWithContentsOfFile:
-      [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]]];
 }
 
 @end

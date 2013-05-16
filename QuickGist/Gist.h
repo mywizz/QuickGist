@@ -57,12 +57,4 @@
 @property (nonatomic) BOOL pub;
 @property (nonatomic) BOOL anonymous;
 
-/** Version 1.0 compatability 
- ------------------------------------------------- */
-@property (nonatomic, strong) NSString *gistID;
-@property (nonatomic, strong) NSString *filename;
-@property (nonatomic, strong) NSString *type;
-@property (nonatomic, strong) NSString *language;
-@property (nonatomic, strong) NSString *user;
-
 @end

@@ -53,6 +53,6 @@ enum {
 @interface GitHub : NSObject
 @property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
 
-- (void)createGist:(id)content withName:(NSString *)filename andDescription:(NSString *)description;
+- (void)createGist:(NSString *)content withName:(NSString *)filename andDescription:(NSString *)description;
 
 @end

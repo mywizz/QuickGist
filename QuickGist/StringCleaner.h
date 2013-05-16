@@ -37,7 +37,7 @@
 
 @interface StringCleaner : NSObject
 
-+ (NSString *)cleanString:(NSString *)string;
++ (NSString *)cleanGistContentString:(NSString *)string;
 + (NSString *)cleanGistNameAndDescriptionString:(NSString *)string;
 
 @end

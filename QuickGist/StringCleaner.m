@@ -38,7 +38,7 @@
 @implementation StringCleaner
 
 #pragma mark - Public
-+ (NSString *)cleanString:(NSString *)string
++ (NSString *)cleanGistContentString:(NSString *)string
 {
     string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
     string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];

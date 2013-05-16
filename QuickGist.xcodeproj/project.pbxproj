@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		9414332517446E4200DB98D8 /* CDAppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9414332417446E4200DB98D8 /* CDAppController.m */; };
 		941433601744726900DB98D8 /* QuickGistHelper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9414335D174470F900DB98D8 /* QuickGistHelper.app */; };
-		941433631744770800DB98D8 /* CDPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 941433621744770800DB98D8 /* CDPrefsWindow.m */; };
 		94143366174487EA00DB98D8 /* GitHubUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 94143365174487E900DB98D8 /* GitHubUser.m */; };
 		945DAC3C17446AE700BF034E /* CDStatusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2917446AE700BF034E /* CDStatusView.m */; };
 		945DAC3D17446AE700BF034E /* Gist.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2B17446AE700BF034E /* Gist.m */; };
@@ -61,8 +60,6 @@
 /* Begin PBXFileReference section */
 		9414332417446E4200DB98D8 /* CDAppController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDAppController.m; sourceTree = "<group>"; };
 		94143358174470F800DB98D8 /* QuickGistHelper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickGistHelper.xcodeproj; path = QuickGistHelper/QuickGistHelper.xcodeproj; sourceTree = "<group>"; };
-		941433611744770800DB98D8 /* CDPrefsWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDPrefsWindow.h; sourceTree = "<group>"; };
-		941433621744770800DB98D8 /* CDPrefsWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDPrefsWindow.m; sourceTree = "<group>"; };
 		94143364174487E900DB98D8 /* GitHubUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHubUser.h; sourceTree = "<group>"; };
 		94143365174487E900DB98D8 /* GitHubUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitHubUser.m; sourceTree = "<group>"; };
 		945DAC2317446A9900BF034E /* QuickGist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = QuickGist.entitlements; sourceTree = "<group>"; };
@@ -152,8 +149,6 @@
 			children = (
 				945DAC2817446AE700BF034E /* CDStatusView.h */,
 				945DAC2917446AE700BF034E /* CDStatusView.m */,
-				941433611744770800DB98D8 /* CDPrefsWindow.h */,
-				941433621744770800DB98D8 /* CDPrefsWindow.m */,
 			);
 			name = "Sub Classes";
 			sourceTree = "<group>";
@@ -161,9 +156,9 @@
 		9414332A17446FB500DB98D8 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				9414332E1744701400DB98D8 /* Singletons */,
 				9414332917446FA900DB98D8 /* Sub Classes */,
 				9414332D17446FFD00DB98D8 /* Supporting Classes */,
+				9414332E1744701400DB98D8 /* Singletons */,
 				945DAC2E17446AE700BF034E /* GitHub.h */,
 				945DAC2F17446AE700BF034E /* GitHub.m */,
 				945DAC2A17446AE700BF034E /* Gist.h */,
@@ -433,7 +428,6 @@
 				945DAC4317446AE700BF034E /* Options.m in Sources */,
 				945DAC4417446AE700BF034E /* StringCleaner.m in Sources */,
 				9414332517446E4200DB98D8 /* CDAppController.m in Sources */,
-				941433631744770800DB98D8 /* CDPrefsWindow.m in Sources */,
 				94143366174487EA00DB98D8 /* GitHubUser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

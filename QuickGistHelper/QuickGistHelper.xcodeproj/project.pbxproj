@@ -29,6 +29,7 @@
 		9414334D174470F800DB98D8 /* CDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDAppDelegate.h; sourceTree = "<group>"; };
 		9414334E174470F800DB98D8 /* CDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CDAppDelegate.m; sourceTree = "<group>"; };
 		94143351174470F800DB98D8 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		9414336A174544EC00DB98D8 /* QuickGistHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = QuickGistHelper.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +83,7 @@
 		94143341174470F800DB98D8 /* QuickGistHelper */ = {
 			isa = PBXGroup;
 			children = (
+				9414336A174544EC00DB98D8 /* QuickGistHelper.entitlements */,
 				9414334D174470F800DB98D8 /* CDAppDelegate.h */,
 				9414334E174470F800DB98D8 /* CDAppDelegate.m */,
 				94143350174470F800DB98D8 /* MainMenu.xib */,
@@ -282,6 +284,7 @@
 		94143356174470F800DB98D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = QuickGistHelper/QuickGistHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -297,6 +300,7 @@
 		94143357174470F800DB98D8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = QuickGistHelper/QuickGistHelper.entitlements;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

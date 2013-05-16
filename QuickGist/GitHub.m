@@ -53,7 +53,16 @@
     return self;
 }
 
-- (void)requestForType:(GitHubRequestType)dataType
+#pragma mark - Public
+- (void)createGist:(NSString*)content withName:(NSString *)filename
+    andDescription:(NSString *)description
+{
+    NSLog(@"\nfilename: %@\ndescription: %@\ncontent:\n%@", filename, description, content);
+}
+
+
+#pragma mark - Private
+- (void)requestForType:(GitHubRequestType)dataType withData:(id)data
 {
     switch (dataType) {
         case GitHubRequestTypeCreateGist:
@@ -68,13 +77,6 @@
     
 }
 
-- (void)createGist:(id)content withName:(NSString *)filename
-    andDescription:(NSString *)description
-{
-    
-}
-
-#pragma mark - Private
 - (void)uploadDataToCreateGist:(NSMutableURLRequest *)request
 {
     

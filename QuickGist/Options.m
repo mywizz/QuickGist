@@ -48,6 +48,9 @@
     dispatch_once(&onceToken, ^{
         options = [[self alloc] init];
         
+        /** Register user defaults */
+        [options registerUserDefaults];
+        
         /** Update the singleton */
         [options update];
     });
@@ -56,55 +59,87 @@
 
 - (void)update
 {
-    /** Let's sync any unsaved pref changes before setting property values. */
+    /** Let's sync any unsaved pref changes before reading
+     them to set property values. */
     [[NSUserDefaults standardUserDefaults] synchronize];
     
-    if (!self.useragent) {
-        NSString *app = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-        NSString *ver = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-        NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-        self.useragent = [NSString stringWithFormat:@"%@ version-%@ (%@)", app, ver, build];
-    }
-    
-    /** Read from user prefs to set options properties.
-     -------------------------------------------------- */
-    
-    /** The stored token. */
-    NSData *token      = [[NSUserDefaults standardUserDefaults] valueForKey:kOAuthToken];
-    NSString *tokenStr = [[NSString alloc] initWithData:token encoding:NSUTF8StringEncoding];
-    if ([tokenStr isEqualToString:@""]) tokenStr = kAnonymous;
-    
-    /** The stored username. */
-    NSData *user      = [[NSUserDefaults standardUserDefaults] valueForKey:kGitHubUser];
-    NSString *userStr = [[NSString alloc] initWithData:user encoding:NSUTF8StringEncoding];
-    if ([userStr isEqualToString:@""]) userStr = kAnonymous;
-    
-    /** Authed user gists */
-    NSData *gists   = [[NSUserDefaults standardUserDefaults] objectForKey:kHistory];
-    NSArray *gistsArr = [NSKeyedUnarchiver unarchiveObjectWithData:gists];
-    
-    /** Anonymous gists */
-    NSData *anonGists   = [[NSUserDefaults standardUserDefaults] objectForKey:kAnonHistory];
-    NSArray *anonGistsArr = [NSKeyedUnarchiver unarchiveObjectWithData:anonGists];
-    
-    self.token      = tokenStr;
-    self.userName   = userStr;
-    self.gists      = gistsArr;
-    self.anonGists  = anonGistsArr;
+    self.token      = [self tokenFromPrefs];
+    self.user       = [self userFromPrefs:kGitHubUser];
+    self.gists      = [self arrayFrom:kHistory];
+    self.anonGists  = [self arrayFrom:kAnonHistory];
     self.lastCheck  = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheck];
+    /** BOOL ------------------------------------------------------------------------ */
     self.anonymous  = [[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous];
-    self.prompt     = [[NSUserDefaults standardUserDefaults] boolForKey:kPrompt];
     self.notice     = [[NSUserDefaults standardUserDefaults] boolForKey:kNotification];
     self.login      = [[NSUserDefaults standardUserDefaults] boolForKey:kLogin];
     self.secret     = [[NSUserDefaults standardUserDefaults] boolForKey:kPublic];
     self.openURL    = [[NSUserDefaults standardUserDefaults] boolForKey:kOpenURL];
     
     if ([self.token isEqualToString:kAnonymous])
-    {
         self.auth = NO;
-        self.userName = kAnonymous;
+    else
+        self.auth = YES;
+}
+
+- (NSString *)useragent
+{
+    if (!_useragent) {
+        NSString *app = [[[NSBundle mainBundle] infoDictionary]
+                         objectForKey:@"CFBundleName"];
+        
+        NSString *ver = [[[NSBundle mainBundle] infoDictionary]
+                         objectForKey:@"CFBundleShortVersionString"];
+        
+        NSString *build = [[[NSBundle mainBundle] infoDictionary]
+                           objectForKey:@"CFBundleVersion"];
+        
+        _useragent = [NSString stringWithFormat:@"%@ version-%@ (%@)", app, ver, build];
     }
-    else self.auth = YES;
+    return _useragent;
+}
+
+- (NSArray *)arrayFrom:(NSString *)userPrefsKey
+{
+    NSArray *arr;
+    NSData *data = [[NSUserDefaults standardUserDefaults]
+                         objectForKey:userPrefsKey];
+    if (data)
+        arr = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    else arr = @[];
+    
+    return arr;
+}
+
+- (GitHubUser *)userFromPrefs:(NSString *)userPrefsKey
+{
+    GitHubUser *user;
+    NSData *data = [[NSUserDefaults standardUserDefaults]
+                    objectForKey:userPrefsKey];
+    if (data)
+        user = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    
+    return user;
+}
+
+- (NSString *)tokenFromPrefs
+{
+    NSString *token;
+    NSData *data = [[NSUserDefaults standardUserDefaults]
+                    valueForKey:kOAuthToken];
+    if (data)
+        token = [[NSString alloc] initWithData:data
+                                      encoding:NSUTF8StringEncoding];
+    else
+        token = kAnonymous;
+    
+    return token;
+}
+
+- (void)registerUserDefaults
+{
+    [[NSUserDefaults standardUserDefaults] registerDefaults:
+     [NSDictionary dictionaryWithContentsOfFile:
+      [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]]];
 }
 
 @end

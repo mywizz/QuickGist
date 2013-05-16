@@ -39,19 +39,27 @@
 
 @interface CDAppController() <StatusViewDelegate, GitHubAPIDelegate> {
     NSPasteboard *_pboard;
+    NSString *_filename;
+    NSString *_description;
+    NSString *_content;
 }
 
 /** Outlets */
 @property (unsafe_unretained) IBOutlet NSWindow *prefsWindow;
 
-@property (nonatomic, weak) IBOutlet NSMenu *menu;
-@property (nonatomic, weak) IBOutlet NSPopover *popover;
+@property (weak) IBOutlet NSMenu *menu;
+@property (weak) IBOutlet NSPopover *popover;
 
-@property (nonatomic, weak) IBOutlet NSTextField *filenameTextField;
-@property (nonatomic, weak) IBOutlet NSTextField *descriptionTextField;
-@property (nonatomic, weak) IBOutlet NSButton *secretCheckBox;
-@property (nonatomic, weak) IBOutlet NSButton *anonymousCheckBox;
+@property (weak) IBOutlet NSTextField *filenameTF;
+@property (weak) IBOutlet NSTextField *descriptionTF;
 
+@property (weak) IBOutlet NSButton *secretCheckBox;
+@property (weak) IBOutlet NSButton *anonymousCheckBox;
+
+@property (weak) IBOutlet NSSegmentedControl *launchAtLoginSegCell;
+@property (weak) IBOutlet NSSegmentedControl *openURLSegCell;
+@property (weak) IBOutlet NSSegmentedControl *notificationCenterSegCell;
+@property (weak) IBOutlet NSButton *githubLoginBtn;
 
 /** Custom */
 @property (nonatomic, strong) CDStatusView *statusView;
@@ -70,7 +78,7 @@
 {
     [super awakeFromNib];
     
-    /** Runtime options singleton */
+    /** Initialize the runtime options singleton */
     self.options = [Options sharedInstance];
     
     /** Our github object to handle api calls */
@@ -79,13 +87,41 @@
     
     /** Let's update our services and let the seystem know we
      have a service. */
-    
     [NSApp setServicesProvider: self];
     NSUpdateDynamicServices();
     
-    /** bring the process fwd */
-    [self bringForward];
+    /** Setup the menubar status item */
+    [self setupTheStatusItem];
+    [self update];
+}
+
+
+#pragma mark - Private
+/** --------------------------------------------------------------------------------- */
+- (void)update
+{
+    /** Update runtime options and view elements. */
+    [self.options update];
     
+    self.launchAtLoginSegCell.selectedSegment = self.options.login;
+    self.notificationCenterSegCell.selectedSegment = self.options.notice;
+    self.openURLSegCell.selectedSegment = self.options.openURL;
+    
+    self.anonymousCheckBox.state = self.options.anonymous;
+    self.secretCheckBox.state = self.options.secret;
+}
+
+- (void)cleanup
+{
+    /** cleanup instance vars*/
+    _pboard = nil;
+    _filename = nil;
+    _description = nil;
+    _content = nil;
+}
+
+- (void)setupTheStatusItem
+{
     /** Setup the status item */
     self.statusItem = [[NSStatusBar systemStatusBar]
                        statusItemWithLength:NSSquareStatusItemLength];
@@ -96,46 +132,45 @@
     [self.statusView setMenu:self.menu];
 }
 
-
-#pragma mark - Private
-/** --------------------------------------------------------------------------------- */
-- (void)update
+- (id)item
 {
-    [self.options update];
-}
-
-- (void)bringForward
-{
-    /** Bring the window (proccess) forward */
-    ProcessSerialNumber psn;
-    if (noErr == GetCurrentProcess(&psn))
-        SetFrontProcess(&psn);
-}
-
-- (id)content
-{
-    NSPasteboard *pboard;
-    if (_pboard)
-        pboard = _pboard;
-    else
+    id _item;
+    
+    NSPasteboard *pboard = _pboard;
+    if (!pboard)
         pboard = [NSPasteboard generalPasteboard];
     
-    NSArray *classes      = @[ [NSString class], [NSURL class] ];
-    NSDictionary *options = [NSDictionary dictionary];
-    NSArray *copiedItems  = [pboard readObjectsForClasses:classes options:options];
-    
-    id item;
+    NSArray *allowedClasses = @[ [NSString class], [NSURL class] ];
+    NSArray *copiedItems = [pboard readObjectsForClasses:allowedClasses
+                                                 options:nil];
     
     if ([copiedItems count])
-        item = [copiedItems objectAtIndex:0];
+        _item = [copiedItems objectAtIndex:0];
     
-    return item;
+    return _item;
+}
+
+- (void)createGist
+{
+    if ([self.filenameTF.stringValue isEqualToString:@""])
+        _filename = @"gistFile1";
+    
+    if ([self.descriptionTF.stringValue isEqualToString:@""])
+        _description = @"Created with QuickGist for OS X";
+    
+    if (_content)
+    {
+        [self.github createGist:_content
+                       withName:_filename
+                 andDescription:_description];
+    }
+    [self cleanup];
 }
 
 - (void)createGist:(NSPasteboard *)pboard userData:(NSString *)userData
              error:(NSString **)error
 {
-    /** This is our system service method */
+    /** This is the OS X service method */
     
     /** Let's set our _pboard instance variable to
      the pasteboard that was passed in. */
@@ -144,32 +179,6 @@
     /** For now we are always prompting the user
      to name the file. */
     [self showPopover:self];
-}
-
-- (void)createGistWithName:(NSString *)filename
-            andDescription:(NSString *)description
-{
-    /** We need to get the content of the gist now
-     incase the user cop/pastes something else. */
-    NSString *content = [self content];
-    
-    if (content != nil) {
-        
-        /** Set default values if the user didn't set any. */
-        if ([filename isEqualToString:@""])
-            filename = @"gistfile1";
-        
-        if ([description isEqualToString:@""])
-            description = @"Created with QuickGist for OS X";
-        
-        /** Create a gist */
-        [self.github createGist:content
-                       withName:filename
-                 andDescription:description];
-    }
-    
-    /** cleanup */
-    _pboard = nil;
 }
 
 
@@ -185,7 +194,7 @@
 /** --------------------------------------------------------------------------------- */
 - (void)downloadGists
 {
-    /** Close the popover window if shown */
+    /** Close the popover if it's shown */
     if (self.popoverIsShown)
         [self.popover close];
 }
@@ -201,40 +210,74 @@
 /** --------------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
 {
-    [self bringForward];
-    
+    /** Close the popover if it's shown */
     if (self.popoverIsShown)
         [self.popover close];
     
+    /** We need to get the content of the gist now
+     incase the user copy/pastes something else. */
+    id item = [self item];
     
-    [self.popover showRelativeToRect:[self.statusView bounds]
-                              ofView:self.statusView
-                       preferredEdge:NSMaxYEdge];
-    
+    if (item != nil)
+    {    
+        if ([item isKindOfClass:[NSString class]])
+            _content = [StringCleaner cleanGistContentString:item];
+        
+        else if ([item isKindOfClass:[NSURL class]])
+        {
+            _filename = [[item path] lastPathComponent];
+            NSData *data = [[NSData alloc] initWithContentsOfURL:item];
+            _content = [StringCleaner cleanGistContentString:[[NSString alloc] initWithData:data
+                                                                                   encoding:NSUTF8StringEncoding]];
+        }
+        
+        if (!_content) {
+            [self cleanup];
+            NSAlert *alert = [NSAlert alertWithMessageText:@"No text detected"
+                                             defaultButton:@"OK"
+                                           alternateButton:nil
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"There doesn't appear to be any text in this file."];
+            [alert runModal];
+        }
+        else {
+            if (_filename)
+                self.filenameTF.stringValue = _filename;
+            
+            if (_description)
+                self.descriptionTF.stringValue = _description;
+            
+            [self.popover showRelativeToRect:[self.statusView bounds]
+                                      ofView:self.statusView
+                               preferredEdge:NSMaxYEdge];
+        }
+    }
+    else [self cleanup];
 }
 
 - (IBAction)createGist:(id)sender
 {
+    /** Close the popover if it's shown */
     if ([self.popover isShown])
         [self.popover close];
- 
-    NSString* (^processField)(NSTextFieldCell *) = ^(NSTextFieldCell *cell) {
-        NSString *str = cell.title;
-        cell.title = @"";
-        return str;
-    };
     
-    NSString *filename = processField([self.filenameTextField cell]);
-    NSString *description = processField([self.descriptionTextField cell]);
-    [self createGistWithName:filename andDescription:description];
+    _filename = self.filenameTF.stringValue;
+    _description = self.descriptionTF.stringValue;
+    
+    [self createGist];
 }
 
 - (IBAction)cancelGist:(id)sender
 {
+    /** Clear the text fields if there is any text. */
+    self.filenameTF.stringValue = @"";
+    self.descriptionTF.stringValue = @"";
+    
+    /** Close the popover if it's shown */
     if ([self.popover isShown])
         [self.popover close];
     
-    _pboard = nil;
+    [self cleanup];
 }
 
 - (IBAction)toggleLaunchAtLogin:(id)sender
@@ -252,7 +295,6 @@
     [self update];
 }
 
-
 - (IBAction)toggleOpenURLAfterPost:(id)sender
 {
     [[NSUserDefaults standardUserDefaults]
@@ -263,13 +305,25 @@
 - (IBAction)toggleAnonymousGists:(id)sender
 {
     if (self.options.anonymous && !self.options.auth) {
-        [self.popover close];
-        // [self toggleGitHubLogin:sender];
+        
+        /** Close the popover if it's shown */
+        if ([self.popover isShown])
+            [self.popover close];
+        
+        /** Prompt the user to authenticate if they are not
+         authenticated. */
     }
     else
         [[NSUserDefaults standardUserDefaults]
          setBool:!self.options.anonymous forKey:kAnonymous];
     
+    [self update];
+}
+
+- (IBAction)toggleSecretGists:(id)sender
+{
+    [[NSUserDefaults standardUserDefaults]
+     setBool:!self.options.secret forKey:kPublic];
     [self update];
 }
 

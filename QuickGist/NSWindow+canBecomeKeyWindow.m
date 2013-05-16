@@ -58,6 +58,11 @@
      introspection to get the status of the NSPopover from
      the AppController. */
     
+    ProcessSerialNumber psn;
+    if (noErr == GetCurrentProcess(&psn))
+        SetFrontProcess(&psn);
+    
+    
     if ([self class] == NSClassFromString(@"NSStatusBarWindow"))
     {
         /** The StatusItem's view delegate is the CDAppController which

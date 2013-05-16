@@ -1,9 +1,9 @@
-## QuickGist for OS X 1.0
+## QuickGist for OS X
 
 
 ## Description
 
-Use QuickGist to post and manage your GitHub Gists.
+Use QuickGist to post and manage your GitHub Gists. QuickGist runs in your Mac menubar and allows you to drag and drop text or text files right onto the menubar icon to quickly create a GitHub Gist!
 
 
 ## Features 
