@@ -34,7 +34,6 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
-#import "NSData+Base64.h"
 #import "Options.h"
 #import "Gist.h"
 #import "GistFile.h"
@@ -42,8 +41,8 @@
 #import "LaunchAtLogin.h"
 
 enum {
-    GitHubRequestTypeCreateGist = 0,
-    GitHubRequestTypeGetAccessToken = 2
+    GitHubRequestTypeCreateGist     = 0,
+    GitHubRequestTypeGetAccessToken = 1
 } typedef GitHubRequestType;
 
 @protocol GitHubAPIDelegate <NSObject>

@@ -36,7 +36,7 @@
 #import "CDAppController.h"
 #import "CDStatusView.h"
 #import "GitHub.h"
-#import "Config.h" /** REMOVE THIS LINE. This is my personal private config for my app. */
+#import "Config.h"
 
 @interface CDAppController() <StatusViewDelegate, GitHubAPIDelegate> {
     NSPasteboard *_pboard;
@@ -88,18 +88,11 @@
     
 /** --------------------------------------------------------------------------------- */    
 
-    /** Using Base64 strings. You can encode you client id and secret
-     at: http://www.motobit.com/util/base64-decoder-encoder.asp */
+    /** REPLACE [Config clientId] with @"<YOUR GITHUB APP ID>" */
+    self.github.clientId = [Config clientId];
     
-    /** Change [Config clientId] to your base64 encoded client_id */
-    NSData *idData     = [NSData dataFromBase64String:[Config clientId]];
-    
-    /** Change [Config clientSecret] to base64 encoded client_secret */
-    NSData *secretData = [NSData dataFromBase64String:[Config clientSecret]];
-    
-    /** Decode base64 strings */
-    self.github.clientId = [[NSString alloc] initWithData:idData encoding:NSUTF8StringEncoding];
-    self.github.clientSecret = [[NSString alloc] initWithData:secretData encoding:NSUTF8StringEncoding];
+    /** REPLACE [Config clientSecret] with @"<YOUR GITHUB APP SECRET>" */
+    self.github.clientSecret = [Config clientSecret];
     
 /** --------------------------------------------------------------------------------- */
     

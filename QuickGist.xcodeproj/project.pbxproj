@@ -102,7 +102,6 @@
 		94E101381744699E005F1C51 /* CDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDAppDelegate.h; sourceTree = "<group>"; };
 		94E101391744699E005F1C51 /* CDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CDAppDelegate.m; sourceTree = "<group>"; };
 		94E1013C1744699E005F1C51 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		94FE26D717454DF10075DE0B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = Private/README.md; sourceTree = "<group>"; };
 		94FE26DC17454EC60075DE0B /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = Private/Config.h; sourceTree = "<group>"; };
 		94FE26DD17454EC60075DE0B /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Config.m; path = Private/Config.m; sourceTree = "<group>"; };
 		94FE26DF174554A10075DE0B /* example.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = example.json; path = Private/example.json; sourceTree = "<group>"; };
@@ -304,7 +303,6 @@
 		94FE26D517454DA60075DE0B /* Private */ = {
 			isa = PBXGroup;
 			children = (
-				94FE26D717454DF10075DE0B /* README.md */,
 				94FE26DC17454EC60075DE0B /* Config.h */,
 				94FE26DD17454EC60075DE0B /* Config.m */,
 				94FE26DF174554A10075DE0B /* example.json */,
