@@ -36,7 +36,7 @@
 #import "CDAppController.h"
 #import "CDStatusView.h"
 #import "GitHub.h"
-#import "Config.h" /** test */
+#import "Config.h"
 
 /** ----------------------------------------------------------------------- */
 #ifndef CONFIG
