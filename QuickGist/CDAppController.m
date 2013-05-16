@@ -38,6 +38,7 @@
 #import "GitHub.h"
 #import "Config.h"
 
+/** ----------------------------------------------------------------------- */
 #ifndef CONFIG
 @interface Config : NSObject
 + (NSString *)clientId;
@@ -50,7 +51,7 @@
 + (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
 @end
 #endif
-
+/** ----------------------------------------------------------------------- */
 
 @interface CDAppController() <StatusViewDelegate, GitHubAPIDelegate> {
     NSPasteboard *_pboard;
