@@ -1,4 +1,4 @@
-## QuickGist for OS X 2.0
+## QuickGist for OS X 1.0
 
 
 ## Description

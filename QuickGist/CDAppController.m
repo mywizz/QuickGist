@@ -35,7 +35,6 @@
 
 #import "CDAppController.h"
 #import "CDStatusView.h"
-#import "Options.h"
 #import "GitHub.h"
 
 @interface CDAppController() <StatusViewDelegate, GitHubAPIDelegate> {
@@ -54,7 +53,6 @@
 @property (nonatomic, weak) IBOutlet NSButton *anonymousCheckBox;
 
 
-
 /** Custom */
 @property (nonatomic, strong) CDStatusView *statusView;
 @property (nonatomic, strong) Options *options;
@@ -67,7 +65,7 @@
 
 @implementation CDAppController
 
-#pragma mark - Private
+#pragma mark - Super Class
 - (void)awakeFromNib
 {
     [super awakeFromNib];
@@ -78,6 +76,12 @@
     /** Our github object to handle api calls */
     self.github = [[GitHub alloc] init];
     [self.github setDelegate:self];
+    
+    /** Let's update our services and let the seystem know we
+     have a service. */
+    
+    [NSApp setServicesProvider: self];
+    NSUpdateDynamicServices();
     
     /** bring the process fwd */
     [self bringForward];
@@ -90,6 +94,14 @@
     [self.statusView setImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setMenu:self.menu];
+}
+
+
+#pragma mark - Private
+/** --------------------------------------------------------------------------------- */
+- (void)update
+{
+    [self.options update];
 }
 
 - (void)bringForward
@@ -150,24 +162,27 @@
         if ([description isEqualToString:@""])
             description = @"Created with QuickGist for OS X";
         
-        /** Construct our JSON POST data to create a Gist */
-
-        NSLog(@"filename: %@", filename);
-        NSLog(@"description: %@", description);
-        NSLog(@"content:\n%@", content);
+        /** Create a gist */
+        [self.github createGist:content
+                       withName:filename
+                 andDescription:description];
     }
     
     /** cleanup */
     _pboard = nil;
 }
 
+
 #pragma mark - Getters
+/** --------------------------------------------------------------------------------- */
 - (BOOL)popoverIsShown
 {
     return [self.popover isShown];
 }
 
+
 #pragma mark - StatusView Delegate
+/** --------------------------------------------------------------------------------- */
 - (void)downloadGists
 {
     /** Close the popover window if shown */
@@ -181,7 +196,9 @@
     [self showPopover:self];
 }
 
+
 #pragma mark - Sent Actions
+/** --------------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
 {
     [self bringForward];
@@ -218,6 +235,42 @@
         [self.popover close];
     
     _pboard = nil;
+}
+
+- (IBAction)toggleLaunchAtLogin:(id)sender
+{
+    [[NSUserDefaults standardUserDefaults]
+     setBool:[sender selectedSegment] forKey:kLogin];
+    [LaunchAtLogin toggleLaunchAtLogin:[sender selectedSegment]];
+    [self update];
+}
+
+- (IBAction)toggleShowInNotificationCenter:(id)sender
+{
+    [[NSUserDefaults standardUserDefaults]
+     setBool:[sender selectedSegment] forKey:kNotification];
+    [self update];
+}
+
+
+- (IBAction)toggleOpenURLAfterPost:(id)sender
+{
+    [[NSUserDefaults standardUserDefaults]
+     setBool:[sender selectedSegment] forKey:kOpenURL];
+    [self update];
+}
+
+- (IBAction)toggleAnonymousGists:(id)sender
+{
+    if (self.options.anonymous && !self.options.auth) {
+        [self.popover close];
+        // [self toggleGitHubLogin:sender];
+    }
+    else
+        [[NSUserDefaults standardUserDefaults]
+         setBool:!self.options.anonymous forKey:kAnonymous];
+    
+    [self update];
 }
 
 @end

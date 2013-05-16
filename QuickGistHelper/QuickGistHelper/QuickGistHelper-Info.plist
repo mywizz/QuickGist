@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>app.icns</string>
+	<string></string>
 	<key>CFBundleIdentifier</key>
 	<string>com.corndogcomputers.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -32,36 +32,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>LSUIElement</key>
+	<key>LSBackgroundOnly</key>
 	<true/>
-	<key>NSServices</key>
-	<array>
-		<dict>
-			<key>NSExecutable</key>
-			<string>QuickGist</string>
-			<key>NSKeyEquivalent</key>
-			<dict>
-				<key>English</key>
-				<string>G</string>
-				<key>Key equivalent (with shift and command)</key>
-				<string>G</string>
-			</dict>
-			<key>NSMenuItem</key>
-			<dict>
-				<key>default</key>
-				<string>Create QuickGist</string>
-			</dict>
-			<key>NSMessage</key>
-			<string>createGist</string>
-			<key>NSPortName</key>
-			<string>QuickGist</string>
-			<key>NSSendTypes</key>
-			<array>
-				<string>NSStringPboardType</string>
-				<string>NSRTFPboardType</string>
-				<string>NSRTFDPboardType</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>

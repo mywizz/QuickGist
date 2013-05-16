@@ -40,7 +40,7 @@
 @property (nonatomic, setter = setHighlighted:) BOOL isHighlighted;
 @property (nonatomic) SEL action;
 @property (nonatomic, assign) id target;
-@property (strong, nonatomic) NSArray *types;
+@property (nonatomic, strong) NSArray *types;
 
 @end
 

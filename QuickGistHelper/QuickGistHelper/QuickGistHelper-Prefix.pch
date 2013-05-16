@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'QuickGistHelper' target in the 'QuickGistHelper' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

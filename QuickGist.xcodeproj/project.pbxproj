@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		9414332517446E4200DB98D8 /* CDAppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9414332417446E4200DB98D8 /* CDAppController.m */; };
+		941433601744726900DB98D8 /* QuickGistHelper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9414335D174470F900DB98D8 /* QuickGistHelper.app */; };
+		941433631744770800DB98D8 /* CDPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 941433621744770800DB98D8 /* CDPrefsWindow.m */; };
+		94143366174487EA00DB98D8 /* GitHubUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 94143365174487E900DB98D8 /* GitHubUser.m */; };
 		945DAC3C17446AE700BF034E /* CDStatusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2917446AE700BF034E /* CDStatusView.m */; };
 		945DAC3D17446AE700BF034E /* Gist.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2B17446AE700BF034E /* Gist.m */; };
 		945DAC3E17446AE700BF034E /* GistFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 945DAC2D17446AE700BF034E /* GistFile.m */; };
@@ -32,8 +35,36 @@
 		94E1013D1744699E005F1C51 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94E1013B1744699E005F1C51 /* MainMenu.xib */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9414335C174470F900DB98D8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94143358174470F800DB98D8 /* QuickGistHelper.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 94143338174470F800DB98D8;
+			remoteInfo = QuickGistHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9414335F1744724C00DB98D8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LoginItems;
+			dstSubfolderSpec = 1;
+			files = (
+				941433601744726900DB98D8 /* QuickGistHelper.app in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		9414332417446E4200DB98D8 /* CDAppController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDAppController.m; sourceTree = "<group>"; };
+		94143358174470F800DB98D8 /* QuickGistHelper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickGistHelper.xcodeproj; path = QuickGistHelper/QuickGistHelper.xcodeproj; sourceTree = "<group>"; };
+		941433611744770800DB98D8 /* CDPrefsWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDPrefsWindow.h; sourceTree = "<group>"; };
+		941433621744770800DB98D8 /* CDPrefsWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDPrefsWindow.m; sourceTree = "<group>"; };
+		94143364174487E900DB98D8 /* GitHubUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHubUser.h; sourceTree = "<group>"; };
+		94143365174487E900DB98D8 /* GitHubUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitHubUser.m; sourceTree = "<group>"; };
 		945DAC2317446A9900BF034E /* QuickGist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = QuickGist.entitlements; sourceTree = "<group>"; };
 		945DAC2417446AE700BF034E /* CDAppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDAppController.h; sourceTree = "<group>"; };
 		945DAC2817446AE700BF034E /* CDStatusView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDStatusView.h; sourceTree = "<group>"; };
@@ -121,6 +152,8 @@
 			children = (
 				945DAC2817446AE700BF034E /* CDStatusView.h */,
 				945DAC2917446AE700BF034E /* CDStatusView.m */,
+				941433611744770800DB98D8 /* CDPrefsWindow.h */,
+				941433621744770800DB98D8 /* CDPrefsWindow.m */,
 			);
 			name = "Sub Classes";
 			sourceTree = "<group>";
@@ -131,12 +164,14 @@
 				9414332E1744701400DB98D8 /* Singletons */,
 				9414332917446FA900DB98D8 /* Sub Classes */,
 				9414332D17446FFD00DB98D8 /* Supporting Classes */,
+				945DAC2E17446AE700BF034E /* GitHub.h */,
+				945DAC2F17446AE700BF034E /* GitHub.m */,
 				945DAC2A17446AE700BF034E /* Gist.h */,
 				945DAC2B17446AE700BF034E /* Gist.m */,
 				945DAC2C17446AE700BF034E /* GistFile.h */,
 				945DAC2D17446AE700BF034E /* GistFile.m */,
-				945DAC2E17446AE700BF034E /* GitHub.h */,
-				945DAC2F17446AE700BF034E /* GitHub.m */,
+				94143364174487E900DB98D8 /* GitHubUser.h */,
+				94143365174487E900DB98D8 /* GitHubUser.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -180,6 +215,14 @@
 			name = Singletons;
 			sourceTree = "<group>";
 		};
+		94143359174470F800DB98D8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9414335D174470F900DB98D8 /* QuickGistHelper.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		945DAC4717446B4C00BF034E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -197,6 +240,7 @@
 				94E1012C1744699E005F1C51 /* QuickGist */,
 				94E101251744699E005F1C51 /* Frameworks */,
 				94E101241744699E005F1C51 /* Products */,
+				94143358174470F800DB98D8 /* QuickGistHelper.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -233,8 +277,8 @@
 			isa = PBXGroup;
 			children = (
 				9414332617446F8D00DB98D8 /* App Delegate */,
-				9414332717446F9800DB98D8 /* User Interface */,
 				9414332817446FA100DB98D8 /* Controllers */,
+				9414332717446F9800DB98D8 /* User Interface */,
 				9414332A17446FB500DB98D8 /* Classes */,
 				9414332C17446FE100DB98D8 /* Categories */,
 				945DAC4717446B4C00BF034E /* Resources */,
@@ -267,6 +311,9 @@
 				94E1011F1744699E005F1C51 /* Sources */,
 				94E101201744699E005F1C51 /* Frameworks */,
 				94E101211744699E005F1C51 /* Resources */,
+				9414335F1744724C00DB98D8 /* CopyFiles */,
+				941433671744888F00DB98D8 /* Increment build number */,
+				94143368174488B900DB98D8 /* Delete helper app embeded profile */,
 			);
 			buildRules = (
 			);
@@ -297,12 +344,28 @@
 			mainGroup = 94E1011A1744699E005F1C51;
 			productRefGroup = 94E101241744699E005F1C51 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 94143359174470F800DB98D8 /* Products */;
+					ProjectRef = 94143358174470F800DB98D8 /* QuickGistHelper.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				94E101221744699E005F1C51 /* QuickGist */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9414335D174470F900DB98D8 /* QuickGistHelper.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = QuickGistHelper.app;
+			remoteRef = 9414335C174470F900DB98D8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		94E101211744699E005F1C51 /* Resources */ = {
@@ -322,6 +385,37 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		941433671744888F00DB98D8 /* Increment build number */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Increment build number";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nif [ $buildNumber == \"1.0\" ]; then buildNumber=1; fi\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"";
+		};
+		94143368174488B900DB98D8 /* Delete helper app embeded profile */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Delete helper app embeded profile";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "PROFILE=\"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LoginItems/${PRODUCT_NAME}Helper.app/Contents/${EMBEDDED_PROFILE_NAME}\"\nif [ -f $PROFILE ]; then rm $PROFILE; fi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		94E1011F1744699E005F1C51 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -339,6 +433,8 @@
 				945DAC4317446AE700BF034E /* Options.m in Sources */,
 				945DAC4417446AE700BF034E /* StringCleaner.m in Sources */,
 				9414332517446E4200DB98D8 /* CDAppController.m in Sources */,
+				941433631744770800DB98D8 /* CDPrefsWindow.m in Sources */,
+				94143366174487EA00DB98D8 /* GitHubUser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,12 +545,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = QuickGist/QuickGist.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
 				INFOPLIST_FILE = "QuickGist/QuickGist-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

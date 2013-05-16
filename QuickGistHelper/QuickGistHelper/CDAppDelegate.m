@@ -1,6 +1,6 @@
 //
-//  GitHub.m
-//  QuickGist
+//  CDAppDelegate.m
+//  QuickGistHelper
 //
 //  Created by Rob Johnson on 5/15/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
@@ -33,76 +33,39 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "GitHub.h"
+#import "CDAppDelegate.h"
 
-@interface GitHub() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
-    NSMutableData *_responseData;
-}
+@implementation CDAppDelegate
 
-@property (strong, nonatomic) Options *options;
-@end
-
-@implementation GitHub
-
-- (id)init
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self = [super init];
-    if (self) {
-        self.options = [Options sharedInstance];
-    }
-    return self;
-}
-
-- (void)requestForType:(GitHubRequestType)dataType
-{
-    switch (dataType) {
-        case GitHubRequestTypeCreateGist:
-            break;
-            
-        case GitHubRequestTypeGetAccessToken:
-            break;
-            
-        default:
-            break;
+    // Check if main app is already running; if yes, do nothing and terminate helper app
+    BOOL alreadyRunning = NO;
+    NSArray *running = [[NSWorkspace sharedWorkspace] runningApplications];
+    
+    for (NSRunningApplication *app in running) {
+        if ([[app bundleIdentifier] isEqualToString:@"com.corndogcomputers.QuickGist"]) {
+            alreadyRunning = YES;
+        }
     }
     
-}
-
-- (void)createGist:(id)content withName:(NSString *)filename
-    andDescription:(NSString *)description
-{
+    if (!alreadyRunning)
+    {
+        NSString *path = [[NSBundle mainBundle] bundlePath];
+        NSArray *p = [path pathComponents];
+        NSMutableArray *pathComponents = [NSMutableArray arrayWithArray:p];
+        
+        [pathComponents removeLastObject];
+        [pathComponents removeLastObject];
+        [pathComponents removeLastObject];
+        [pathComponents addObject:@"MacOS"];
+        [pathComponents addObject:@"QuickGist"];
+        
+        NSString *newPath = [NSString pathWithComponents:pathComponents];
+        [[NSWorkspace sharedWorkspace] launchApplication:newPath];
+    }
     
-}
-
-#pragma mark - Private
-- (void)uploadDataToCreateGist:(NSMutableURLRequest *)request
-{
-    
-}
-
-- (void)processData:(NSData *)data
-{
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    
+    [NSApp terminate:nil];
 }
 
 @end

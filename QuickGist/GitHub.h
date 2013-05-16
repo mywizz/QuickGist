@@ -34,8 +34,16 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
+#import "Options.h"
 #import "Gist.h"
 #import "GistFile.h"
+#import "StringCleaner.h"
+#import "LaunchAtLogin.h"
+
+enum {
+    GitHubRequestTypeCreateGist = 0,
+    GitHubRequestTypeGetAccessToken = 2
+} typedef GitHubRequestType;
 
 @protocol GitHubAPIDelegate <NSObject>
 
@@ -45,5 +53,6 @@
 @interface GitHub : NSObject
 @property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
 
+- (void)createGist:(id)content withName:(NSString *)filename andDescription:(NSString *)description;
 
 @end

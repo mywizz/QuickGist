@@ -1,5 +1,5 @@
 //
-//  GitHub.m
+//  GitHubUser.h
 //  QuickGist
 //
 //  Created by Rob Johnson on 5/15/13.
@@ -33,76 +33,8 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "GitHub.h"
+#import <Foundation/Foundation.h>
 
-@interface GitHub() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
-    NSMutableData *_responseData;
-}
-
-@property (strong, nonatomic) Options *options;
-@end
-
-@implementation GitHub
-
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        self.options = [Options sharedInstance];
-    }
-    return self;
-}
-
-- (void)requestForType:(GitHubRequestType)dataType
-{
-    switch (dataType) {
-        case GitHubRequestTypeCreateGist:
-            break;
-            
-        case GitHubRequestTypeGetAccessToken:
-            break;
-            
-        default:
-            break;
-    }
-    
-}
-
-- (void)createGist:(id)content withName:(NSString *)filename
-    andDescription:(NSString *)description
-{
-    
-}
-
-#pragma mark - Private
-- (void)uploadDataToCreateGist:(NSMutableURLRequest *)request
-{
-    
-}
-
-- (void)processData:(NSData *)data
-{
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    
-}
+@interface GitHubUser : NSObject
 
 @end

@@ -34,8 +34,38 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
+#import "GitHubUser.h"
+
+#define kOAuthToken     @"OAuthToken"
+#define kHistory        @"Gists"
+#define kAnonHistory    @"AnonymousGists"
+#define kLogin          @"LaunchAtLogin"
+#define kPublic         @"SecretGists"
+#define kOpenURL        @"OpenURLAfterPost"
+#define kAnonymous      @"anonymous"
+#define kPrompt         @"ShowPrompt"
+#define kNotification   @"ShowDesktopNotifications"
+#define kGitHubUser     @"GitHubUser"
+#define kLastCheck      @"LastCheck"
 
 @interface Options : NSObject
+
+@property (nonatomic, strong) NSString *token;
+@property (nonatomic, strong) NSString *useragent;
+@property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) NSString *lastCheck;
+@property (nonatomic, strong) NSArray  *gists;
+@property (nonatomic, strong) NSArray  *anonGists;
+
+@property (nonatomic, strong) GitHubUser *user;
+
+@property (nonatomic) BOOL auth;
+@property (nonatomic) BOOL login;
+@property (nonatomic) BOOL secret;
+@property (nonatomic) BOOL openURL;
+@property (nonatomic) BOOL prompt;
+@property (nonatomic) BOOL notice;
+@property (nonatomic) BOOL anonymous;
 
 + (id)sharedInstance;
 - (void)update;
