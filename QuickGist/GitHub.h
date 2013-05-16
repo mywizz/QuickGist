@@ -34,6 +34,7 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
+#import "NSData+Base64.h"
 #import "Options.h"
 #import "Gist.h"
 #import "GistFile.h"
@@ -52,6 +53,9 @@ enum {
 
 @interface GitHub : NSObject
 @property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
+
+@property (nonatomic, strong) NSString *clientId;
+@property (nonatomic, strong) NSString *clientSecret;
 
 - (void)createGist:(NSString *)content withName:(NSString *)filename andDescription:(NSString *)description;
 
