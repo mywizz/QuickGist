@@ -37,7 +37,7 @@
 #import "CDStatusView.h"
 #import "GitHub.h"
 
-#import "Config.h" /** <== Comment out or remove this line since I didn't give it to you. ;-) */
+#import "Config.h"
 
 #ifndef CONFIG
 @interface Config : NSObject
