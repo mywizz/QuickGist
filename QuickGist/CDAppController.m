@@ -36,13 +36,27 @@
 #import "CDAppController.h"
 #import "CDStatusView.h"
 #import "GitHub.h"
-#import "Config.h"
+
+#import "Config.h" /** <== Comment out or remove this line. */
+
+#ifndef CONFIG
+@interface Config : NSObject
++ (NSString *)clientId;
++ (NSString *)clientSecret;
+@end
+
+@implementation Config
++ (NSString *)clientId { return @"<YOUR GITHUB APP ID>"; }
++ (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
+@end
+#endif
+
 
 @interface CDAppController() <StatusViewDelegate, GitHubAPIDelegate> {
     NSPasteboard *_pboard;
-    NSString *_filename;
-    NSString *_description;
-    NSString *_content;
+    NSString     *_filename;
+    NSString     *_description;
+    NSString     *_content;
 }
 
 /** Outlets */
@@ -85,16 +99,8 @@
     /** Our github object to handle api calls */
     self.github = [[GitHub alloc] init];
     [self.github setDelegate:self];
-    
-/** --------------------------------------------------------------------------------- */    
-
-    /** REPLACE [Config clientId] with @"<YOUR GITHUB APP ID>" */
     self.github.clientId = [Config clientId];
-    
-    /** REPLACE [Config clientSecret] with @"<YOUR GITHUB APP SECRET>" */
     self.github.clientSecret = [Config clientSecret];
-    
-/** --------------------------------------------------------------------------------- */
     
     /** Let's update our services and let the seystem know we
      have a service. */

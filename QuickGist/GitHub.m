@@ -34,6 +34,7 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "GitHub.h"
+#import "NSData+Base64.h"
 
 @interface GitHub() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
     NSMutableData *_responseData;

@@ -25,13 +25,13 @@
 		945DAC4D17446B4C00BF034E /* menu-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 945DAC4A17446B4C00BF034E /* menu-icon@2x.png */; };
 		945DAC5217446CCE00BF034E /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 945DAC5117446CCE00BF034E /* WebKit.framework */; };
 		945DAC5417446CD900BF034E /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 945DAC5317446CD900BF034E /* ServiceManagement.framework */; };
+		9466142017458C6800BF2CBA /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 9466141E17458C6800BF2CBA /* Config.m */; };
 		94E101271744699E005F1C51 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E101261744699E005F1C51 /* Cocoa.framework */; };
 		94E101311744699E005F1C51 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94E1012F1744699E005F1C51 /* InfoPlist.strings */; };
 		94E101331744699E005F1C51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E101321744699E005F1C51 /* main.m */; };
 		94E101371744699E005F1C51 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 94E101351744699E005F1C51 /* Credits.rtf */; };
 		94E1013A1744699E005F1C51 /* CDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E101391744699E005F1C51 /* CDAppDelegate.m */; };
 		94E1013D1744699E005F1C51 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94E1013B1744699E005F1C51 /* MainMenu.xib */; };
-		94FE26DE17454EC60075DE0B /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 94FE26DD17454EC60075DE0B /* Config.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +89,8 @@
 		945DAC4E17446B8C00BF034E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		945DAC5117446CCE00BF034E /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		945DAC5317446CD900BF034E /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		9466141D17458C6800BF2CBA /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		9466141E17458C6800BF2CBA /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
 		94E101231744699E005F1C51 /* QuickGist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickGist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E101261744699E005F1C51 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		94E101291744699E005F1C51 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -102,9 +104,6 @@
 		94E101381744699E005F1C51 /* CDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDAppDelegate.h; sourceTree = "<group>"; };
 		94E101391744699E005F1C51 /* CDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CDAppDelegate.m; sourceTree = "<group>"; };
 		94E1013C1744699E005F1C51 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		94FE26DC17454EC60075DE0B /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = Private/Config.h; sourceTree = "<group>"; };
-		94FE26DD17454EC60075DE0B /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Config.m; path = Private/Config.m; sourceTree = "<group>"; };
-		94FE26DF174554A10075DE0B /* example.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = example.json; path = Private/example.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -274,7 +273,6 @@
 		94E1012C1744699E005F1C51 /* QuickGist */ = {
 			isa = PBXGroup;
 			children = (
-				94FE26D517454DA60075DE0B /* Private */,
 				9414332617446F8D00DB98D8 /* App Delegate */,
 				9414332817446FA100DB98D8 /* Controllers */,
 				9414332717446F9800DB98D8 /* User Interface */,
@@ -289,6 +287,8 @@
 		94E1012D1744699E005F1C51 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9466141D17458C6800BF2CBA /* Config.h */,
+				9466141E17458C6800BF2CBA /* Config.m */,
 				945DAC4517446B3300BF034E /* Defaults.plist */,
 				945DAC2317446A9900BF034E /* QuickGist.entitlements */,
 				94E1012E1744699E005F1C51 /* QuickGist-Info.plist */,
@@ -300,17 +300,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		94FE26D517454DA60075DE0B /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				94FE26DC17454EC60075DE0B /* Config.h */,
-				94FE26DD17454EC60075DE0B /* Config.m */,
-				94FE26DF174554A10075DE0B /* example.json */,
-			);
-			name = Private;
-			path = ..;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -318,6 +307,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 94E101401744699E005F1C51 /* Build configuration list for PBXNativeTarget "QuickGist" */;
 			buildPhases = (
+				94625ADD17458BFF00277E92 /* ShellScript */,
 				94E1011F1744699E005F1C51 /* Sources */,
 				94E101201744699E005F1C51 /* Frameworks */,
 				94E101211744699E005F1C51 /* Resources */,
@@ -423,6 +413,19 @@
 			shellPath = /bin/sh;
 			shellScript = "PROFILE=\"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LoginItems/${PRODUCT_NAME}Helper.app/Contents/${EMBEDDED_PROFILE_NAME}\"\nif [ -f $PROFILE ]; then rm $PROFILE; fi\n";
 		};
+		94625ADD17458BFF00277E92 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "CONFIG_SOURCE=\"Config.m\"\nif [ ! -f QuickGist/$CONFIG_SOURCE ]; then touch QuickGist/$CONFIG_SOURCE; fi";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -443,7 +446,7 @@
 				945DAC4417446AE700BF034E /* StringCleaner.m in Sources */,
 				9414332517446E4200DB98D8 /* CDAppController.m in Sources */,
 				94143366174487EA00DB98D8 /* GitHubUser.m in Sources */,
-				94FE26DE17454EC60075DE0B /* Config.m in Sources */,
+				9466142017458C6800BF2CBA /* Config.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
