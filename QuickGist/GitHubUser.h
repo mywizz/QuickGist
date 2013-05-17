@@ -37,8 +37,8 @@
 
 @interface GitHubUser : NSObject
 
-@property (nonatomic, strong) NSString *login;
 @property (nonatomic, strong) NSString *userId;
+@property (nonatomic, strong) NSString *login;
 @property (nonatomic, strong) NSString *avatar_url;
 @property (nonatomic, strong) NSString *gravatar_id;
 @property (nonatomic, strong) NSString *url;

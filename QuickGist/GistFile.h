@@ -41,6 +41,7 @@
 @property (nonatomic, strong) NSString *type;
 @property (nonatomic, strong) NSString *language;
 @property (nonatomic, strong) NSString *raw_url;
+@property (nonatomic, strong) NSString *content;
 @property (nonatomic) NSInteger size;
 
 @end

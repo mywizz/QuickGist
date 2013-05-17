@@ -48,6 +48,8 @@
         self.type       = [aDecoder decodeObjectForKey:@"type"];
         self.language   = [aDecoder decodeObjectForKey:@"language"];
         self.raw_url    = [aDecoder decodeObjectForKey:@"raw_url"];
+        self.content    = [aDecoder decodeObjectForKey:@"content"];
+        
         self.size       = [aDecoder decodeIntegerForKey:@"size"];
     }
     
@@ -60,6 +62,8 @@
     [aCoder encodeObject:self.type      forKey:@"type"];
     [aCoder encodeObject:self.language  forKey:@"language"];
     [aCoder encodeObject:self.raw_url   forKey:@"raw_url"];
+    [aCoder encodeObject:self.content   forKey:@"content"];
+    
     [aCoder encodeInteger:self.size     forKey:@"size"];
 }
 

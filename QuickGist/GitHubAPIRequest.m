@@ -39,6 +39,7 @@
 @interface GitHubAPIRequest() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
     NSURLConnection *_connection;
     NSMutableData *_responseData;
+    NSString      *_lastRequest;
     GitHubRequestType _reqType;
 }
 
@@ -59,11 +60,45 @@
 {
     GitHubResponseProcessor *proc = [[GitHubResponseProcessor alloc] init];
     id processedData = [proc processData:data forReqestType:_reqType];
-    [self.delegate handleData:processedData forDataType:_reqType];
+    [self.delegate handleData:processedData forDataType:_reqType fromLastRequest:_lastRequest];
 }
 
+- (void)cleanup
+{
+    [_connection cancel];
+    _connection   = nil;
+    _responseData = nil;
+    _lastRequest  = nil;
+}
+
+#pragma mark - Connection Delegate
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    NSDictionary *headers = [httpResponse allHeaderFields];
+    NSInteger status = [httpResponse statusCode];
+    
+    for (id key in headers)
+        NSLog(@"%@: %@", [key description], [headers objectForKey:key]);
+    
+    switch (status) {
+        case 200:
+            // success
+            break;
+        case 201:
+            // success posting data
+            break;
+        case 304:
+            // use cache
+            [self cleanup];
+            break;
+            
+        default:
+            break;
+    }
+    
+    _lastRequest = [headers objectForKey:@"Date"];
+    
     if (!_responseData)
         _responseData = [[NSMutableData alloc] init];
 }
@@ -85,7 +120,7 @@
                                      defaultButton:@"OK"
                                    alternateButton:nil
                                        otherButton:nil
-                         informativeTextWithFormat:@"Check your Internet connection to make sure your connected."];
+                         informativeTextWithFormat:@"Check your Internet connection to make sure you're connected."];
     [alert runModal];
 }
 

@@ -59,12 +59,10 @@
 #endif
 /** ------------------------------------------------------------------------- */
 
-@interface CDAppController() <NSUserNotificationCenterDelegate,
-                              StatusViewDelegate, GitHubAPIDelegate> {
+@interface CDAppController() <NSUserNotificationCenterDelegate, StatusViewDelegate, GitHubAPIDelegate> {
     NSPasteboard *_pboard;
-    NSString     *_filename;
-    NSString     *_description;
-    NSString     *_content;
+    NSString     *_url;
+    Gist         *_gist;
 }
 
 /** Outlets */
@@ -165,6 +163,11 @@
             [alert runModal];
         }
         
+        /** Request user data */
+        if (!self.options.user)
+            [self.github requestDataForType:GitHubRequestTypeGetUser
+                                   withData:nil];
+        
         
         [self.githubLoginBtn setTitle:@"Logout"];
         if (self.options.user.login)
@@ -194,10 +197,8 @@
     self.descriptionTF.stringValue = @"";
     
     /** cleanup instance vars */
-    _pboard      = nil;
-    _filename    = nil;
-    _description = nil;
-    _content     = nil;
+    _pboard = nil;
+    _gist   = nil;
 }
 
 - (void)setGistHistoryMenu
@@ -233,7 +234,7 @@
          a menu item that opens the users GitHub gists page.
          */
         
-        if (self.options.auth) {
+        if (self.options.auth && self.options.user) {
             CDMenuItem *item = [[CDMenuItem alloc] init];
             NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@", self.options.user.login];
             [item setTitle:@"Open GitHub Gists"];
@@ -254,17 +255,29 @@
     BOOL __block auth = NO;
     
     void(^setMenuItems)(NSArray *) = ^(NSArray *gists) {
+        
         for (int i=0; i<[gists count]; i++) {
+            
             Gist *gist = (Gist *)[gists objectAtIndex:i];
             CDMenuItem *item = [[CDMenuItem alloc] init];
             NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
             if (gist.pub) image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
             
+            NSString __block *tooltip = @"files:\n";
+            [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                GistFile *file = (GistFile *)[gist.files objectAtIndex:idx];
+                NSString *filename = [NSString stringWithFormat:@"%@", file.filename];
+                if ([gist.files count] != idx-1)
+                    tooltip = [tooltip stringByAppendingString:filename];
+                else
+                    tooltip = [tooltip stringByAppendingString:[NSString stringWithFormat:@"%@\n", filename]];
+            }];
+            
             [item setTitle:gist.description];
-            [item setUrl:gist.url];
+            [item setUrl:gist.html_url];
             [item setGID:gist.gistId];
             [item setAuthedUser:auth];
-            [item setToolTip:gist.description];
+            [item setToolTip:tooltip];
             [item setImage:image];
             [item setAction:@selector(openURL:)];
             [item setTarget:self];
@@ -296,9 +309,9 @@
 }
 
 
-- (id)item
+- (NSArray* )items
 {
-    id _item;
+    NSArray *_items;
     
     NSPasteboard *pboard = _pboard;
     if (!pboard)
@@ -309,36 +322,35 @@
                                                  options:nil];
     
     if ([copiedItems count])
-        _item = [copiedItems objectAtIndex:0];
+        _items = [NSArray arrayWithArray:copiedItems];
     
-    return _item;
+    return _items;
 }
 
 - (void)createGist
 {
-    if ([self.filenameTF.stringValue isEqualToString:@""])
-        _filename = @"gistfile1";
-    
-    if ([self.descriptionTF.stringValue isEqualToString:@""])
+    if (_gist)
     {
-        /** If the user doesn't add a description, let's give him one 
-         based on the filename and date. */
+        Gist *gist = _gist;
         
-        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-        NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
-        _description = [NSString stringWithFormat:@"%@ %@", _filename, dateString];
-    }
-    
-    if (_content)
-    {
-        NSString *public = @"true";
-        if (self.options.secret) public = @"false";
+        /** grab the filename and description from the user prompt. */
+        NSString *filename = self.filenameTF.stringValue;
+        NSString *description = self.descriptionTF.stringValue;
         
-        NSDictionary *gist = @{ @"filename":    _filename,
-                                @"description": _description,
-                                @"content":     _content,
-                                @"public":      public };
+        if ([description isEqualToString:@""])
+        {
+            NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+            NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
+            description = [NSString stringWithFormat:@"%@ %@", filename, dateString];
+        }
+        
+        if ([gist.files count] == 1) {
+            GistFile *gistFile = (GistFile*)[gist.files objectAtIndex:0];
+            gistFile.filename = filename;
+            
+        }
+        gist.description = description;
         
         [self.github requestDataForType:GitHubRequestTypeCreateGist
                                withData:gist];
@@ -364,6 +376,38 @@
     return [self.popover isShown];
 }
 
+- (Gist *)processGistForMultipleFiles:(NSArray *)files
+{
+    Gist *gist = [[Gist alloc] init];
+    NSMutableArray *fileList = [[NSMutableArray alloc] init];
+    
+    [files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+    {    
+        id item = [files objectAtIndex:idx];
+        if ([item isKindOfClass:[NSURL class]])
+        {
+            GistFile *gistFile = [[GistFile alloc] init];
+            NSString *filename = [[item path] lastPathComponent];
+            NSData *data = [[NSData alloc] initWithContentsOfURL:item];
+            NSString *content = [StringCleaner cleanGistContentString:
+                                 [[NSString alloc] initWithData:data
+                                                       encoding:NSUTF8StringEncoding]];
+            
+            /** Only add the files if they have content */
+            if (content) {
+                gistFile.filename = filename;
+                gistFile.content = content;
+                [fileList addObject:gistFile];
+            }
+        }
+    }];
+    
+    if ([fileList count])
+        gist.files = fileList;
+
+    return gist;
+}
+
 
 
 
@@ -371,51 +415,77 @@
 /** ------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
 {
-    /** Close the popover if it's shown */
-    if (self.popoverIsShown)
-        [self.popover close];
+    NSArray *items = [self items];
     
-    /** We need to get the content of the gist now
-     incase the user copy/pastes something else. */
-    id item = [self item];
+    [self.filenameTF setEnabled:YES];
     
-    if (item != nil)
+    if ([items count])
     {
-        if ([item isKindOfClass:[NSString class]])
-            _content = [StringCleaner cleanGistContentString:item];
+        Gist *gist;
         
-        else if ([item isKindOfClass:[NSURL class]])
+        /** Close the popover if it's shown */
+        if (self.popoverIsShown)
+            [self.popover close];
+        
+        /** Bring the app process forward */
+        ProcessSerialNumber psn;
+        if (noErr == GetCurrentProcess(&psn))
+            SetFrontProcess(&psn);
+        
+        
+        /** Multiple files to be processed. */
+        if ([items count] > 1)
+            gist = [self processGistForMultipleFiles:items];
+        
+        if ([items count] == 1) {
+            id item = [items objectAtIndex:0];
+            NSString *filename;
+            NSString *content;
+            
+            if ([item isKindOfClass:[NSString class]])
+                content = [StringCleaner cleanGistContentString:item];
+            
+            else if ([item isKindOfClass:[NSURL class]])
+            {
+                filename = [[item path] lastPathComponent];
+                NSData *data = [[NSData alloc] initWithContentsOfURL:item];
+                content = [StringCleaner cleanGistContentString:
+                           [[NSString alloc] initWithData:data
+                                                 encoding:NSUTF8StringEncoding]];
+            }
+            if (content) {
+                if (!gist) gist = [[Gist alloc] init];
+                NSMutableArray *fileList = [[NSMutableArray alloc] init];
+                GistFile *gistFile = [[GistFile alloc] init];
+                gistFile.filename = filename;
+                gistFile.content = content;
+                [fileList addObject:gistFile];
+                gist.files = fileList;
+            }
+        }
+        
+        if (gist)
         {
-            _filename = [[item path] lastPathComponent];
-            NSData *data = [[NSData alloc] initWithContentsOfURL:item];
+            if ([gist.files count] > 1)
+            {
+                NSString __block *filenames = @"";
+                [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    GistFile *gistfile = (GistFile*)[gist.files objectAtIndex:idx];
+                    filenames = [filenames stringByAppendingString:[NSString stringWithFormat:@"%@, ", gistfile.filename]];
+                }];
+                
+                /** set multiple filenames and disable user input. */
+                self.filenameTF.stringValue = filenames;
+                [self.filenameTF setEnabled:NO];
+            }
             
-            _content = [StringCleaner cleanGistContentString:
-                        [[NSString alloc] initWithData:data
-                                              encoding:NSUTF8StringEncoding]];
-        }
-        
-        if (!_content) {
-            [self cleanup];
-            NSAlert *alert = [NSAlert alertWithMessageText:@"No text detected"
-                                             defaultButton:@"OK"
-                                           alternateButton:nil
-                                               otherButton:nil
-                                 informativeTextWithFormat:@"There doesn't appear to be any text in this file."];
-            [alert runModal];
-        }
-        else {
-            if (_filename)
-                self.filenameTF.stringValue = _filename;
-            
-            if (_description)
-                self.descriptionTF.stringValue = _description;
-            
+            _gist = gist;
             [self.popover showRelativeToRect:[self.statusView bounds]
                                       ofView:self.statusView
                                preferredEdge:NSMaxYEdge];
         }
+        else [self cleanup];
     }
-    else [self cleanup];
 }
 
 - (IBAction)createGist:(id)sender
@@ -423,10 +493,6 @@
     /** Close the popover if it's shown */
     if ([self.popover isShown])
         [self.popover close];
-    
-    _filename = self.filenameTF.stringValue;
-    _description = self.descriptionTF.stringValue;
-    
     [self createGist];
 }
 
@@ -435,7 +501,6 @@
     /** Close the popover if it's shown */
     if ([self.popover isShown])
         [self.popover close];
-    
     [self cleanup];
 }
 
@@ -498,6 +563,51 @@
         NSData *data = [kAnonymous dataUsingEncoding:NSUTF8StringEncoding];
         [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
         [self update];
+    }
+}
+
+- (IBAction)openURL:(id)sender
+{
+    BOOL delete = NO;
+    BOOL edit   = NO;
+    CDMenuItem *item;
+    
+    if (NSAlternateKeyMask & [NSEvent modifierFlags]) edit = YES;
+    if (NSCommandKeyMask & [NSEvent modifierFlags]) delete = YES;
+    
+    
+    if ([sender isKindOfClass:[CDMenuItem class]]) {
+        item = (CDMenuItem *)sender;
+        _url = item.url;
+        
+        if (item.authedUser)
+        {
+            if (edit)
+            {
+                NSString *match = @"https://gist.github.com/";
+                NSString *chg = [NSString stringWithFormat:@"https://gist.github.com/%@/",
+                                 self.options.user.login];
+                _url = [_url stringByReplacingOccurrencesOfString:match withString:chg];
+                _url = [_url stringByAppendingString:@"/edit"];
+            }
+            
+            if (delete)
+            {
+                /*
+                GistDelete *gistDelete = [[GistDelete alloc] init];
+                [gistDelete setDelegate:self];
+                [gistDelete setGistId:item.gID];
+                [gistDelete setToken:self.options.token];
+                [gistDelete deleteGist];
+                 */
+            }
+        }
+    }
+    
+    if (_url && !delete) {
+        NSURL *url = [NSURL URLWithString:_url];
+        [[NSWorkspace sharedWorkspace] openURL:url];
+        _url = nil;
     }
 }
 

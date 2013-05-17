@@ -34,6 +34,7 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
+#import "GitHubUser.h"
 
 @interface Gist : NSObject
 
@@ -49,8 +50,10 @@
 @property (nonatomic, strong) NSString *created_at;
 @property (nonatomic, strong) NSString *updated_at;
 
-@property (nonatomic, strong) NSDictionary *files;
-@property (nonatomic, strong) NSDictionary *gistUser;
+@property (nonatomic, strong) NSMutableArray *files;
+@property (nonatomic, strong) NSMutableArray *history;
+@property (nonatomic, strong) NSMutableDictionary *forks;
+@property (nonatomic, strong) GitHubUser *user;
 
 @property (nonatomic) NSInteger comments;
 

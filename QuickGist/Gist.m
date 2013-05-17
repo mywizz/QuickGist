@@ -55,7 +55,9 @@
         self.updated_at     = [aDecoder decodeObjectForKey:@"updated_at"];
         
         self.files          = [aDecoder decodeObjectForKey:@"files"];
-        self.gistUser       = [aDecoder decodeObjectForKey:@"gistUser"];
+        self.history        = [aDecoder decodeObjectForKey:@"history"];
+        self.forks          = [aDecoder decodeObjectForKey:@"forks"];
+        self.user           = [aDecoder decodeObjectForKey:@"user"];
         
         self.comments       = [aDecoder decodeIntegerForKey:@"comments"];
         
@@ -81,7 +83,9 @@
     [aCoder encodeObject:self.updated_at    forKey:@"updated_at"];
     
     [aCoder encodeObject:self.files         forKey:@"files"];
-    [aCoder encodeObject:self.gistUser      forKey:@"gistUser"];
+    [aCoder encodeObject:self.history       forKey:@"history"];
+    [aCoder encodeObject:self.forks         forKey:@"forks"];
+    [aCoder encodeObject:self.user          forKey:@"user"];
     
     [aCoder encodeInteger:self.comments     forKey:@"comments"];
     

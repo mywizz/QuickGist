@@ -45,15 +45,15 @@
 #define kAnonymous      @"anonymous"
 #define kNotification   @"ShowDesktopNotifications"
 #define kGitHubUser     @"GitHubUser"
-#define kLastCheck      @"LastCheck"
+#define kLastRequest    @"LastRequest"
 
 @interface Options : NSObject
 
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) NSString *useragent;
-@property (nonatomic, strong) NSString *lastCheck;
-@property (nonatomic, strong) NSArray  *gists;
-@property (nonatomic, strong) NSArray  *anonGists;
+@property (nonatomic, strong) NSString *lastRequest;
+@property (nonatomic, strong) NSMutableArray  *gists;
+@property (nonatomic, strong) NSMutableArray  *anonGists;
 
 @property (nonatomic, strong) GitHubUser *user;
 

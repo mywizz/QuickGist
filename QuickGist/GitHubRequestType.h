@@ -34,9 +34,10 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 enum {
-    GitHubRequestTypeCreateGist  = 0,
-    GitHubRequestTypeAccessToken = 1,
-    GitHubRequestTypeGetGist     = 2,
-    GitHubRequestTypeGetAllGists = 3,
-    GitHubRequestTypeDeleteGist  = 4
+    GitHubRequestTypeCreateGist  = 0, /** POST */
+    GitHubRequestTypeAccessToken = 1, /** POST */
+    GitHubRequestTypeGetUser     = 2, /** GET  */
+    GitHubRequestTypeGetGist     = 3, /** GET  */
+    GitHubRequestTypeGetAllGists = 4, /** GET  */
+    GitHubRequestTypeDeleteGist  = 5  /** DELETE */
 } typedef GitHubRequestType;

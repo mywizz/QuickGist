@@ -63,19 +63,19 @@
      them to set property values. */
     [[NSUserDefaults standardUserDefaults] synchronize];
     
-    self.token      = [self tokenFromPrefs];
-    self.user       = [self userFromPrefs:kGitHubUser];
-    self.gists      = [self arrayFrom:kHistory];
-    self.anonGists  = [self arrayFrom:kAnonHistory];
-    self.lastCheck  = [[NSUserDefaults standardUserDefaults] valueForKey:kLastCheck];
-    /** BOOL ------------------------------------------------------------------------ */
-    self.anonymous  = [[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous];
-    self.notice     = [[NSUserDefaults standardUserDefaults] boolForKey:kNotification];
-    self.login      = [[NSUserDefaults standardUserDefaults] boolForKey:kLogin];
-    self.secret     = [[NSUserDefaults standardUserDefaults] boolForKey:kPublic];
-    self.openURL    = [[NSUserDefaults standardUserDefaults] boolForKey:kOpenURL];
+    self.token       = [self tokenFromPrefs];
+    self.user        = [self userFromPrefs:kGitHubUser];
+    self.gists       = [NSMutableArray arrayWithArray:[self arrayFrom:kHistory]];
+    self.anonGists   = [NSMutableArray arrayWithArray:[self arrayFrom:kAnonHistory]];
+    self.lastRequest = [[NSUserDefaults standardUserDefaults] valueForKey:kLastRequest];
     
-    self.auth = (self.token && !([self.token isEqualToString:kAnonymous]));
+    /** BOOL ------------------------------------------------------------------------ */
+    self.anonymous   = [[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous];
+    self.notice      = [[NSUserDefaults standardUserDefaults] boolForKey:kNotification];
+    self.login       = [[NSUserDefaults standardUserDefaults] boolForKey:kLogin];
+    self.secret      = [[NSUserDefaults standardUserDefaults] boolForKey:kPublic];
+    self.openURL     = [[NSUserDefaults standardUserDefaults] boolForKey:kOpenURL];
+    self.auth        = (self.token && !([self.token isEqualToString:kAnonymous]));
 }
 
 - (NSString *)useragent

@@ -40,5 +40,5 @@ Use QuickGist to post and manage your GitHub Gists. QuickGist runs in your Mac m
 
 ## History
 
-This is not the first codebase. Version 2.0 was complete rewrite with the intention to make QuickGist an open source project.
+This is not the first codebase. This was complete rewrite with the intention to make the source public.
 

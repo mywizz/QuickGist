@@ -72,36 +72,66 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
     return _apiGistRequestURL;
 }
 
+- (NSString *)bearer
+{
+    return [NSString stringWithFormat:@"bearer %@", self.options.token];
+}
+
 #pragma mark - Public
 - (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data
 {
-    NSMutableURLRequest *req;
+    NSMutableURLRequest *req = [[NSMutableURLRequest alloc] init];
     NSString * HTTPMethod;
     id postData;
     
     switch (dataType) {
         case GitHubRequestTypeCreateGist:
-            if ([data isKindOfClass:[NSDictionary class]]) {
+            if ([data isKindOfClass:[Gist class]])
+            {
+                Gist *gist = (Gist*)data;
+                NSString __block *files = @"";
                 
-                NSDictionary *dict = (NSDictionary *)data;
                 
-                for (id key in dict)
-                    NSLog(@"%@", [dict objectForKey:key]);
+                for (int i =0; i<[gist.files count]; i++) {
+                    GistFile *gistfile = (GistFile *)[gist.files objectAtIndex:i];
+                    NSString *file = [NSString stringWithFormat:@"\"%@\": { \"content\": \"%@\" } ",
+                                      gistfile.filename, gistfile.content];
+                    
+                    if (i > 0) file = [NSString stringWithFormat:@", %@", file];
+                    files = [files stringByAppendingString:file];
+                }
+                
+                [req setURL:[NSURL URLWithString:apiCreateGistURL]];
                 HTTPMethod = @"POST";
-                [req setURL:[NSURL URLWithString:@""]];
+                
+                NSString *public = @"true";
+                if (self.options.secret) public = @"false";
+                
+                postData = [NSString stringWithFormat:@"{ \"description\":\"%@\", \"public\": \"%@\", \"files\": { %@ }}",
+                            gist.description, public, files ];
+                
+                if (!self.options.anonymous)
+                    [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
+                
+                [req setValue:@"text/json" forHTTPHeaderField:@"Content-Type"];
             }
             break;
             
         case GitHubRequestTypeAccessToken:
             if ([data isKindOfClass:[NSString class]])
             {
-                NSString *code = (NSString*)data;
-                 postData = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@",
-                                         self.clientId, self.clientSecret, code];
+                [req setURL:[NSURL URLWithString:apiTokenURL]];
                 HTTPMethod = @"POST";
-                req = [[NSMutableURLRequest alloc]
-                       initWithURL:[NSURL URLWithString:apiTokenURL]];
+                postData = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@",
+                            self.clientId, self.clientSecret, data];
+                
             }
+            break;
+            
+        case GitHubRequestTypeGetUser:
+            [req setURL:[NSURL URLWithString:apiUserURL]];
+            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
+            HTTPMethod = @"GET";
             break;
             
         default:
@@ -123,27 +153,44 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
     }
 }
 
-- (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType
+
+#pragma mark - GitHub Request Delegate
+- (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType fromLastRequest:(NSString *)lastRequest
 {
     switch (requestType) {
         case GitHubRequestTypeCreateGist:
-            //
+            if ([responseData isKindOfClass:[Gist class]])
+            {
+                void(^addToGistsHistory)(Gist*) = ^(Gist* gist) {
+                    (gist.anonymous) ? [self.options.anonGists addObject:gist]
+                                     : [self.options.gists addObject:gist];
+                    
+                    NSData *gistsData = [NSKeyedArchiver archivedDataWithRootObject:self.options.gists];
+                    [[NSUserDefaults standardUserDefaults] setObject:gistsData forKey:kHistory];
+                    
+                    NSData *anaonGistsData = [NSKeyedArchiver archivedDataWithRootObject:self.options.anonGists];
+                    [[NSUserDefaults standardUserDefaults] setObject:anaonGistsData forKey:kAnonHistory];
+                    
+                };
+                
+                addToGistsHistory(responseData);
+                [self.delegate update];
+            }
             break;
             
         case GitHubRequestTypeAccessToken:
             if ([responseData isKindOfClass:[NSString class]])
             {
-                NSString *token = (NSString *)responseData;
-                
-                /** Let's request the user data, and the gists
-                 now that we have a token. */
-                
-                if (!self.options.user)
-                    [self getUserDataAndGistsFromToken:token];
-                
-                /** Process the token for user defaults */
-                NSData *data = [token dataUsingEncoding:NSUTF8StringEncoding];
+                NSData *data = [responseData dataUsingEncoding:NSUTF8StringEncoding];
                 [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
+            }
+            break;
+            
+        case GitHubRequestTypeGetUser:
+            if ([responseData isKindOfClass:[GitHubUser class]])
+            {
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:responseData];
+                [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
             }
             break;
             
@@ -152,12 +199,6 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
     }
     
     [self.delegate update];
-}
-
-
-- (void)getUserDataAndGistsFromToken:(NSString *)token
-{
-    
 }
 
 

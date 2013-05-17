@@ -161,7 +161,7 @@
 {
     NSPasteboard *pboard = [sender draggingPasteboard];
     
-    if( [[pboard pasteboardItems] count] != 1 )
+    if( ![[pboard pasteboardItems] count] )
         return NO;
     
     if ([[sender draggingPasteboard] availableTypeFromArray:self.types]) {
