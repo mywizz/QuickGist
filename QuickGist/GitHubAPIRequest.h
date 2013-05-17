@@ -1,8 +1,8 @@
 //
-//  GitHub.m
+//  GitHubAPIRequest.h
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/15/13.
+//  Created by Rob Johnson on 5/16/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,57 +33,15 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "GitHub.h"
+#import <Foundation/Foundation.h>
+#import "GitHubRequestType.h"
 
-@interface GitHub() <GitHubRequestDelegate>
+@protocol GitHubRequestDelegate <NSObject>
 
-@property (strong, nonatomic) Options *options;
+
 @end
 
-@implementation GitHub
-
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        self.options = [Options sharedInstance];
-    }
-    return self;
-}
-
-#pragma mark - Getters
-- (NSString *)apiTokenRequestURL
-{
-    if (!_apiGistRequestURL)
-    {
-        if (self.clientId)
-            _apiGistRequestURL = [NSString stringWithFormat:@"https://github.com/login/oauth/authorize?client_id=%@&scope=gist", self.clientId];
-    }
-    
-    return _apiGistRequestURL;
-}
-
-#pragma mark - Public
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data
-{
-    switch (dataType) {
-        case GitHubRequestTypeCreateGist:
-            if ([data isKindOfClass:[NSDictionary class]])
-                for (id key in data) NSLog(@"%@: %@", [key description], [data objectForKey:key]);
-            break;
-            
-        case GitHubRequestTypeAccessToken:
-            break;
-            
-        default:
-            break;
-    }
-    
-}
-
-- (void)uploadDataToCreateGist:(NSMutableURLRequest *)request
-{
-    
-}
+@interface GitHubAPIRequest : NSObject
+@property (nonatomic, strong) id<GitHubRequestDelegate> delegate;
 
 @end

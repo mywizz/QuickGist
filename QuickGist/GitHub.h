@@ -38,12 +38,8 @@
 #import "Gist.h"
 #import "GistFile.h"
 #import "StringCleaner.h"
-#import "LaunchAtLogin.h"
-
-enum {
-    GitHubRequestTypeCreateGist     = 0,
-    GitHubRequestTypeGetAccessToken = 1
-} typedef GitHubRequestType;
+#import "GitHubRequestType.h"
+#import "GitHubAPIRequest.h"
 
 @protocol GitHubAPIDelegate <NSObject>
 
@@ -56,6 +52,10 @@ enum {
 @property (nonatomic, strong) NSString *clientId;
 @property (nonatomic, strong) NSString *clientSecret;
 
-- (void)createGist:(NSString *)content withName:(NSString *)filename andDescription:(NSString *)description;
+@property (nonatomic, strong) NSString *apiGistRequestURL;
+@property (nonatomic, strong) NSString *apiGistsRequestURL;
+@property (nonatomic, strong) NSString *apiTokenRequestURL;
+
+- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data;
 
 @end

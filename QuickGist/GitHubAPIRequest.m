@@ -1,8 +1,8 @@
 //
-//  GitHub.m
+//  GitHubAPIRequest.m
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/15/13.
+//  Created by Rob Johnson on 5/16/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,55 +33,39 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "GitHub.h"
+#import "GitHubAPIRequest.h"
 
-@interface GitHub() <GitHubRequestDelegate>
+@interface GitHubAPIRequest() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
+    NSMutableData *_responseData;
+}
 
-@property (strong, nonatomic) Options *options;
 @end
 
-@implementation GitHub
+@implementation GitHubAPIRequest
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        self.options = [Options sharedInstance];
-    }
-    return self;
-}
 
-#pragma mark - Getters
-- (NSString *)apiTokenRequestURL
-{
-    if (!_apiGistRequestURL)
-    {
-        if (self.clientId)
-            _apiGistRequestURL = [NSString stringWithFormat:@"https://github.com/login/oauth/authorize?client_id=%@&scope=gist", self.clientId];
-    }
-    
-    return _apiGistRequestURL;
-}
 
-#pragma mark - Public
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data
+- (void)processData:(NSData *)data
 {
-    switch (dataType) {
-        case GitHubRequestTypeCreateGist:
-            if ([data isKindOfClass:[NSDictionary class]])
-                for (id key in data) NSLog(@"%@: %@", [key description], [data objectForKey:key]);
-            break;
-            
-        case GitHubRequestTypeAccessToken:
-            break;
-            
-        default:
-            break;
-    }
     
 }
 
-- (void)uploadDataToCreateGist:(NSMutableURLRequest *)request
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     
 }

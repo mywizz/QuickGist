@@ -36,9 +36,14 @@
 #import "CDAppController.h"
 #import "CDStatusView.h"
 #import "GitHub.h"
-#import "Config.h"
+#import "LaunchAtLogin.h"
+#import <WebKit/WebKit.h>
+#import <WebKit/WebFrame.h>
+#import <WebKit/WebPolicyDelegate.h>
 
-/** ----------------------------------------------------------------------- */
+#import "Config.h" /** COMMENT OUT OR REMOVE THIS LINE. */
+
+/** ------------------------------------------------------------------------- */
 #ifndef CONFIG
 @interface Config : NSObject
 + (NSString *)clientId;
@@ -51,9 +56,10 @@
 + (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
 @end
 #endif
-/** ----------------------------------------------------------------------- */
+/** ------------------------------------------------------------------------- */
 
-@interface CDAppController() <StatusViewDelegate, GitHubAPIDelegate> {
+@interface CDAppController() <NSUserNotificationCenterDelegate,
+                              StatusViewDelegate, GitHubAPIDelegate> {
     NSPasteboard *_pboard;
     NSString     *_filename;
     NSString     *_description;
@@ -61,21 +67,28 @@
 }
 
 /** Outlets */
-@property (unsafe_unretained) IBOutlet NSWindow *prefsWindow;
 
 @property (weak) IBOutlet NSMenu *menu;
 @property (weak) IBOutlet NSPopover *popover;
 
+/** Popover  */
 @property (weak) IBOutlet NSTextField *filenameTF;
 @property (weak) IBOutlet NSTextField *descriptionTF;
-
 @property (weak) IBOutlet NSButton *secretCheckBox;
 @property (weak) IBOutlet NSButton *anonymousCheckBox;
 
+/** Prefs window */
+@property (unsafe_unretained) IBOutlet NSWindow *prefsWindow;
 @property (weak) IBOutlet NSSegmentedControl *launchAtLoginSegCell;
 @property (weak) IBOutlet NSSegmentedControl *openURLSegCell;
 @property (weak) IBOutlet NSSegmentedControl *notificationCenterSegCell;
 @property (weak) IBOutlet NSButton *githubLoginBtn;
+@property (weak) IBOutlet NSTextField *loginDescriptionTextField;
+
+/** Auth Window */
+@property (unsafe_unretained) IBOutlet NSWindow *authWindow;
+@property (weak) IBOutlet WebView *webview;
+@property (weak) IBOutlet NSTextField *loactionLabel;
 
 /** Custom */
 @property (nonatomic, strong) CDStatusView *statusView;
@@ -109,13 +122,21 @@
     NSUpdateDynamicServices();
     
     /** Setup the menubar status item */
-    [self setupTheStatusItem];
+    self.statusItem = [[NSStatusBar systemStatusBar]
+                       statusItemWithLength:NSSquareStatusItemLength];
+    self.statusView = [[CDStatusView alloc] initWithStatusItem:self.statusItem];
+    [self.statusView setDelegate:self];
+    [self.statusView setImage:[NSImage imageNamed:@"menu-icon"]];
+    [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
+    [self.statusView setMenu:self.menu];
+    
+    /** Update views and prefs */
     [self update];
 }
 
 
 #pragma mark - Private
-/** --------------------------------------------------------------------------------- */
+/** ------------------------------------------------------------------------- */
 - (void)update
 {
     /** Update runtime options and view elements. */
@@ -127,27 +148,28 @@
     
     self.anonymousCheckBox.state = self.options.anonymous;
     self.secretCheckBox.state = self.options.secret;
+    
+    /** If the user is authenticated with GitHub. */
+    if (self.options.auth) {
+        [self.githubLoginBtn setTitle:@"Logout"];
+        if (self.options.user.login)
+            [self.loginDescriptionTextField setStringValue:self.options.user.login];
+        else
+            [self.loginDescriptionTextField setStringValue:@"Logout of GitHub:"];
+    }
+    else {
+        [self.githubLoginBtn setTitle:@"Login"];
+        [self.loginDescriptionTextField setStringValue:@"Login to GitHub:"];
+    }
 }
 
 - (void)cleanup
 {
-    /** cleanup instance vars*/
+    /** cleanup instance vars */
     _pboard = nil;
     _filename = nil;
     _description = nil;
     _content = nil;
-}
-
-- (void)setupTheStatusItem
-{
-    /** Setup the status item */
-    self.statusItem = [[NSStatusBar systemStatusBar]
-                       statusItemWithLength:NSSquareStatusItemLength];
-    self.statusView = [[CDStatusView alloc] initWithStatusItem:self.statusItem];
-    [self.statusView setDelegate:self];
-    [self.statusView setImage:[NSImage imageNamed:@"menu-icon"]];
-    [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
-    [self.statusView setMenu:self.menu];
 }
 
 - (id)item
@@ -171,25 +193,35 @@
 - (void)createGist
 {
     if ([self.filenameTF.stringValue isEqualToString:@""])
-        _filename = @"gistFile1";
+        _filename = @"gistfile1";
     
     if ([self.descriptionTF.stringValue isEqualToString:@""])
-        _description = @"Created with QuickGist for OS X";
+    {
+        /** If the user doesn't add a description, let's give him one 
+         based on the filename and date. */
+        
+        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+        NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
+        _description = [NSString stringWithFormat:@"%@ %@", _filename, dateString];
+    }
     
     if (_content)
     {
-        [self.github createGist:_content
-                       withName:_filename
-                 andDescription:_description];
+        NSDictionary *gist = @{@"filename": _filename,
+                               @"description": _description,
+                               @"content": _content};
+        
+        [self.github requestDataForType:GitHubRequestTypeCreateGist
+                               withData:gist];
     }
     [self cleanup];
 }
 
-- (void)createGist:(NSPasteboard *)pboard userData:(NSString *)userData
-             error:(NSString **)error
+- (void)createGistFromSystemService:(NSPasteboard *)pboard
+                           userData:(NSString *)userData
+                              error:(NSString **)error
 {
-    /** This is the OS X service method */
-    
     /** Let's set our _pboard instance variable to
      the pasteboard that was passed in. */
     _pboard = pboard;
@@ -201,7 +233,7 @@
 
 
 #pragma mark - Getters
-/** --------------------------------------------------------------------------------- */
+/** ------------------------------------------------------------------------- */
 - (BOOL)popoverIsShown
 {
     return [self.popover isShown];
@@ -209,7 +241,7 @@
 
 
 #pragma mark - StatusView Delegate
-/** --------------------------------------------------------------------------------- */
+/** ------------------------------------------------------------------------- */
 - (void)downloadGists
 {
     /** Close the popover if it's shown */
@@ -223,9 +255,47 @@
     [self showPopover:self];
 }
 
+#pragma mark - WebView Policy Delegate
+/** ------------------------------------------------------------------------- */
+- (void)webView:(WebView *)sender
+decidePolicyForNavigationAction:(NSDictionary *)actionInformation
+                        request:(NSURLRequest *)request
+                          frame:(WebFrame *)frame
+               decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+    /** We're going to catch the request url to check for "?code=" which
+     is the code that is sent back from GitHub to the callback url.
+     
+     Once the code is found in the string range, we initiate a token
+     request, and wait for the response which should contain
+     the token string */
+    
+    NSString *url = [[request URL] absoluteString];
+    NSString *codeSearch = @"?code=";
+    NSRange range = [url rangeOfString:codeSearch];
+    
+    if (range.location!=NSNotFound)
+    {
+        NSString *code = [url substringFromIndex:range.location];
+        code = [code stringByReplacingOccurrencesOfString:codeSearch withString:@""];
+        /** Initiate token request */
+    }
+    
+    [listener use];
+}
+
+
+#pragma mark - WebView Frame Load Delegate
+/** ------------------------------------------------------------------------- */
+- (void)webView:(WebView *)sender didReceiveTitle:(NSString *)title
+       forFrame:(WebFrame *)frame
+{
+    self.loactionLabel.stringValue = frame.dataSource.request.URL.absoluteString;
+}
+
 
 #pragma mark - Sent Actions
-/** --------------------------------------------------------------------------------- */
+/** ------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
 {
     /** Close the popover if it's shown */
@@ -245,8 +315,10 @@
         {
             _filename = [[item path] lastPathComponent];
             NSData *data = [[NSData alloc] initWithContentsOfURL:item];
-            _content = [StringCleaner cleanGistContentString:[[NSString alloc] initWithData:data
-                                                                                   encoding:NSUTF8StringEncoding]];
+            
+            _content = [StringCleaner cleanGistContentString:
+                        [[NSString alloc] initWithData:data
+                                              encoding:NSUTF8StringEncoding]];
         }
         
         if (!_content) {
@@ -343,6 +415,32 @@
     [[NSUserDefaults standardUserDefaults]
      setBool:!self.options.secret forKey:kPublic];
     [self update];
+}
+
+- (IBAction)toggleGitHubLogin:(id)sender
+{
+    if (!self.options.auth)
+    {
+        NSURL *url = [NSURL URLWithString:self.github.apiTokenRequestURL];
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc]
+                                        initWithURL:url];
+        
+        [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+        [self.webview setApplicationNameForUserAgent:self.options.useragent];
+        [[self.webview mainFrame] loadRequest:request];
+        [self.authWindow makeKeyAndOrderFront:self];
+    }
+    /*
+    else {
+        [[NSUserDefaults standardUserDefaults] setValue:@"" forKey:kLastCheck];
+        self.options.token = kAnonymous;
+        self.options.auth = NO;
+    }
+    
+    NSData *tokenData = [self.options.token dataUsingEncoding:NSUTF8StringEncoding];
+    [[NSUserDefaults standardUserDefaults] setValue:tokenData forKey:kOAuthToken];
+    [self update];
+     */
 }
 
 @end
