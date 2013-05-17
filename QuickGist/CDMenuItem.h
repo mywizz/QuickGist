@@ -1,8 +1,8 @@
 //
-//  GitHub.h
+//  CDMenuItem.h
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/15/13.
+//  Created by Rob Johnson on 5/4/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,27 +33,12 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/Foundation.h>
-#import "Options.h"
-#import "Gist.h"
-#import "GistFile.h"
-#import "StringCleaner.h"
-#import "GitHubRequestType.h"
+#import <Cocoa/Cocoa.h>
 
-@protocol GitHubAPIDelegate <NSObject>
-- (void)update;
-@end
+@interface CDMenuItem : NSMenuItem
 
-@interface GitHub : NSObject
-@property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
-
-@property (nonatomic, strong) NSString *clientId;
-@property (nonatomic, strong) NSString *clientSecret;
-
-@property (nonatomic, strong) NSString *apiGistRequestURL;
-@property (nonatomic, strong) NSString *apiGistsRequestURL;
-@property (nonatomic, strong) NSString *apiTokenRequestURL;
-
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data;
+@property (strong, nonatomic) NSString *url;
+@property (strong, nonatomic) NSString *gID;
+@property (nonatomic) BOOL authedUser;
 
 @end

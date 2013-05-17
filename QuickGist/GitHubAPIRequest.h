@@ -37,11 +37,12 @@
 #import "GitHubRequestType.h"
 
 @protocol GitHubRequestDelegate <NSObject>
-
-
+- (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType;
 @end
 
 @interface GitHubAPIRequest : NSObject
 @property (nonatomic, strong) id<GitHubRequestDelegate> delegate;
+
+- (void)submitRequest:(NSURLRequest *)req forDataType:(GitHubRequestType)requestType;
 
 @end

@@ -1,8 +1,8 @@
 //
-//  GitHub.h
+//  GitHubResponseProcessor.m
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/15/13.
+//  Created by Rob Johnson on 5/16/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,27 +33,43 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/Foundation.h>
-#import "Options.h"
-#import "Gist.h"
-#import "GistFile.h"
-#import "StringCleaner.h"
-#import "GitHubRequestType.h"
+#import "GitHubResponseProcessor.h"
 
-@protocol GitHubAPIDelegate <NSObject>
-- (void)update;
-@end
+@implementation GitHubResponseProcessor
 
-@interface GitHub : NSObject
-@property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
+- (id)processData:(NSData *)data forReqestType:(GitHubRequestType)requestType
+{
+    id processedData;
+    
+    switch (requestType) {
+        case GitHubRequestTypeCreateGist:
+            //
+            break;
+        case GitHubRequestTypeAccessToken:
+            processedData = [self processTokenResponse:data];
+            break;
+            
+        default:
+            break;
+    }
+ 
+    return processedData;
+}
 
-@property (nonatomic, strong) NSString *clientId;
-@property (nonatomic, strong) NSString *clientSecret;
 
-@property (nonatomic, strong) NSString *apiGistRequestURL;
-@property (nonatomic, strong) NSString *apiGistsRequestURL;
-@property (nonatomic, strong) NSString *apiTokenRequestURL;
-
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data;
+- (NSString *)processTokenResponse:(NSData *)data
+{
+    NSString *token = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *access = @"access_token=";
+    NSRange range = [token rangeOfString:access];
+    
+    if (range.location!=NSNotFound)
+    {
+        token = [token stringByReplacingOccurrencesOfString:@"access_token=" withString:@""];
+        token = [token stringByReplacingOccurrencesOfString:@"&token_type=bearer" withString:@""];
+    }
+    
+    return token;
+}
 
 @end

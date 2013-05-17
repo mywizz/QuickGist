@@ -1,8 +1,8 @@
 //
-//  GitHub.h
+//  CDWindow.m
 //  QuickGist
 //
-//  Created by Rob Johnson on 5/15/13.
+//  Created by Rob Johnson on 5/16/13.
 //  Copyright (c) 2013 CornDog Computers. All rights reserved.
 //
 //   _____              ___              _____                     __
@@ -33,27 +33,40 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/Foundation.h>
-#import "Options.h"
-#import "Gist.h"
-#import "GistFile.h"
-#import "StringCleaner.h"
-#import "GitHubRequestType.h"
+#import "CDWindow.h"
 
-@protocol GitHubAPIDelegate <NSObject>
-- (void)update;
-@end
+@implementation CDWindow
 
-@interface GitHub : NSObject
-@property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
+/** I like a little animation with my UI  */
 
-@property (nonatomic, strong) NSString *clientId;
-@property (nonatomic, strong) NSString *clientSecret;
+- (void)close
+{
+    float alpha = 1.0;
+	[self setAlphaValue:alpha];
+    
+	for (int i=0; i<10; i++)
+    {
+		alpha -= 0.1;
+		[self setAlphaValue:alpha];
+		[NSThread sleepForTimeInterval:0.020];
+	}
 
-@property (nonatomic, strong) NSString *apiGistRequestURL;
-@property (nonatomic, strong) NSString *apiGistsRequestURL;
-@property (nonatomic, strong) NSString *apiTokenRequestURL;
+    [super close];
+    [self setAlphaValue:1.0];
+}
 
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data;
+- (void)makeKeyAndOrderFront:(id)sender
+{
+    float alpha = 0.0;
+	[self setAlphaValue:alpha];
+    
+    [super makeKeyAndOrderFront:self];
+    
+	for (int i=0; i<10; i++) {
+		alpha += 0.1;
+		[self setAlphaValue:alpha];
+		[NSThread sleepForTimeInterval:0.020];
+	}
+}
 
 @end

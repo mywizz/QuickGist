@@ -58,6 +58,8 @@
      introspection to get the status of the NSPopover from
      the AppController. */
     
+    /** Let's bring the process forward when making the window key */
+    
     ProcessSerialNumber psn;
     if (noErr == GetCurrentProcess(&psn))
         SetFrontProcess(&psn);
@@ -67,7 +69,7 @@
     {
         /** The StatusItem's view delegate is the CDAppController which
          has a popoverIsShown BOOL property. */
-
+        
         BOOL popoverIsShown = (BOOL)[[[self contentView] delegate]
                                      performSelector:@selector(popoverIsShown)];
         return popoverIsShown;

@@ -75,10 +75,7 @@
     self.secret     = [[NSUserDefaults standardUserDefaults] boolForKey:kPublic];
     self.openURL    = [[NSUserDefaults standardUserDefaults] boolForKey:kOpenURL];
     
-    if ([self.token isEqualToString:kAnonymous])
-        self.auth = NO;
-    else
-        self.auth = YES;
+    self.auth = (self.token && !([self.token isEqualToString:kAnonymous]));
 }
 
 - (NSString *)useragent

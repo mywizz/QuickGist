@@ -34,40 +34,59 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "GitHubAPIRequest.h"
+#import "GitHubResponseProcessor.h"
 
 @interface GitHubAPIRequest() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
+    NSURLConnection *_connection;
     NSMutableData *_responseData;
+    GitHubRequestType _reqType;
 }
 
 @end
 
 @implementation GitHubAPIRequest
 
+#pragma mark - Public
+- (void)submitRequest:(NSURLRequest *)req forDataType:(GitHubRequestType)requestType
+{
+    _reqType = requestType;
+    _connection = [[NSURLConnection alloc] initWithRequest:req delegate:self];
+    [_connection start];
+}
 
-
+#pragma mark - Private
 - (void)processData:(NSData *)data
 {
-    
+    GitHubResponseProcessor *proc = [[GitHubResponseProcessor alloc] init];
+    id processedData = [proc processData:data forReqestType:_reqType];
+    [self.delegate handleData:processedData forDataType:_reqType];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    
+    if (!_responseData)
+        _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    
+    [_responseData appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    
+    NSData *data = _responseData;
+    [self processData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    
+    NSAlert *alert = [NSAlert alertWithMessageText:@"No response from GitHub"
+                                     defaultButton:@"OK"
+                                   alternateButton:nil
+                                       otherButton:nil
+                         informativeTextWithFormat:@"Check your Internet connection to make sure your connected."];
+    [alert runModal];
 }
 
 @end

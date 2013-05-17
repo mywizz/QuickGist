@@ -34,6 +34,11 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "GitHub.h"
+#import "GitHubAPIRequest.h"
+
+static NSString *const apiCreateGistURL = @"https://api.github.com/gists";
+static NSString *const apiUserURL       = @"https://api.github.com/user";
+static NSString *const apiTokenURL      = @"https://github.com/login/oauth/access_token";
 
 @interface GitHub() <GitHubRequestDelegate>
 
@@ -57,7 +62,11 @@
     if (!_apiGistRequestURL)
     {
         if (self.clientId)
-            _apiGistRequestURL = [NSString stringWithFormat:@"https://github.com/login/oauth/authorize?client_id=%@&scope=gist", self.clientId];
+        {
+            _apiGistRequestURL = [NSString stringWithFormat:
+                                  @"https://github.com/login/oauth/authorize?client_id=%@&scope=gist",
+                                  self.clientId];
+        }
     }
     
     return _apiGistRequestURL;
@@ -66,24 +75,90 @@
 #pragma mark - Public
 - (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data
 {
+    NSMutableURLRequest *req;
+    NSString * HTTPMethod;
+    id postData;
+    
     switch (dataType) {
         case GitHubRequestTypeCreateGist:
-            if ([data isKindOfClass:[NSDictionary class]])
-                for (id key in data) NSLog(@"%@: %@", [key description], [data objectForKey:key]);
+            if ([data isKindOfClass:[NSDictionary class]]) {
+                
+                NSDictionary *dict = (NSDictionary *)data;
+                
+                for (id key in dict)
+                    NSLog(@"%@", [dict objectForKey:key]);
+                HTTPMethod = @"POST";
+                [req setURL:[NSURL URLWithString:@""]];
+            }
             break;
             
         case GitHubRequestTypeAccessToken:
+            if ([data isKindOfClass:[NSString class]])
+            {
+                NSString *code = (NSString*)data;
+                 postData = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@",
+                                         self.clientId, self.clientSecret, code];
+                HTTPMethod = @"POST";
+                req = [[NSMutableURLRequest alloc]
+                       initWithURL:[NSURL URLWithString:apiTokenURL]];
+            }
             break;
             
         default:
             break;
     }
     
+    if (req)
+    {
+        if (postData)
+            [req setHTTPBody:[postData dataUsingEncoding:NSUTF8StringEncoding]];
+            
+        [req setHTTPMethod:HTTPMethod];
+        [req setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+        [req addValue:self.options.useragent forHTTPHeaderField:@"User-Agent"];
+        
+        GitHubAPIRequest *apiReq = [[GitHubAPIRequest alloc] init];
+        [apiReq setDelegate:self];
+        [apiReq submitRequest:req forDataType:dataType];
+    }
 }
 
-- (void)uploadDataToCreateGist:(NSMutableURLRequest *)request
+- (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType
+{
+    switch (requestType) {
+        case GitHubRequestTypeCreateGist:
+            //
+            break;
+            
+        case GitHubRequestTypeAccessToken:
+            if ([responseData isKindOfClass:[NSString class]])
+            {
+                NSString *token = (NSString *)responseData;
+                
+                /** Let's request the user data, and the gists
+                 now that we have a token. */
+                
+                if (!self.options.user)
+                    [self getUserDataAndGistsFromToken:token];
+                
+                /** Process the token for user defaults */
+                NSData *data = [token dataUsingEncoding:NSUTF8StringEncoding];
+                [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    [self.delegate update];
+}
+
+
+- (void)getUserDataAndGistsFromToken:(NSString *)token
 {
     
 }
+
 
 @end

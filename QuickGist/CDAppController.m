@@ -36,6 +36,7 @@
 #import "CDAppController.h"
 #import "CDStatusView.h"
 #import "GitHub.h"
+#import "CDMenuItem.h"
 #import "LaunchAtLogin.h"
 #import <WebKit/WebKit.h>
 #import <WebKit/WebFrame.h>
@@ -135,6 +136,8 @@
 }
 
 
+
+
 #pragma mark - Private
 /** ------------------------------------------------------------------------- */
 - (void)update
@@ -142,15 +145,27 @@
     /** Update runtime options and view elements. */
     [self.options update];
     
-    self.launchAtLoginSegCell.selectedSegment = self.options.login;
-    self.notificationCenterSegCell.selectedSegment = self.options.notice;
-    self.openURLSegCell.selectedSegment = self.options.openURL;
-    
-    self.anonymousCheckBox.state = self.options.anonymous;
-    self.secretCheckBox.state = self.options.secret;
-    
-    /** If the user is authenticated with GitHub. */
+    /** If the user is authenticated with GitHub... */
     if (self.options.auth) {
+        
+        if ([self.authWindow isKeyWindow])
+        {
+            /** Close the auth window if we're coming back from
+             an authorization request. */
+            [self.authWindow close];
+            
+            /** At this point we're doing some assumption that we have
+             a valid token. It will be chaged later. */
+            
+            NSAlert *alert = [NSAlert alertWithMessageText:@"QuickGist authorized with GitHub"
+                                             defaultButton:@"OK"
+                                           alternateButton:nil
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"You can now post Gists to your GitHub account!"];
+            [alert runModal];
+        }
+        
+        
         [self.githubLoginBtn setTitle:@"Logout"];
         if (self.options.user.login)
             [self.loginDescriptionTextField setStringValue:self.options.user.login];
@@ -161,16 +176,125 @@
         [self.githubLoginBtn setTitle:@"Login"];
         [self.loginDescriptionTextField setStringValue:@"Login to GitHub:"];
     }
+    
+    /** Update our buttons and switches and blinking lights. */
+    self.launchAtLoginSegCell.selectedSegment      = self.options.login;
+    self.notificationCenterSegCell.selectedSegment = self.options.notice;
+    self.openURLSegCell.selectedSegment            = self.options.openURL;
+    self.anonymousCheckBox.state                   = self.options.anonymous;
+    self.secretCheckBox.state                      = self.options.secret;
+    
+    [self setGistHistoryMenu];
 }
 
 - (void)cleanup
 {
+    /** Clear the popover text fields. */
+    self.filenameTF.stringValue = @"";
+    self.descriptionTF.stringValue = @"";
+    
     /** cleanup instance vars */
-    _pboard = nil;
-    _filename = nil;
+    _pboard      = nil;
+    _filename    = nil;
     _description = nil;
-    _content = nil;
+    _content     = nil;
 }
+
+- (void)setGistHistoryMenu
+{
+    /**
+     This needs to be cleaned up a bit. Setting the gist history
+     menu actually reads from two seperate arays. An array for an
+     authenticated user, and an array for anonymous gists.
+     
+     It's ugly, but it works pretty well right now.
+     */
+    
+    NSMenuItem *yourGists = [[self.menu itemArray] objectAtIndex:1];
+    NSMenu     *submenu   = [yourGists submenu];
+    NSMenuItem *loginItem = [[NSMenuItem alloc] initWithTitle:@"Login to GitHub"
+                                                       action:@selector(toggleGitHubLogin:)
+                                                keyEquivalent:@""];
+    [loginItem setTarget:self];
+    
+    /**
+     If there are any objects in the history or anonymous history
+     array, we need to wipe out the menu so we can re-populate
+     with updated info.
+     */
+    
+    if ([[submenu itemArray] count]) [submenu removeAllItems];
+    
+    
+    if ([self.options.gists count] || [self.options.anonGists count])
+    {
+        /**
+         If we have an authorized user and a username, let's create
+         a menu item that opens the users GitHub gists page.
+         */
+        
+        if (self.options.auth) {
+            CDMenuItem *item = [[CDMenuItem alloc] init];
+            NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@", self.options.user.login];
+            [item setTitle:@"Open GitHub Gists"];
+            [item setUrl:url];
+            [item setAction:@selector(openURL:)];
+            [item setTarget:self];
+            [submenu addItem:item];
+        }
+        else [submenu addItem:loginItem];
+        
+        [submenu addItem:[NSMenuItem separatorItem]];
+    }
+    else if (![[submenu itemArray] count] && !self.options.auth)
+        [submenu addItem:loginItem];
+    
+    
+    /** This block sets the menu items. */
+    BOOL __block auth = NO;
+    
+    void(^setMenuItems)(NSArray *) = ^(NSArray *gists) {
+        for (int i=0; i<[gists count]; i++) {
+            Gist *gist = (Gist *)[gists objectAtIndex:i];
+            CDMenuItem *item = [[CDMenuItem alloc] init];
+            NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
+            if (gist.pub) image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
+            
+            [item setTitle:gist.description];
+            [item setUrl:gist.url];
+            [item setGID:gist.gistId];
+            [item setAuthedUser:auth];
+            [item setToolTip:gist.description];
+            [item setImage:image];
+            [item setAction:@selector(openURL:)];
+            [item setTarget:self];
+            [submenu addItem:item];
+        }
+    };
+    
+    /** Set the menu items for the logged in user. */
+    if ([self.options.gists count]) {
+        auth = YES;
+        setMenuItems(self.options.gists);
+    }
+    
+    
+    /** Set the menu items for anonymous gist history. */
+    if ([self.options.anonGists count])
+    {
+        auth = NO;
+        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:kAnonymous
+                                                      action:nil
+                                               keyEquivalent:@""];
+        
+        if ([self.options.gists count])
+            [submenu addItem:[NSMenuItem separatorItem]];
+        
+        [submenu addItem:item];
+        setMenuItems(self.options.anonGists);
+    }
+}
+
 
 - (id)item
 {
@@ -208,9 +332,13 @@
     
     if (_content)
     {
-        NSDictionary *gist = @{@"filename": _filename,
-                               @"description": _description,
-                               @"content": _content};
+        NSString *public = @"true";
+        if (self.options.secret) public = @"false";
+        
+        NSDictionary *gist = @{ @"filename":    _filename,
+                                @"description": _description,
+                                @"content":     _content,
+                                @"public":      public };
         
         [self.github requestDataForType:GitHubRequestTypeCreateGist
                                withData:gist];
@@ -231,67 +359,12 @@
     [self showPopover:self];
 }
 
-
-#pragma mark - Getters
-/** ------------------------------------------------------------------------- */
 - (BOOL)popoverIsShown
 {
     return [self.popover isShown];
 }
 
 
-#pragma mark - StatusView Delegate
-/** ------------------------------------------------------------------------- */
-- (void)downloadGists
-{
-    /** Close the popover if it's shown */
-    if (self.popoverIsShown)
-        [self.popover close];
-}
-
-- (void)createGistFromDrop:(NSPasteboard *)pboard
-{
-    _pboard = pboard;
-    [self showPopover:self];
-}
-
-#pragma mark - WebView Policy Delegate
-/** ------------------------------------------------------------------------- */
-- (void)webView:(WebView *)sender
-decidePolicyForNavigationAction:(NSDictionary *)actionInformation
-                        request:(NSURLRequest *)request
-                          frame:(WebFrame *)frame
-               decisionListener:(id<WebPolicyDecisionListener>)listener
-{
-    /** We're going to catch the request url to check for "?code=" which
-     is the code that is sent back from GitHub to the callback url.
-     
-     Once the code is found in the string range, we initiate a token
-     request, and wait for the response which should contain
-     the token string */
-    
-    NSString *url = [[request URL] absoluteString];
-    NSString *codeSearch = @"?code=";
-    NSRange range = [url rangeOfString:codeSearch];
-    
-    if (range.location!=NSNotFound)
-    {
-        NSString *code = [url substringFromIndex:range.location];
-        code = [code stringByReplacingOccurrencesOfString:codeSearch withString:@""];
-        /** Initiate token request */
-    }
-    
-    [listener use];
-}
-
-
-#pragma mark - WebView Frame Load Delegate
-/** ------------------------------------------------------------------------- */
-- (void)webView:(WebView *)sender didReceiveTitle:(NSString *)title
-       forFrame:(WebFrame *)frame
-{
-    self.loactionLabel.stringValue = frame.dataSource.request.URL.absoluteString;
-}
 
 
 #pragma mark - Sent Actions
@@ -307,7 +380,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
     id item = [self item];
     
     if (item != nil)
-    {    
+    {
         if ([item isKindOfClass:[NSString class]])
             _content = [StringCleaner cleanGistContentString:item];
         
@@ -359,10 +432,6 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 
 - (IBAction)cancelGist:(id)sender
 {
-    /** Clear the text fields if there is any text. */
-    self.filenameTF.stringValue = @"";
-    self.descriptionTF.stringValue = @"";
-    
     /** Close the popover if it's shown */
     if ([self.popover isShown])
         [self.popover close];
@@ -399,9 +468,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         /** Close the popover if it's shown */
         if ([self.popover isShown])
             [self.popover close];
-        
-        /** Prompt the user to authenticate if they are not
-         authenticated. */
+        [self toggleGitHubLogin:self];
     }
     else
         [[NSUserDefaults standardUserDefaults]
@@ -422,25 +489,82 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
     if (!self.options.auth)
     {
         NSURL *url = [NSURL URLWithString:self.github.apiTokenRequestURL];
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc]
-                                        initWithURL:url];
-        
-        [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
-        [self.webview setApplicationNameForUserAgent:self.options.useragent];
-        [[self.webview mainFrame] loadRequest:request];
+        NSURLRequest *req = [[NSURLRequest alloc] initWithURL:url];
+        [[self.webview mainFrame] loadRequest:req];
         [self.authWindow makeKeyAndOrderFront:self];
     }
-    /*
     else {
-        [[NSUserDefaults standardUserDefaults] setValue:@"" forKey:kLastCheck];
-        self.options.token = kAnonymous;
-        self.options.auth = NO;
+        /** Process the token for user defaults */
+        NSData *data = [kAnonymous dataUsingEncoding:NSUTF8StringEncoding];
+        [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
+        [self update];
+    }
+}
+
+
+
+
+#pragma mark - StatusView Delegate
+/** ------------------------------------------------------------------------- */
+- (void)downloadGists
+{
+    /** Close the popover if it's shown */
+    if (self.popoverIsShown)
+        [self.popover close];
+}
+
+- (void)createGistFromDrop:(NSPasteboard *)pboard
+{
+    _pboard = pboard;
+    [self showPopover:self];
+}
+
+
+
+
+#pragma mark - WebView Policy Delegate
+/** ------------------------------------------------------------------------- */
+- (void)webView:(WebView *)sender
+decidePolicyForNavigationAction:(NSDictionary *)actionInformation
+                        request:(NSURLRequest *)request
+                          frame:(WebFrame *)frame
+               decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+    /** We're going to catch the request url to check for "?code=" which
+     is the code that is sent back from GitHub to the callback url.
+     
+     Once the code is found in the string range, we initiate a token
+     request, and wait for the response which should contain
+     the token string */
+    
+    NSString *url = [[request URL] absoluteString];
+    NSString *codeSearch = @"?code=";
+    NSRange range = [url rangeOfString:codeSearch];
+    
+    if (range.location != NSNotFound)
+    {
+        NSString *code = [url substringFromIndex:range.location];
+        code = [code stringByReplacingOccurrencesOfString:codeSearch withString:@""];
+        
+        [self.github requestDataForType:GitHubRequestTypeAccessToken
+                               withData:code];
     }
     
-    NSData *tokenData = [self.options.token dataUsingEncoding:NSUTF8StringEncoding];
-    [[NSUserDefaults standardUserDefaults] setValue:tokenData forKey:kOAuthToken];
-    [self update];
-     */
+    [listener use];
 }
+
+
+
+
+#pragma mark - WebView Frame Load Delegate
+/** ------------------------------------------------------------------------- */
+- (void)webView:(WebView *)sender didReceiveTitle:(NSString *)title
+       forFrame:(WebFrame *)frame
+{
+    self.loactionLabel.stringValue = frame.dataSource.request.URL.absoluteString;
+}
+
+
+
 
 @end
