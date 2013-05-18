@@ -66,6 +66,7 @@
         self.bio                 = [aDecoder decodeObjectForKey:@"bio"];
         self.created_at          = [aDecoder decodeObjectForKey:@"created_at"];
         self.updated_at          = [aDecoder decodeObjectForKey:@"updated_at"];
+        self.avatar              = [aDecoder decodeObjectForKey:@"avatar"];
         /** NSIntegers ------------------------------------------------------------------ */
         self.public_repos        = [aDecoder decodeIntegerForKey:@"public_repos"];
         self.public_gists        = [aDecoder decodeIntegerForKey:@"public_gists"];
@@ -105,6 +106,7 @@
     [aCoder encodeObject:self.bio                 forKey:@"bio"];
     [aCoder encodeObject:self.created_at          forKey:@"created_at"];
     [aCoder encodeObject:self.updated_at          forKey:@"updated_at"];
+    [aCoder encodeObject:self.avatar              forKey:@"avatar"];
     /** NSIntegers ------------------------------------------------------------------ */
     [aCoder encodeInteger:self.public_repos       forKey:@"public_repos"];
     [aCoder encodeInteger:self.public_gists       forKey:@"public_gists"];

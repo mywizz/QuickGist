@@ -38,7 +38,7 @@
 @interface CDMenuItem : NSMenuItem
 
 @property (strong, nonatomic) NSString *url;
-@property (strong, nonatomic) NSString *gID;
+@property (strong, nonatomic) NSString *gistId;
 @property (nonatomic) BOOL authedUser;
 
 @end

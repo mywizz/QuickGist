@@ -83,6 +83,9 @@
 @property (weak) IBOutlet NSSegmentedControl *notificationCenterSegCell;
 @property (weak) IBOutlet NSButton *githubLoginBtn;
 @property (weak) IBOutlet NSTextField *loginDescriptionTextField;
+@property (weak) IBOutlet NSImageView *avatarImageView;
+@property (weak) IBOutlet NSToolbar *toolbar;
+@property (weak) IBOutlet NSTabView *tabView;
 
 /** Auth Window */
 @property (unsafe_unretained) IBOutlet NSWindow *authWindow;
@@ -128,6 +131,10 @@
     [self.statusView setImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setMenu:self.menu];
+    
+    /** Set selected tab */
+    self.toolbar.selectedItemIdentifier = @"General";
+    self.prefsWindow.title = self.tabView.selectedTabViewItem.label;
     
     /** Update views and prefs */
     [self update];
@@ -215,15 +222,16 @@
             [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 GistFile *file = (GistFile *)[gist.files objectAtIndex:idx];
                 NSString *filename = [NSString stringWithFormat:@"%@", file.filename];
-                if ([gist.files count] != idx-1)
+                
+                if (idx == 0)
                     tooltip = [tooltip stringByAppendingString:filename];
                 else
-                    tooltip = [tooltip stringByAppendingString:[NSString stringWithFormat:@"%@\n", filename]];
+                    tooltip = [tooltip stringByAppendingString:[NSString stringWithFormat:@"\n%@", filename]];
             }];
             
             [item setTitle:gist.description];
             [item setUrl:gist.html_url];
-            [item setGID:gist.gistId];
+            [item setGistId:gist.gistId];
             [item setAuthedUser:auth];
             [item setToolTip:tooltip];
             [item setImage:image];
@@ -235,6 +243,10 @@
     
     /** Set the menu items for the logged in user. */
     if ([self.options.gists count]) {
+        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:self.options.user.login
+                                                      action:nil
+                                               keyEquivalent:@""];
+        [submenu addItem:item];
         auth = YES;
         setMenuItems(self.options.gists);
     }
@@ -293,15 +305,16 @@
             description = [NSString stringWithFormat:@"%@ %@", filename, dateString];
         }
         
-        if ([gist.files count] == 1) {
+        if ([gist.files count] == 1)
+        {
             GistFile *gistFile = (GistFile*)[gist.files objectAtIndex:0];
             gistFile.filename = filename;
-            
         }
         gist.description = description;
         
         [self.github requestDataForType:GitHubRequestTypeCreateGist
-                               withData:gist];
+                               withData:gist
+                         cachedResponse:NO];
     }
     [self cleanup];
 }
@@ -356,6 +369,37 @@
     return gist;
 }
 
+- (void)deleteGistId:(NSString *)gistId
+{
+    NSAlert *alert = [NSAlert alertWithMessageText:@"Gist delete confirmation"
+                                     defaultButton:@"Delete"
+                                   alternateButton:@"Cancel"
+                                       otherButton:nil
+                         informativeTextWithFormat:@"Are you sure you want to delete this Gist and all of it's files?"];
+    
+    NSInteger result = [alert runModal];
+    [self handleResult:alert withResult:result forGistId:gistId];
+}
+
+-(void)handleResult:(NSAlert *)alert withResult:(NSInteger)result
+          forGistId:(NSString *)gistId
+{
+    switch(result)
+    {
+        case NSAlertDefaultReturn:
+            [self.github requestDataForType:GitHubRequestTypeDeleteGist
+                                   withData:gistId
+                             cachedResponse:NO];
+            break;
+            
+        case NSAlertAlternateReturn:
+            // nothing to do.
+            break;
+            
+        default:
+            break;
+    }
+}
 
 
 
@@ -367,8 +411,8 @@
     [self.options update];
     
     /** If the user is authenticated with GitHub... */
-    if (self.options.auth) {
-        
+    if (self.options.auth)
+    {
         if ([self.authWindow isKeyWindow])
         {
             /** Close the auth window if we're coming back from
@@ -380,18 +424,19 @@
             
             [self postUserNotification:@"QuickGist authorized"
                               subtitle:@"QuickGist is now authorized with your GitHub account!"];
+            
+            /** Attempt to download the users gists after authentication success. */
+            [self performSelector:@selector(downloadGists) withObject:nil afterDelay:1.0];
+            
+            /** Set the users gists to !anonymous */
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kAnonymous];
         }
         
         /** Request user data */
         if (!self.options.user)
             [self.github requestDataForType:GitHubRequestTypeGetUser
-                                   withData:nil];
-        
-        /** Requests all gists */
-        if (!self.options.gists)
-            [self.github requestDataForType:GitHubRequestTypeGetAllGists
-                                   withData:nil];
-        
+                                   withData:nil
+                             cachedResponse:NO];
         
         [self.githubLoginBtn setTitle:@"Logout"];
         if (self.options.user.login)
@@ -402,6 +447,18 @@
     else {
         [self.githubLoginBtn setTitle:@"Login"];
         [self.loginDescriptionTextField setStringValue:@"Login to GitHub:"];
+    }
+    
+    
+    if (self.options.user && !self.options.user.avatar)
+        [self.github requestDataForType:GitHubRequestTypeGetUserAvatar
+                               withData:nil
+                         cachedResponse:NO];
+    else if (self.options.user.avatar)
+    {
+        NSImage *image = [[NSImage alloc] initWithData:self.options.user.avatar];
+        [self.avatarImageView setImage:image];
+        [self.avatarImageView setNeedsDisplay];
     }
     
     /** Update our buttons and switches and blinking lights. */
@@ -466,7 +523,8 @@
     /** Download the gists when status menu item clicked */
     if (self.options.auth)
         [self.github requestDataForType:GitHubRequestTypeGetAllGists
-                               withData:nil];
+                               withData:nil
+                         cachedResponse:([self.options.gists count])];
 }
 
 - (void)createGistFromDrop:(NSPasteboard *)pboard
@@ -475,6 +533,14 @@
     [self showPopover:self];
 }
 
+
+
+
+#pragma mark - Tabview Delegate
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    self.prefsWindow.title = tabView.selectedTabViewItem.label;
+}
 
 
 
@@ -503,7 +569,8 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         code = [code stringByReplacingOccurrencesOfString:codeSearch withString:@""];
         
         [self.github requestDataForType:GitHubRequestTypeAccessToken
-                               withData:code];
+                               withData:code
+                         cachedResponse:NO];
     }
     
     [listener use];
@@ -527,12 +594,12 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 /** ------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
 {
-    NSArray *items = [self items];
     
     [self.filenameTF setEnabled:YES];
     
-    if ([items count])
+    if ([[self items] count])
     {
+        NSArray *items = [self items];
         Gist *gist;
         
         /** Close the popover if it's shown */
@@ -573,6 +640,8 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
                 gistFile.content = content;
                 [fileList addObject:gistFile];
                 gist.files = fileList;
+                if (filename)
+                    self.filenameTF.stringValue = filename;
             }
         }
         
@@ -671,9 +740,15 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         [self.authWindow makeKeyAndOrderFront:self];
     }
     else {
-        /** Process the token for user defaults */
+        /** Remove all account related info from user prefs. */
         NSData *data = [kAnonymous dataUsingEncoding:NSUTF8StringEncoding];
         [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kHistory];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kGitHubUser];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastRequest];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kAnonymous];
+        
+        self.avatarImageView.image = [NSImage imageNamed:NSImageNameUser];
         [self update];
         [self postUserNotification:@"QuickGist de-authorized"
                           subtitle:@"QuickGist has been de-authorized from your GitHub account."];
@@ -706,15 +781,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
             }
             
             if (delete)
-            {
-                /*
-                 GistDelete *gistDelete = [[GistDelete alloc] init];
-                 [gistDelete setDelegate:self];
-                 [gistDelete setGistId:item.gID];
-                 [gistDelete setToken:self.options.token];
-                 [gistDelete deleteGist];
-                 */
-            }
+                [self deleteGistId:item.gistId];
         }
     }
     

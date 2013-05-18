@@ -67,6 +67,12 @@
     self.user        = [self userFromPrefs:kGitHubUser];
     self.gists       = [NSMutableArray arrayWithArray:[self arrayFrom:kHistory]];
     self.anonGists   = [NSMutableArray arrayWithArray:[self arrayFrom:kAnonHistory]];
+    
+    /** Sort with newest gists first */
+    NSSortDescriptor *sorter = [NSSortDescriptor sortDescriptorWithKey:@"created_at" ascending:NO];
+    self.gists = [NSMutableArray arrayWithArray:[self.gists sortedArrayUsingDescriptors:@[ sorter]]];
+    self.anonGists = [NSMutableArray arrayWithArray:[self.anonGists sortedArrayUsingDescriptors:@[ sorter]]];
+    
     self.lastRequest = [[NSUserDefaults standardUserDefaults] valueForKey:kLastRequest];
     
     /** BOOL ------------------------------------------------------------------------ */

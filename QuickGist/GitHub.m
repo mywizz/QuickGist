@@ -78,7 +78,7 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
 }
 
 #pragma mark - Public
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data
+- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data cachedResponse:(BOOL)cached
 {
     NSMutableURLRequest *req = [[NSMutableURLRequest alloc] init];
     NSString * HTTPMethod;
@@ -134,6 +134,11 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             HTTPMethod = @"GET";
             break;
             
+        case GitHubRequestTypeGetUserAvatar:
+            [req setURL:[NSURL URLWithString:self.options.user.avatar_url]];
+            HTTPMethod = @"GET";
+            break;
+            
         case GitHubRequestTypeGetGist:
             if ([data isKindOfClass:[NSString class]])
             {
@@ -150,6 +155,16 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             HTTPMethod = @"GET";
             break;
             
+        case GitHubRequestTypeDeleteGist:
+            if ([data isKindOfClass:[NSString class]])
+            {
+                NSString *url = [NSString stringWithFormat:@"%@/%@", apiGistsURL, data];
+                [req setURL:[NSURL URLWithString:url]];
+            }
+            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
+            HTTPMethod = @"DELETE";
+            break;
+            
         default:
             break;
     }
@@ -158,9 +173,11 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
     {
         if (postData)
             [req setHTTPBody:[postData dataUsingEncoding:NSUTF8StringEncoding]];
-            
+        
+        if (cached)
+            [req setValue:self.options.lastRequest forHTTPHeaderField:@"If-Modified-Since"];
+        
         [req setHTTPMethod:HTTPMethod];
-        [req setValue:self.options.lastRequest forHTTPHeaderField:@"If-Modified-Since"];
         [req setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
         [req addValue:self.options.useragent forHTTPHeaderField:@"User-Agent"];
         
@@ -174,7 +191,8 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
 #pragma mark - GitHub Request Delegate
 - (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType fromLastRequest:(NSString *)lastRequest
 {
-    switch (requestType) {
+    switch (requestType)
+    {
         case GitHubRequestTypeCreateGist:
             if ([responseData isKindOfClass:[Gist class]])
             {
@@ -197,6 +215,12 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
                 NSString *title = [NSString stringWithFormat:@"%@ created", gist.description];
                 [self.delegate update];
                 [self.delegate postUserNotification:title subtitle:gist.html_url];
+                
+                /** Copy the new gist url to the clipboard */
+                NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+                NSArray *objectsToCopy = [[NSArray alloc] initWithObjects:gist.html_url, nil];
+                [pboard clearContents];
+                [pboard writeObjects:objectsToCopy];
             }
             break;
             
@@ -216,6 +240,18 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             }
             break;
             
+        case GitHubRequestTypeGetUserAvatar:
+            if ([responseData isKindOfClass:[NSData class]])
+            {
+                if (self.options.user)
+                {
+                    self.options.user.avatar = responseData;
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.options.user];
+                    [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
+                }
+            }
+            break;
+            
         case GitHubRequestTypeGetGist:
             if ([responseData isKindOfClass:[Gist class]])
             {
@@ -229,6 +265,20 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
                 NSArray *gists = (NSArray *)responseData;
                 NSData *gistsData = [NSKeyedArchiver archivedDataWithRootObject:gists];
                 [[NSUserDefaults standardUserDefaults] setObject:gistsData forKey:kHistory];
+            }
+            break;
+            
+        case GitHubRequestTypeDeleteGist:
+            if ([responseData isKindOfClass:[NSString class]])
+            {
+                if ([responseData isEqualToString:@"success"]) {
+                    [self.delegate postUserNotification:@"Gist deleted"
+                                               subtitle:@"Your Gist has been deleted."];
+                    
+                    [self requestDataForType:GitHubRequestTypeGetAllGists
+                                    withData:nil
+                              cachedResponse:NO];
+                }
             }
             break;
             

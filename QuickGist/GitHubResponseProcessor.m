@@ -54,6 +54,9 @@
         case GitHubRequestTypeGetUser:
             processedData = [self processGetUserResponse:data];
             break;
+        case GitHubRequestTypeGetUserAvatar:
+            processedData = data;
+            break;
         case GitHubRequestTypeGetGist:
             processedData = [self processGetGistResponse:data];
             break;

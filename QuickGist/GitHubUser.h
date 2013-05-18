@@ -62,6 +62,8 @@
 @property (nonatomic, strong) NSString *created_at;
 @property (nonatomic, strong) NSString *updated_at;
 
+@property (nonatomic, strong) NSData   *avatar;
+
 
 @property (nonatomic) NSInteger public_repos;
 @property (nonatomic) NSInteger public_gists;

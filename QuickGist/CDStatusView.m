@@ -107,6 +107,7 @@
 
 - (void)menuWillOpen:(NSMenu *)menu
 {
+    [self.delegate downloadGists];
     [self setHighlighted:YES];
     [self setNeedsDisplay:YES];
 }
@@ -115,7 +116,6 @@
 
 - (void)menuDidClose:(NSMenu *)menu
 {
-    [self.delegate downloadGists];
     [self setHighlighted:NO];
     [self setNeedsDisplay:YES];
 }

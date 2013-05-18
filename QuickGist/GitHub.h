@@ -55,6 +55,6 @@
 @property (nonatomic, strong) NSString *apiGistsRequestURL;
 @property (nonatomic, strong) NSString *apiTokenRequestURL;
 
-- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data;
+- (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data cachedResponse:(BOOL)cached;
 
 @end

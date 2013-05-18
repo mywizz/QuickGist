@@ -37,9 +37,9 @@
 #import "GitHubResponseProcessor.h"
 
 @interface GitHubAPIRequest() <NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
-    NSURLConnection *_connection;
-    NSMutableData *_responseData;
-    NSString      *_lastRequest;
+    NSURLConnection  *_connection;
+    NSMutableData    *_responseData;
+    NSString         *_lastRequest;
     GitHubRequestType _reqType;
 }
 
@@ -59,8 +59,13 @@
 - (void)processData:(NSData *)data
 {
     GitHubResponseProcessor *proc = [[GitHubResponseProcessor alloc] init];
-    id processedData = [proc processData:data forReqestType:_reqType];
-    [self.delegate handleData:processedData forDataType:_reqType fromLastRequest:_lastRequest];
+    
+    id processedData = [proc processData:data
+                           forReqestType:_reqType];
+    
+    [self.delegate handleData:processedData
+                  forDataType:_reqType
+              fromLastRequest:_lastRequest];
 }
 
 - (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
@@ -84,6 +89,7 @@
     NSInteger status = [httpResponse statusCode];
     
 #ifdef DEBUG
+    /** Log the response headers when debugging. */
     for (id key in headers)
         NSLog(@"%@: %@", [key description], [headers objectForKey:key]);
 #endif
@@ -94,6 +100,19 @@
             break;
         case 201:
             // success posting data
+            break;
+        case 204:
+            // delete success
+            if (_reqType == GitHubRequestTypeDeleteGist) {
+                
+                NSString *success = @"success";
+                
+                [self.delegate handleData:success
+                              forDataType:_reqType
+                          fromLastRequest:_lastRequest];
+                
+                [self cleanup];
+            }
             break;
         case 304:
             // use cache
@@ -108,6 +127,7 @@
             break;
     }
     
+    /** Save the date so we can use it for chaed responses */
     _lastRequest = [headers objectForKey:@"Date"];
     
     if (!_responseData)
