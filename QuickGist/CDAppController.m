@@ -112,16 +112,18 @@
     /** Initialize the runtime options singleton */
     self.options = [Options sharedInstance];
     
+    
     /** Our github object to handle api calls */
     self.github = [[GitHub alloc] init];
     [self.github setDelegate:self];
     self.github.clientId = [Config clientId];
     self.github.clientSecret = [Config clientSecret];
     
-    /** Let's update our services and let the seystem know we
-     have a service. */
+    
+    /** Let the system know we have a service. */
     [NSApp setServicesProvider: self];
     NSUpdateDynamicServices();
+    
     
     /** Setup the menubar status item */
     self.statusItem = [[NSStatusBar systemStatusBar]
@@ -132,9 +134,11 @@
     [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setMenu:self.menu];
     
+    
     /** Set selected tab */
     self.toolbar.selectedItemIdentifier = @"General";
     self.prefsWindow.title = self.tabView.selectedTabViewItem.label;
+    
     
     /** Update views and prefs */
     [self update];
@@ -179,27 +183,39 @@
      with updated info.
      */
     
-    if ([[submenu itemArray] count]) [submenu removeAllItems];
+    if ([[submenu itemArray] count])
+        [submenu removeAllItems];
+    
     
     
     if ([self.options.gists count] || [self.options.anonGists count])
     {
         /**
-         If we have an authorized user and a username, let's create
+         If we have an authorized user, let's create
          a menu item that opens the users GitHub gists page.
          */
         
-        if (self.options.auth && self.options.user) {
+        if (self.options.user)
+        {
+            /** Using our sub-classed NSMenuItem to provide a few
+             extra properties. */
+            
             CDMenuItem *item = [[CDMenuItem alloc] init];
-            NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@", self.options.user.login];
+            NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@",
+                             self.options.user.login];
+            
             [item setTitle:@"Open GitHub Gists"];
             [item setUrl:url];
             [item setAction:@selector(openURL:)];
             [item setTarget:self];
             [submenu addItem:item];
         }
+        
+        /** If not, let's add an NSMenuItem that the user can login
+         to GitHub with. */
         else [submenu addItem:loginItem];
         
+        /** To make it pretty, we'll want a seperator. */
         [submenu addItem:[NSMenuItem separatorItem]];
     }
     else if (![[submenu itemArray] count] && !self.options.auth)
@@ -297,13 +313,11 @@
         NSString *filename = self.filenameTF.stringValue;
         NSString *description = self.descriptionTF.stringValue;
         
+        if ([filename isEqualToString:@""])
+            filename = @"gistfile1";
+            
         if ([description isEqualToString:@""])
-        {
-            NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-            NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
-            description = [NSString stringWithFormat:@"%@ %@", filename, dateString];
-        }
+            description = filename;
         
         if ([gist.files count] == 1)
         {
@@ -375,7 +389,7 @@
                                      defaultButton:@"Delete"
                                    alternateButton:@"Cancel"
                                        otherButton:nil
-                         informativeTextWithFormat:@"Are you sure you want to delete this Gist and all of it's files?"];
+                         informativeTextWithFormat:@"Are you sure you want to delete this Gist and all of its files?"];
     
     NSInteger result = [alert runModal];
     [self handleResult:alert withResult:result forGistId:gistId];
@@ -443,22 +457,26 @@
             [self.loginDescriptionTextField setStringValue:self.options.user.login];
         else
             [self.loginDescriptionTextField setStringValue:@"Logout of GitHub:"];
+        
+        
+        
+        
+        if (self.options.user && !self.options.user.avatar)
+            [self.github requestDataForType:GitHubRequestTypeGetUserAvatar
+                                   withData:nil
+                             cachedResponse:NO];
+        else if (self.options.user.avatar)
+        {
+            NSImage *image = [[NSImage alloc] initWithData:self.options.user.avatar];
+            [self.avatarImageView setImage:image];
+            [self.avatarImageView setNeedsDisplay];
+        }
     }
-    else {
+    
+    else
+    {
         [self.githubLoginBtn setTitle:@"Login"];
         [self.loginDescriptionTextField setStringValue:@"Login to GitHub:"];
-    }
-    
-    
-    if (self.options.user && !self.options.user.avatar)
-        [self.github requestDataForType:GitHubRequestTypeGetUserAvatar
-                               withData:nil
-                         cachedResponse:NO];
-    else if (self.options.user.avatar)
-    {
-        NSImage *image = [[NSImage alloc] initWithData:self.options.user.avatar];
-        [self.avatarImageView setImage:image];
-        [self.avatarImageView setNeedsDisplay];
     }
     
     /** Update our buttons and switches and blinking lights. */
@@ -616,7 +634,8 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         if ([items count] > 1)
             gist = [self processGistForMultipleFiles:items];
         
-        if ([items count] == 1) {
+        if ([items count] == 1)
+        {
             id item = [items objectAtIndex:0];
             NSString *filename;
             NSString *content;
@@ -649,14 +668,18 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         {
             if ([gist.files count] > 1)
             {
-                NSString __block *filenames = @"";
+                NSString __block *filename = @"";
                 [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     GistFile *gistfile = (GistFile*)[gist.files objectAtIndex:idx];
-                    filenames = [filenames stringByAppendingString:[NSString stringWithFormat:@"%@, ", gistfile.filename]];
+                    
+                    /** Only add comma and filename if there are more than 1 files. */
+                    if (idx > 0 )
+                        filename = [filename stringByAppendingString:[NSString stringWithFormat:@", %@", gistfile.filename]];
+                    else filename = gistfile.filename;
                 }];
                 
                 /** set multiple filenames and disable user input. */
-                self.filenameTF.stringValue = filenames;
+                self.filenameTF.stringValue = filename;
                 [self.filenameTF setEnabled:NO];
             }
             

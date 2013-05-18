@@ -37,8 +37,8 @@
 #import "GitHubAPIRequest.h"
 
 static NSString *const apiGistsURL = @"https://api.github.com/gists";
-static NSString *const apiUserURL       = @"https://api.github.com/user";
-static NSString *const apiTokenURL      = @"https://github.com/login/oauth/access_token";
+static NSString *const apiUserURL  = @"https://api.github.com/user";
+static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_token";
 
 @interface GitHub() <GitHubRequestDelegate>
 

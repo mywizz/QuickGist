@@ -79,6 +79,7 @@
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
                                                          options:kNilOptions
                                                            error:&error];
+    
     if ([json objectForKey:@"message"])
         NSLog(@"GitHub response: %@", [json objectForKey:@"message"]);
     

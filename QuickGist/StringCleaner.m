@@ -43,6 +43,7 @@
     string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
     string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
     string = [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    string = [string stringByReplacingOccurrencesOfString:@"	" withString:@"    "]; // strange white space
     return string;
 }
 
