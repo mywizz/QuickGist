@@ -63,8 +63,16 @@
     [self.delegate handleData:processedData forDataType:_reqType fromLastRequest:_lastRequest];
 }
 
+- (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
+{
+    [self.delegate postUserNotification:title subtitle:subtitle];
+}
+
 - (void)cleanup
 {
+    [self postUserNotification:@"Something went wrong!"
+                      subtitle:@"#!%&$ Something went wrong and I don't have a good reason."];
+    
     [_connection cancel];
     _connection   = nil;
     _responseData = nil;
@@ -78,8 +86,10 @@
     NSDictionary *headers = [httpResponse allHeaderFields];
     NSInteger status = [httpResponse statusCode];
     
+#ifdef DEBUG
     for (id key in headers)
         NSLog(@"%@: %@", [key description], [headers objectForKey:key]);
+#endif
     
     switch (status) {
         case 200:
@@ -89,6 +99,10 @@
             // success posting data
             break;
         case 304:
+            // use cache
+            [self cleanup];
+            break;
+        case 400:
             // use cache
             [self cleanup];
             break;

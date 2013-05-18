@@ -144,6 +144,7 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             [req setHTTPBody:[postData dataUsingEncoding:NSUTF8StringEncoding]];
             
         [req setHTTPMethod:HTTPMethod];
+        [req setValue:self.options.lastRequest forHTTPHeaderField:@"If-Modified-Since"];
         [req setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
         [req addValue:self.options.useragent forHTTPHeaderField:@"User-Agent"];
         
@@ -161,6 +162,8 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
         case GitHubRequestTypeCreateGist:
             if ([responseData isKindOfClass:[Gist class]])
             {
+                Gist* gist = (Gist*)responseData;
+                
                 void(^addToGistsHistory)(Gist*) = ^(Gist* gist) {
                     (gist.anonymous) ? [self.options.anonGists addObject:gist]
                                      : [self.options.gists addObject:gist];
@@ -173,8 +176,11 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
                     
                 };
                 
-                addToGistsHistory(responseData);
+                addToGistsHistory(gist);
+                
+                NSString *title = [NSString stringWithFormat:@"%@ created", gist.description];
                 [self.delegate update];
+                [self.delegate postUserNotification:title subtitle:gist.html_url];
             }
             break;
             
@@ -198,8 +204,13 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             break;
     }
     
+    [[NSUserDefaults standardUserDefaults] setValue:lastRequest forKey:kLastRequest];
     [self.delegate update];
 }
 
+- (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
+{
+    [self.delegate postUserNotification:title subtitle:subtitle];
+}
 
 @end

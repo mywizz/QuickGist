@@ -132,7 +132,6 @@
         gist.updated_at     = [json objectForKey:@"updated_at"];
         gist.url            = [json objectForKey:@"url"];
         
-        
         gist.pub            = [[json objectForKey:@"public"] boolValue];
         gist.anonymous      = (gist.user.login == nil);
     }

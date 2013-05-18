@@ -138,58 +138,6 @@
 
 #pragma mark - Private
 /** ------------------------------------------------------------------------- */
-- (void)update
-{
-    /** Update runtime options and view elements. */
-    [self.options update];
-    
-    /** If the user is authenticated with GitHub... */
-    if (self.options.auth) {
-        
-        if ([self.authWindow isKeyWindow])
-        {
-            /** Close the auth window if we're coming back from
-             an authorization request. */
-            [self.authWindow close];
-            
-            /** At this point we're doing some assumption that we have
-             a valid token. It will be chaged later. */
-            
-            NSAlert *alert = [NSAlert alertWithMessageText:@"QuickGist authorized with GitHub"
-                                             defaultButton:@"OK"
-                                           alternateButton:nil
-                                               otherButton:nil
-                                 informativeTextWithFormat:@"You can now post Gists to your GitHub account!"];
-            [alert runModal];
-        }
-        
-        /** Request user data */
-        if (!self.options.user)
-            [self.github requestDataForType:GitHubRequestTypeGetUser
-                                   withData:nil];
-        
-        
-        [self.githubLoginBtn setTitle:@"Logout"];
-        if (self.options.user.login)
-            [self.loginDescriptionTextField setStringValue:self.options.user.login];
-        else
-            [self.loginDescriptionTextField setStringValue:@"Logout of GitHub:"];
-    }
-    else {
-        [self.githubLoginBtn setTitle:@"Login"];
-        [self.loginDescriptionTextField setStringValue:@"Login to GitHub:"];
-    }
-    
-    /** Update our buttons and switches and blinking lights. */
-    self.launchAtLoginSegCell.selectedSegment      = self.options.login;
-    self.notificationCenterSegCell.selectedSegment = self.options.notice;
-    self.openURLSegCell.selectedSegment            = self.options.openURL;
-    self.anonymousCheckBox.state                   = self.options.anonymous;
-    self.secretCheckBox.state                      = self.options.secret;
-    
-    [self setGistHistoryMenu];
-}
-
 - (void)cleanup
 {
     /** Clear the popover text fields. */
@@ -411,6 +359,160 @@
 
 
 
+#pragma mark - GitHub API Delegate
+/** ------------------------------------------------------------------------- */
+- (void)update
+{
+    /** Update runtime options and view elements. */
+    [self.options update];
+    
+    /** If the user is authenticated with GitHub... */
+    if (self.options.auth) {
+        
+        if ([self.authWindow isKeyWindow])
+        {
+            /** Close the auth window if we're coming back from
+             an authorization request. */
+            [self.authWindow close];
+            
+            /** At this point we're doing some assumption that we have
+             a valid token. It will be chaged later. */
+            
+            [self postUserNotification:@"QuickGist authorized"
+                              subtitle:@"QuickGist is now authorized with your GitHub account!"];
+        }
+        
+        /** Request user data */
+        if (!self.options.user)
+            [self.github requestDataForType:GitHubRequestTypeGetUser
+                                   withData:nil];
+        
+        
+        [self.githubLoginBtn setTitle:@"Logout"];
+        if (self.options.user.login)
+            [self.loginDescriptionTextField setStringValue:self.options.user.login];
+        else
+            [self.loginDescriptionTextField setStringValue:@"Logout of GitHub:"];
+    }
+    else {
+        [self.githubLoginBtn setTitle:@"Login"];
+        [self.loginDescriptionTextField setStringValue:@"Login to GitHub:"];
+    }
+    
+    /** Update our buttons and switches and blinking lights. */
+    self.launchAtLoginSegCell.selectedSegment      = self.options.login;
+    self.notificationCenterSegCell.selectedSegment = self.options.notice;
+    self.openURLSegCell.selectedSegment            = self.options.openURL;
+    self.anonymousCheckBox.state                   = self.options.anonymous;
+    self.secretCheckBox.state                      = self.options.secret;
+    
+    [self setGistHistoryMenu];
+}
+
+- (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
+{
+    if (self.options.notice)
+    {
+        NSUserNotification *notice = [[NSUserNotification alloc] init];
+        notice.title = title;
+        notice.subtitle = subtitle;
+        
+        NSUserNotificationCenter *nc = [NSUserNotificationCenter defaultUserNotificationCenter];
+        [nc setDelegate:self];
+        [nc deliverNotification:notice];
+    }
+}
+
+
+
+
+#pragma mark - User Notification Delegate
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
+     shouldPresentNotification:(NSUserNotification *)notification
+{
+    return YES;
+}
+
+
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+       didActivateNotification:(NSUserNotification *)notification
+{
+    NSString *http = @"http";
+    NSRange range = [notification.subtitle rangeOfString:http];
+    
+    if (range.location != NSNotFound)
+    {
+        _url = notification.subtitle;
+        [self openURL:self];
+    }
+}
+
+
+
+
+#pragma mark - StatusView Delegate
+/** ------------------------------------------------------------------------- */
+- (void)downloadGists
+{
+    /** Close the popover if it's shown */
+    if (self.popoverIsShown)
+        [self.popover close];
+}
+
+- (void)createGistFromDrop:(NSPasteboard *)pboard
+{
+    _pboard = pboard;
+    [self showPopover:self];
+}
+
+
+
+
+#pragma mark - WebView Policy Delegate
+/** ------------------------------------------------------------------------- */
+- (void)webView:(WebView *)sender
+decidePolicyForNavigationAction:(NSDictionary *)actionInformation
+                        request:(NSURLRequest *)request
+                          frame:(WebFrame *)frame
+               decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+    /** We're going to catch the request url to check for "?code=" which
+     is the code that is sent back from GitHub to the callback url.
+     
+     Once the code is found in the string range, we initiate a token
+     request, and wait for the response which should contain
+     the token string */
+    
+    NSString *url = [[request URL] absoluteString];
+    NSString *codeSearch = @"?code=";
+    NSRange range = [url rangeOfString:codeSearch];
+    
+    if (range.location != NSNotFound)
+    {
+        NSString *code = [url substringFromIndex:range.location];
+        code = [code stringByReplacingOccurrencesOfString:codeSearch withString:@""];
+        
+        [self.github requestDataForType:GitHubRequestTypeAccessToken
+                               withData:code];
+    }
+    
+    [listener use];
+}
+
+
+
+
+#pragma mark - WebView Frame Load Delegate
+/** ------------------------------------------------------------------------- */
+- (void)webView:(WebView *)sender didReceiveTitle:(NSString *)title
+       forFrame:(WebFrame *)frame
+{
+    self.loactionLabel.stringValue = frame.dataSource.request.URL.absoluteString;
+}
+
+
+
+
 #pragma mark - Sent Actions
 /** ------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
@@ -563,6 +665,8 @@
         NSData *data = [kAnonymous dataUsingEncoding:NSUTF8StringEncoding];
         [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
         [self update];
+        [self postUserNotification:@"QuickGist de-authorized"
+                          subtitle:@"QuickGist has been de-authorized from your GitHub account."];
     }
 }
 
@@ -594,11 +698,11 @@
             if (delete)
             {
                 /*
-                GistDelete *gistDelete = [[GistDelete alloc] init];
-                [gistDelete setDelegate:self];
-                [gistDelete setGistId:item.gID];
-                [gistDelete setToken:self.options.token];
-                [gistDelete deleteGist];
+                 GistDelete *gistDelete = [[GistDelete alloc] init];
+                 [gistDelete setDelegate:self];
+                 [gistDelete setGistId:item.gID];
+                 [gistDelete setToken:self.options.token];
+                 [gistDelete deleteGist];
                  */
             }
         }
@@ -609,69 +713,6 @@
         [[NSWorkspace sharedWorkspace] openURL:url];
         _url = nil;
     }
-}
-
-
-
-
-#pragma mark - StatusView Delegate
-/** ------------------------------------------------------------------------- */
-- (void)downloadGists
-{
-    /** Close the popover if it's shown */
-    if (self.popoverIsShown)
-        [self.popover close];
-}
-
-- (void)createGistFromDrop:(NSPasteboard *)pboard
-{
-    _pboard = pboard;
-    [self showPopover:self];
-}
-
-
-
-
-#pragma mark - WebView Policy Delegate
-/** ------------------------------------------------------------------------- */
-- (void)webView:(WebView *)sender
-decidePolicyForNavigationAction:(NSDictionary *)actionInformation
-                        request:(NSURLRequest *)request
-                          frame:(WebFrame *)frame
-               decisionListener:(id<WebPolicyDecisionListener>)listener
-{
-    /** We're going to catch the request url to check for "?code=" which
-     is the code that is sent back from GitHub to the callback url.
-     
-     Once the code is found in the string range, we initiate a token
-     request, and wait for the response which should contain
-     the token string */
-    
-    NSString *url = [[request URL] absoluteString];
-    NSString *codeSearch = @"?code=";
-    NSRange range = [url rangeOfString:codeSearch];
-    
-    if (range.location != NSNotFound)
-    {
-        NSString *code = [url substringFromIndex:range.location];
-        code = [code stringByReplacingOccurrencesOfString:codeSearch withString:@""];
-        
-        [self.github requestDataForType:GitHubRequestTypeAccessToken
-                               withData:code];
-    }
-    
-    [listener use];
-}
-
-
-
-
-#pragma mark - WebView Frame Load Delegate
-/** ------------------------------------------------------------------------- */
-- (void)webView:(WebView *)sender didReceiveTitle:(NSString *)title
-       forFrame:(WebFrame *)frame
-{
-    self.loactionLabel.stringValue = frame.dataSource.request.URL.absoluteString;
 }
 
 

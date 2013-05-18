@@ -38,6 +38,7 @@
 
 @protocol GitHubRequestDelegate <NSObject>
 - (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType fromLastRequest:(NSString *)lastRequest;
+- (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle;
 @end
 
 @interface GitHubAPIRequest : NSObject
