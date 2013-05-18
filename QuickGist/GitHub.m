@@ -36,7 +36,7 @@
 #import "GitHub.h"
 #import "GitHubAPIRequest.h"
 
-static NSString *const apiCreateGistURL = @"https://api.github.com/gists";
+static NSString *const apiGistsURL = @"https://api.github.com/gists";
 static NSString *const apiUserURL       = @"https://api.github.com/user";
 static NSString *const apiTokenURL      = @"https://github.com/login/oauth/access_token";
 
@@ -101,7 +101,7 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
                     files = [files stringByAppendingString:file];
                 }
                 
-                [req setURL:[NSURL URLWithString:apiCreateGistURL]];
+                [req setURL:[NSURL URLWithString:apiGistsURL]];
                 HTTPMethod = @"POST";
                 
                 NSString *public = @"true";
@@ -130,6 +130,22 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             
         case GitHubRequestTypeGetUser:
             [req setURL:[NSURL URLWithString:apiUserURL]];
+            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
+            HTTPMethod = @"GET";
+            break;
+            
+        case GitHubRequestTypeGetGist:
+            if ([data isKindOfClass:[NSString class]])
+            {
+                NSString *url = [NSString stringWithFormat:@"%@/%@", apiGistsURL, data];
+                [req setURL:[NSURL URLWithString:url]];
+            }
+            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
+            HTTPMethod = @"GET";
+            break;
+            
+        case GitHubRequestTypeGetAllGists:
+            [req setURL:[NSURL URLWithString:apiGistsURL]];
             [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
             HTTPMethod = @"GET";
             break;
@@ -197,6 +213,22 @@ static NSString *const apiTokenURL      = @"https://github.com/login/oauth/acces
             {
                 NSData *data = [NSKeyedArchiver archivedDataWithRootObject:responseData];
                 [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
+            }
+            break;
+            
+        case GitHubRequestTypeGetGist:
+            if ([responseData isKindOfClass:[Gist class]])
+            {
+                /** Not sure what to do here yet */
+            }
+            break;
+            
+        case GitHubRequestTypeGetAllGists:
+            if ([responseData isKindOfClass:[NSArray class]])
+            {
+                NSArray *gists = (NSArray *)responseData;
+                NSData *gistsData = [NSKeyedArchiver archivedDataWithRootObject:gists];
+                [[NSUserDefaults standardUserDefaults] setObject:gistsData forKey:kHistory];
             }
             break;
             

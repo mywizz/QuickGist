@@ -387,6 +387,11 @@
             [self.github requestDataForType:GitHubRequestTypeGetUser
                                    withData:nil];
         
+        /** Requests all gists */
+        if (!self.options.gists)
+            [self.github requestDataForType:GitHubRequestTypeGetAllGists
+                                   withData:nil];
+        
         
         [self.githubLoginBtn setTitle:@"Logout"];
         if (self.options.user.login)
@@ -457,6 +462,11 @@
     /** Close the popover if it's shown */
     if (self.popoverIsShown)
         [self.popover close];
+    
+    /** Download the gists when status menu item clicked */
+    if (self.options.auth)
+        [self.github requestDataForType:GitHubRequestTypeGetAllGists
+                               withData:nil];
 }
 
 - (void)createGistFromDrop:(NSPasteboard *)pboard

@@ -52,7 +52,6 @@
     self = [super initWithFrame:frame];
     if (self)
     {
-        // self.options = [Options sharedInstance];
         self.types = @[ NSStringPboardType, NSRTFPboardType, NSFilenamesPboardType ];
         [self registerForDraggedTypes:self.types];
     }
@@ -100,7 +99,6 @@
 #pragma mark - Mouse tracking
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    [self.delegate downloadGists];
     NSMenu *menu = [super menu];
     [_statusItem popUpStatusItemMenu:menu];
     [NSApp sendAction:self.action to:self.target from:self];
@@ -109,7 +107,6 @@
 
 - (void)menuWillOpen:(NSMenu *)menu
 {
-    // [self.delegate setGistHistoryMenu];
     [self setHighlighted:YES];
     [self setNeedsDisplay:YES];
 }
@@ -118,6 +115,7 @@
 
 - (void)menuDidClose:(NSMenu *)menu
 {
+    [self.delegate downloadGists];
     [self setHighlighted:NO];
     [self setNeedsDisplay:YES];
 }

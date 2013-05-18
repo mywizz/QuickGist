@@ -70,9 +70,6 @@
 
 - (void)cleanup
 {
-    [self postUserNotification:@"Something went wrong!"
-                      subtitle:@"#!%&$ Something went wrong and I don't have a good reason."];
-    
     [_connection cancel];
     _connection   = nil;
     _responseData = nil;

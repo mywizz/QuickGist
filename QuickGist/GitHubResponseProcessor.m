@@ -54,6 +54,12 @@
         case GitHubRequestTypeGetUser:
             processedData = [self processGetUserResponse:data];
             break;
+        case GitHubRequestTypeGetGist:
+            processedData = [self processGetGistResponse:data];
+            break;
+        case GitHubRequestTypeGetAllGists:
+            processedData = [self processGetAllGistsResponse:data];
+            break;
             
         default:
             break;
@@ -196,6 +202,94 @@
     
     
     return user;
+}
+
+- (Gist *)processGetGistResponse:(NSData *)data
+{
+    Gist *gist;
+    
+    return gist;
+}
+
+- (NSArray *)processGetAllGistsResponse:(NSData *)data
+{
+    NSMutableArray *gists;
+    NSError *error;
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    
+    if ([json isKindOfClass:[NSArray class]]) {
+        
+        gists = [[NSMutableArray alloc] init];
+        NSArray *jsonArray = (NSArray *)json;
+        
+        [jsonArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSDictionary *gistDict = (NSDictionary*)[jsonArray objectAtIndex:idx];
+            Gist *gist = [[Gist alloc] init];
+            GitHubUser *user;
+            
+            /** Setup the gist files */
+            NSDictionary *files = [[NSDictionary alloc]
+                                   initWithDictionary:[gistDict objectForKey:@"files"]];
+            NSMutableArray *filesArray = [[NSMutableArray alloc] init];
+            
+            for (id key in files)
+            {
+                NSDictionary *file = [files objectForKey:key];
+                GistFile *gistfile = [[GistFile alloc] init];
+                
+                //gistfile.content   = [file objectForKey:@"content"];
+                gistfile.filename  = [file objectForKey:@"filename"];
+                gistfile.language  = [file objectForKey:@"language"];
+                gistfile.type      = [file objectForKey:@"type"];
+                gistfile.raw_url   = [file objectForKey:@"raw_url"];
+                gistfile.size      = [[file objectForKey:@"size"] integerValue];
+                [filesArray addObject:gistfile];
+            }
+            if ([filesArray count])
+                gist.files = filesArray;
+            
+            // gist.history = [json objectForKey:@"history"];
+            
+            if (![[gistDict objectForKey:@"user"] isKindOfClass:[NSNull class]])
+            {
+                /** The question is, how much do we really need to know about
+                 ourselves right now?*/
+                NSDictionary *userData = (NSDictionary*)[gistDict objectForKey:@"user"];
+                
+                if (userData) {
+                    user = [[GitHubUser alloc] init];
+                    user.login = [userData objectForKey:@"login"];
+                    user.userId = [userData objectForKey:@"id"];
+                    user.avatar_url = [userData objectForKey:@"avatar_url"];
+                    user.html_url = [userData objectForKey:@"html_url"];
+                    user.url = [userData objectForKey:@"url"];
+                }
+            }
+            
+            if (user)
+                gist.user = user;
+            
+            /** The easy stuff */
+            gist.comments_url   = [gistDict objectForKey:@"comments_url"];
+            gist.commits_url    = [gistDict objectForKey:@"commits_url"];
+            gist.created_at     = [gistDict objectForKey:@"created_at"];
+            gist.description    = [gistDict objectForKey:@"description"];
+            gist.forks_url      = [gistDict objectForKey:@"forks_url"];
+            gist.git_pull_url   = [gistDict objectForKey:@"git_pull_url"];
+            gist.git_push_url   = [gistDict objectForKey:@"git_push_url"];
+            gist.html_url       = [gistDict objectForKey:@"html_url"];
+            gist.gistId         = [gistDict objectForKey:@"id"];
+            gist.updated_at     = [gistDict objectForKey:@"updated_at"];
+            gist.url            = [gistDict objectForKey:@"url"];
+            
+            gist.pub            = [[gistDict objectForKey:@"public"] boolValue];
+            gist.anonymous      = (gist.user.login == nil);
+           
+            [gists addObject:gist];
+        }];
+    }
+    
+    return gists;
 }
 
 @end
