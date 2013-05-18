@@ -86,6 +86,7 @@
 @property (weak) IBOutlet NSImageView *avatarImageView;
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet NSTabView *tabView;
+@property (weak) IBOutlet NSTextField *apiCallsCount;
 
 /** Auth Window */
 @property (unsafe_unretained) IBOutlet NSWindow *authWindow;
@@ -138,7 +139,6 @@
     /** Set selected tab */
     self.toolbar.selectedItemIdentifier = @"General";
     self.prefsWindow.title = self.tabView.selectedTabViewItem.label;
-    
     
     /** Update views and prefs */
     [self update];
@@ -487,6 +487,10 @@
     self.secretCheckBox.state                      = self.options.secret;
     
     [self setGistHistoryMenu];
+    
+    /** Update remaining api calls for the user. */
+    if (self.options.remainingAPICalls)
+        self.apiCallsCount.stringValue = self.options.remainingAPICalls;
 }
 
 - (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle

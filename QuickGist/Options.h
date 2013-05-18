@@ -52,6 +52,7 @@
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) NSString *useragent;
 @property (nonatomic, strong) NSString *lastRequest;
+@property (nonatomic, strong) NSString *remainingAPICalls;
 @property (nonatomic, strong) NSMutableArray  *gists;
 @property (nonatomic, strong) NSMutableArray  *anonGists;
 

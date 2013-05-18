@@ -31,6 +31,7 @@
 		94CD4B001745E007009A88EB /* CDWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4AFF1745E007009A88EB /* CDWindow.m */; };
 		94CD4B041745F8EE009A88EB /* CDMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4B031745F8EE009A88EB /* CDMenuItem.m */; };
 		94CD4B0917473FCD009A88EB /* github.png in Resources */ = {isa = PBXBuildFile; fileRef = 94CD4B0817473FCD009A88EB /* github.png */; };
+		94CD4B0D1747DB6D009A88EB /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = 94CD4B0C1747DB6D009A88EB /* TODO.md */; };
 		94E101271744699E005F1C51 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E101261744699E005F1C51 /* Cocoa.framework */; };
 		94E101311744699E005F1C51 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94E1012F1744699E005F1C51 /* InfoPlist.strings */; };
 		94E101331744699E005F1C51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E101321744699E005F1C51 /* main.m */; };
@@ -106,6 +107,7 @@
 		94CD4B021745F8EE009A88EB /* CDMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDMenuItem.h; sourceTree = "<group>"; };
 		94CD4B031745F8EE009A88EB /* CDMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDMenuItem.m; sourceTree = "<group>"; };
 		94CD4B0817473FCD009A88EB /* github.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = github.png; sourceTree = "<group>"; };
+		94CD4B0C1747DB6D009A88EB /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.md; sourceTree = "<group>"; };
 		94E101231744699E005F1C51 /* QuickGist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickGist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E101261744699E005F1C51 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		94E101291744699E005F1C51 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -267,6 +269,7 @@
 			isa = PBXGroup;
 			children = (
 				945DAC4E17446B8C00BF034E /* README.md */,
+				94CD4B0C1747DB6D009A88EB /* TODO.md */,
 				94E1012C1744699E005F1C51 /* QuickGist */,
 				94E101251744699E005F1C51 /* Frameworks */,
 				94E101241744699E005F1C51 /* Products */,
@@ -413,6 +416,7 @@
 				945DAC4C17446B4C00BF034E /* menu-icon.png in Resources */,
 				945DAC4D17446B4C00BF034E /* menu-icon@2x.png in Resources */,
 				94CD4B0917473FCD009A88EB /* github.png in Resources */,
+				94CD4B0D1747DB6D009A88EB /* TODO.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

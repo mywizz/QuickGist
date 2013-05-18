@@ -33,10 +33,6 @@ Use QuickGist to post and manage your GitHub Gists. QuickGist runs in your Mac m
 • Notification center notice after gist creation and deletion
 
 
-## TODO
-
-• A LOT!
-
 
 ## History
 

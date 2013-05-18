@@ -295,4 +295,9 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
     [self.delegate postUserNotification:title subtitle:subtitle];
 }
 
+- (void)processRemainingApiCalls:(NSString *)apiCallsString
+{
+    self.options.remainingAPICalls = apiCallsString;
+}
+
 @end

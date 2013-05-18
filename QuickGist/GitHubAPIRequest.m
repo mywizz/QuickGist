@@ -94,6 +94,9 @@
         NSLog(@"%@: %@", [key description], [headers objectForKey:key]);
 #endif
     
+    /** Keep track of remaing api calls for the user */
+    NSString *remainingApiCallsStr = [NSString stringWithFormat:@"Remaining api calls: %@", [headers objectForKey:@"X-RateLimit-Remaining"]];
+    [self.delegate processRemainingApiCalls:remainingApiCallsStr];
     
     switch (status) {
         case 200:
