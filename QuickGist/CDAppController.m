@@ -34,8 +34,8 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "CDAppController.h"
-#import "CDStatusView.h"
 #import "GitHub.h"
+#import "CDStatusView.h"
 #import "CDMenuItem.h"
 #import "LaunchAtLogin.h"
 #import <WebKit/WebKit.h>
@@ -137,8 +137,12 @@
     
     
     /** Set selected tab */
-    self.toolbar.selectedItemIdentifier = @"General";
-    self.prefsWindow.title = self.tabView.selectedTabViewItem.label;
+    self.toolbar.selectedItemIdentifier = @"Account";
+    self.prefsWindow.title = @"GitHub Account";
+    
+    /** Remove the last check on launch so we can do a fresh ckeck
+     for authed users gists. */
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastRequest];
     
     /** Update views and prefs */
     [self update];
@@ -179,7 +183,7 @@
     
     /**
      If there are any objects in the history or anonymous history
-     array, we need to wipe out the menu so we can re-populate
+     array, we need to wipe out the sub-menu so we can re-populate
      with updated info.
      */
     
@@ -199,12 +203,18 @@
         {
             /** Using our sub-classed NSMenuItem to provide a few
              extra properties. */
-            
-            CDMenuItem *item = [[CDMenuItem alloc] init];
+            CDMenuItem *item = [[CDMenuItem alloc] initWithTitle:self.options.user.login
+                                                          action:nil
+                                                   keyEquivalent:@""];
             NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@",
                              self.options.user.login];
+            NSImage *avatar = [[NSImage alloc] initWithData:self.options.user.avatar];
+            NSSize avatarSize;
+            avatarSize.width = 18.00;
+            avatarSize.height = 18.00;
+            [avatar setSize:avatarSize];
             
-            [item setTitle:@"Open GitHub Gists"];
+            [item setImage:avatar];
             [item setUrl:url];
             [item setAction:@selector(openURL:)];
             [item setTarget:self];
@@ -218,23 +228,23 @@
         /** To make it pretty, we'll want a seperator. */
         [submenu addItem:[NSMenuItem separatorItem]];
     }
-    else if (![[submenu itemArray] count] && !self.options.auth)
+    else if (![[submenu itemArray] count] && !self.options.user)
         [submenu addItem:loginItem];
     
     
     /** This block sets the menu items. */
-    BOOL __block auth = NO;
+    __block BOOL auth = NO;
     
-    void(^setMenuItems)(NSArray *) = ^(NSArray *gists) {
-        
-        for (int i=0; i<[gists count]; i++) {
-            
+    void(^setMenuItems)(NSArray *) = ^(NSArray *gists)
+    {    
+        for (int i=0; i<[gists count]; i++)
+        {    
             Gist *gist = (Gist *)[gists objectAtIndex:i];
             CDMenuItem *item = [[CDMenuItem alloc] init];
             NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
             if (gist.pub) image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
             
-            NSString __block *tooltip = @"files:\n";
+            __block NSString *tooltip = @"files:\n";
             [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 GistFile *file = (GistFile *)[gist.files objectAtIndex:idx];
                 NSString *filename = [NSString stringWithFormat:@"%@", file.filename];
@@ -259,10 +269,6 @@
     
     /** Set the menu items for the logged in user. */
     if ([self.options.gists count]) {
-        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:self.options.user.login
-                                                      action:nil
-                                               keyEquivalent:@""];
-        [submenu addItem:item];
         auth = YES;
         setMenuItems(self.options.gists);
     }
@@ -272,7 +278,7 @@
     if ([self.options.anonGists count])
     {
         auth = NO;
-        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:kAnonymous
+        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"anonymous"
                                                       action:nil
                                                keyEquivalent:@""];
         
@@ -283,7 +289,6 @@
         setMenuItems(self.options.anonGists);
     }
 }
-
 
 - (NSArray* )items
 {
@@ -353,11 +358,14 @@
 
 - (Gist *)processGistForMultipleFiles:(NSArray *)files
 {
-    Gist *gist = [[Gist alloc] init];
-    NSMutableArray *fileList = [[NSMutableArray alloc] init];
+    Gist *gist;
+    __block NSMutableArray *fileList;
+    __block BOOL noText = NO;
     
     [files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-    {    
+    {
+        if (noText) return;
+        
         id item = [files objectAtIndex:idx];
         if ([item isKindOfClass:[NSURL class]])
         {
@@ -370,16 +378,23 @@
             
             /** Only add the files if they have content */
             if (content) {
+                if (!fileList) fileList = [[NSMutableArray alloc] init];
                 gistFile.filename = filename;
                 gistFile.content = content;
                 [fileList addObject:gistFile];
             }
+            else {
+                noText = YES;
+                [self invalidFileTypeAlert];
+                return;
+            }
         }
     }];
     
-    if ([fileList count])
+    if ([fileList count] && !noText) {
+        gist = [[Gist alloc] init];
         gist.files = fileList;
-
+    }
     return gist;
 }
 
@@ -416,6 +431,18 @@
 }
 
 
+- (void)invalidFileTypeAlert
+{
+    NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid file type"
+                                     defaultButton:@"OK"
+                                   alternateButton:nil
+                                       otherButton:nil
+                         informativeTextWithFormat:@"No text files detected."];
+    [alert runModal];
+}
+
+
+
 
 #pragma mark - GitHub API Delegate
 /** ------------------------------------------------------------------------- */
@@ -425,7 +452,7 @@
     [self.options update];
     
     /** If the user is authenticated with GitHub... */
-    if (self.options.auth)
+    if (self.options.user)
     {
         if ([self.authWindow isKeyWindow])
         {
@@ -433,24 +460,17 @@
              an authorization request. */
             [self.authWindow close];
             
-            /** At this point we're doing some assumption that we have
-             a valid token. It will be chaged later. */
-            
             [self postUserNotification:@"QuickGist authorized"
                               subtitle:@"QuickGist is now authorized with your GitHub account!"];
             
-            /** Attempt to download the users gists after authentication success. */
-            [self performSelector:@selector(downloadGists) withObject:nil afterDelay:1.0];
+            /** Set the users initial option to post gists to the users account. */
+            self.options.user.useAccount = YES;
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.options.user];
+            [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
             
-            /** Set the users gists to !anonymous */
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kAnonymous];
+            /** Download the users gists after authentication success. */
+            [self downloadGists];
         }
-        
-        /** Request user data */
-        if (!self.options.user)
-            [self.github requestDataForType:GitHubRequestTypeGetUser
-                                   withData:nil
-                             cachedResponse:NO];
         
         [self.githubLoginBtn setTitle:@"Logout"];
         if (self.options.user.login)
@@ -472,7 +492,12 @@
             [self.avatarImageView setNeedsDisplay];
         }
     }
-    
+    else if (![self.options.token isEqualToString:@"anonymous"] && !self.options.user)
+    {
+        [self.github requestDataForType:GitHubRequestTypeGetUser
+                               withData:nil
+                         cachedResponse:NO];
+    }
     else
     {
         [self.githubLoginBtn setTitle:@"Login"];
@@ -483,11 +508,15 @@
     self.launchAtLoginSegCell.selectedSegment      = self.options.login;
     self.notificationCenterSegCell.selectedSegment = self.options.notice;
     self.openURLSegCell.selectedSegment            = self.options.openURL;
-    self.anonymousCheckBox.state                   = self.options.anonymous;
+    self.anonymousCheckBox.state                   = !self.options.user.useAccount;
     self.secretCheckBox.state                      = self.options.secret;
     
     [self setGistHistoryMenu];
-    
+    [self updateApiCallsLabel];
+}
+
+- (void)updateApiCallsLabel
+{
     /** Update remaining api calls for the user. */
     if (self.options.remainingAPICalls)
         self.apiCallsCount.stringValue = self.options.remainingAPICalls;
@@ -511,6 +540,7 @@
 
 
 #pragma mark - User Notification Delegate
+/** ------------------------------------------------------------------------- */
 - (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
      shouldPresentNotification:(NSUserNotification *)notification
 {
@@ -543,7 +573,8 @@
         [self.popover close];
     
     /** Download the gists when status menu item clicked */
-    if (self.options.auth)
+    if (self.options.user ||
+        ![self.options.token isEqualToString:@"anonymous"])
         [self.github requestDataForType:GitHubRequestTypeGetAllGists
                                withData:nil
                          cachedResponse:([self.options.gists count])];
@@ -561,8 +592,12 @@
 #pragma mark - Tabview Delegate
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
-    self.prefsWindow.title = tabView.selectedTabViewItem.label;
+    if ([tabView.selectedTabViewItem.label isEqualToString:@"Account"])
+        self.prefsWindow.title = @"GitHub Account";
+    else
+        self.prefsWindow.title = tabView.selectedTabViewItem.label;
 }
+
 
 
 
@@ -655,28 +690,29 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
                            [[NSString alloc] initWithData:data
                                                  encoding:NSUTF8StringEncoding]];
             }
-            if (content) {
+            if (content)
+            {
                 if (!gist) gist = [[Gist alloc] init];
-                NSMutableArray *fileList = [[NSMutableArray alloc] init];
                 GistFile *gistFile = [[GistFile alloc] init];
+                
                 gistFile.filename = filename;
                 gistFile.content = content;
-                [fileList addObject:gistFile];
-                gist.files = fileList;
+                [gist.files addObject:gistFile];
                 if (filename)
                     self.filenameTF.stringValue = filename;
             }
+            else [self invalidFileTypeAlert];
         }
         
-        if (gist)
+        if ([gist.files count])
         {
             if ([gist.files count] > 1)
             {
-                NSString __block *filename = @"";
+                __block NSString *filename = @"";
                 [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     GistFile *gistfile = (GistFile*)[gist.files objectAtIndex:idx];
                     
-                    /** Only add comma and filename if there are more than 1 files. */
+                    /** Only add comma and filename if there are more than one files. */
                     if (idx > 0 )
                         filename = [filename stringByAppendingString:[NSString stringWithFormat:@", %@", gistfile.filename]];
                     else filename = gistfile.filename;
@@ -698,16 +734,14 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 
 - (IBAction)createGist:(id)sender
 {
-    /** Close the popover if it's shown */
-    if ([self.popover isShown])
+    if (self.popoverIsShown)
         [self.popover close];
     [self createGist];
 }
 
 - (IBAction)cancelGist:(id)sender
 {
-    /** Close the popover if it's shown */
-    if ([self.popover isShown])
+    if (self.popoverIsShown)
         [self.popover close];
     [self cleanup];
 }
@@ -736,16 +770,18 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 
 - (IBAction)toggleAnonymousGists:(id)sender
 {
-    if (self.options.anonymous && !self.options.auth) {
+    if (!self.options.user) {
         
         /** Close the popover if it's shown */
         if ([self.popover isShown])
             [self.popover close];
         [self toggleGitHubLogin:self];
     }
-    else
-        [[NSUserDefaults standardUserDefaults]
-         setBool:!self.options.anonymous forKey:kAnonymous];
+    else {
+        self.options.user.useAccount = !self.options.user.useAccount;
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.options.user];
+        [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
+    }
     
     [self update];
 }
@@ -759,7 +795,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 
 - (IBAction)toggleGitHubLogin:(id)sender
 {
-    if (!self.options.auth)
+    if (!self.options.user)
     {
         NSURL *url = [NSURL URLWithString:self.github.apiTokenRequestURL];
         NSURLRequest *req = [[NSURLRequest alloc] initWithURL:url];
@@ -768,14 +804,15 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
     }
     else {
         /** Remove all account related info from user prefs. */
-        NSData *data = [kAnonymous dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *data = [@"anonymous" dataUsingEncoding:NSUTF8StringEncoding];
         [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kHistory];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kGitHubUser];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastRequest];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kAnonymous];
         
         self.avatarImageView.image = [NSImage imageNamed:NSImageNameUser];
+        
+        self.options.remainingAPICalls = @"Remaining api calls: 60";
         [self update];
         [self postUserNotification:@"QuickGist de-authorized"
                           subtitle:@"QuickGist has been de-authorized from your GitHub account."];

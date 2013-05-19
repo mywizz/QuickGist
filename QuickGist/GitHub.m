@@ -110,7 +110,7 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
                 postData = [NSString stringWithFormat:@"{ \"description\":\"%@\", \"public\": \"%@\", \"files\": { %@ }}",
                             gist.description, public, files ];
                 
-                if (!self.options.anonymous)
+                if (self.options.user.useAccount)
                     [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
                 
                 [req setValue:@"text/json" forHTTPHeaderField:@"Content-Type"];
@@ -298,6 +298,7 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
 - (void)processRemainingApiCalls:(NSString *)apiCallsString
 {
     self.options.remainingAPICalls = apiCallsString;
+    [self.delegate updateApiCallsLabel];
 }
 
 @end

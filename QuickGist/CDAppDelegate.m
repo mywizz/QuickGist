@@ -50,16 +50,17 @@
      to start the app.
      */
     
-    NSUserNotification *userNotification = [[aNotification userInfo]
-                                            objectForKey:NSApplicationLaunchUserNotificationKey];
+    NSUserNotification *notification = [[aNotification userInfo]
+                                        objectForKey:NSApplicationLaunchUserNotificationKey];
     
-    if (userNotification) {
-        /** Version 1.0 response
-         
-         NSURL *url = [NSURL URLWithString:userNotification.subtitle];
-         [[NSWorkspace sharedWorkspace] openURL:url];
-         
-         */
+    if (notification) {
+        NSString *http = @"http";
+        NSRange range = [notification.subtitle rangeOfString:http];
+        
+        if (range.location != NSNotFound) {
+            NSURL *url = [NSURL URLWithString:notification.subtitle];
+            [[NSWorkspace sharedWorkspace] openURL:url];
+        }
     }
 }
 

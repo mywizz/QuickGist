@@ -31,7 +31,6 @@
 		94CD4B001745E007009A88EB /* CDWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4AFF1745E007009A88EB /* CDWindow.m */; };
 		94CD4B041745F8EE009A88EB /* CDMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4B031745F8EE009A88EB /* CDMenuItem.m */; };
 		94CD4B0917473FCD009A88EB /* github.png in Resources */ = {isa = PBXBuildFile; fileRef = 94CD4B0817473FCD009A88EB /* github.png */; };
-		94CD4B0D1747DB6D009A88EB /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = 94CD4B0C1747DB6D009A88EB /* TODO.md */; };
 		94E101271744699E005F1C51 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E101261744699E005F1C51 /* Cocoa.framework */; };
 		94E101311744699E005F1C51 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94E1012F1744699E005F1C51 /* InfoPlist.strings */; };
 		94E101331744699E005F1C51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 94E101321744699E005F1C51 /* main.m */; };
@@ -416,7 +415,6 @@
 				945DAC4C17446B4C00BF034E /* menu-icon.png in Resources */,
 				945DAC4D17446B4C00BF034E /* menu-icon@2x.png in Resources */,
 				94CD4B0917473FCD009A88EB /* github.png in Resources */,
-				94CD4B0D1747DB6D009A88EB /* TODO.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,6 +585,10 @@
 				CODE_SIGN_ENTITLEMENTS = QuickGist/QuickGist.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/QuickGist/Frameworks\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
 				INFOPLIST_FILE = "QuickGist/QuickGist-Info.plist";
@@ -602,6 +604,10 @@
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/QuickGist/Frameworks\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
 				INFOPLIST_FILE = "QuickGist/QuickGist-Info.plist";

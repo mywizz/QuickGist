@@ -176,6 +176,7 @@
     
     user.userId              = [json objectForKey:@"id"];
     user.login               = [json objectForKey:@"login"];
+    user.name                = [json objectForKey:@"name"];
     user.avatar_url          = [json objectForKey:@"avatar_url"];
     user.gravatar_id         = [json objectForKey:@"gravatar_id"];
     user.url                 = [json objectForKey:@"url"];

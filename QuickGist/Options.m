@@ -76,12 +76,10 @@
     self.lastRequest = [[NSUserDefaults standardUserDefaults] valueForKey:kLastRequest];
     
     /** BOOL ------------------------------------------------------------------------ */
-    self.anonymous   = [[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous];
     self.notice      = [[NSUserDefaults standardUserDefaults] boolForKey:kNotification];
     self.login       = [[NSUserDefaults standardUserDefaults] boolForKey:kLogin];
     self.secret      = [[NSUserDefaults standardUserDefaults] boolForKey:kPublic];
     self.openURL     = [[NSUserDefaults standardUserDefaults] boolForKey:kOpenURL];
-    self.auth        = (self.token && !([self.token isEqualToString:kAnonymous]));
 }
 
 - (NSString *)useragent
@@ -133,7 +131,7 @@
         token = [[NSString alloc] initWithData:data
                                       encoding:NSUTF8StringEncoding];
     else
-        token = kAnonymous;
+        token = @"anonymous";
     
     return token;
 }

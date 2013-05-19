@@ -42,7 +42,6 @@
 #define kLogin          @"LaunchAtLogin"
 #define kPublic         @"SecretGists"
 #define kOpenURL        @"OpenURLAfterPost"
-#define kAnonymous      @"anonymous"
 #define kNotification   @"ShowDesktopNotifications"
 #define kGitHubUser     @"GitHubUser"
 #define kLastRequest    @"LastRequest"
@@ -58,12 +57,10 @@
 
 @property (nonatomic, strong) GitHubUser *user;
 
-@property (nonatomic) BOOL auth;
 @property (nonatomic) BOOL login;
 @property (nonatomic) BOOL secret;
 @property (nonatomic) BOOL openURL;
 @property (nonatomic) BOOL notice;
-@property (nonatomic) BOOL anonymous;
 
 + (id)sharedInstance;
 - (void)update;

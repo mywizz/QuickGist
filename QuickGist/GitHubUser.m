@@ -74,6 +74,7 @@
         self.following           = [aDecoder decodeIntegerForKey:@"following"];
         /** BOOL ------------------------------------------------------------------------ */
         self.hireable            = [aDecoder decodeBoolForKey:@"hireable"];
+        self.useAccount          = [aDecoder decodeBoolForKey:@"useAccount"];
     }
     
     return self;
@@ -114,6 +115,7 @@
     [aCoder encodeInteger:self.following          forKey:@"following"];
     /** BOOL ------------------------------------------------------------------------ */
     [aCoder encodeBool:self.hireable              forKey:@"hireable"];
+    [aCoder encodeBool:self.useAccount            forKey:@"useAccount"];
 }
 
 @end

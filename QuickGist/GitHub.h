@@ -43,6 +43,7 @@
 @protocol GitHubAPIDelegate <NSObject>
 - (void)update;
 - (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle;
+- (void)updateApiCallsLabel;
 @end
 
 @interface GitHub : NSObject

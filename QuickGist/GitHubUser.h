@@ -71,6 +71,7 @@
 @property (nonatomic) NSInteger following;
 
 @property (nonatomic) BOOL hireable;
+@property (nonatomic) BOOL useAccount;
 
 
 
