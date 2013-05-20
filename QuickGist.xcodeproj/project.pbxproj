@@ -26,6 +26,7 @@
 		945DAC5217446CCE00BF034E /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 945DAC5117446CCE00BF034E /* WebKit.framework */; };
 		945DAC5417446CD900BF034E /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 945DAC5317446CD900BF034E /* ServiceManagement.framework */; };
 		9466142017458C6800BF2CBA /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 9466141E17458C6800BF2CBA /* Config.m */; };
+		949AAC5F174A74A70013D3A5 /* CDAPITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 949AAC5E174A74A70013D3A5 /* CDAPITextField.m */; };
 		94CD4AFA1745CBF0009A88EB /* GitHubAPIRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4AF91745CBF0009A88EB /* GitHubAPIRequest.m */; };
 		94CD4AFD1745CF3A009A88EB /* GitHubResponseProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4AFC1745CF3A009A88EB /* GitHubResponseProcessor.m */; };
 		94CD4B001745E007009A88EB /* CDWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD4AFF1745E007009A88EB /* CDWindow.m */; };
@@ -96,6 +97,8 @@
 		945DAC5317446CD900BF034E /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		9466141D17458C6800BF2CBA /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		9466141E17458C6800BF2CBA /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
+		949AAC5D174A74A70013D3A5 /* CDAPITextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDAPITextField.h; sourceTree = "<group>"; };
+		949AAC5E174A74A70013D3A5 /* CDAPITextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDAPITextField.m; sourceTree = "<group>"; };
 		94CD4AF51745BA8E009A88EB /* GitHubRequestType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHubRequestType.h; sourceTree = "<group>"; };
 		94CD4AF81745CBF0009A88EB /* GitHubAPIRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHubAPIRequest.h; sourceTree = "<group>"; };
 		94CD4AF91745CBF0009A88EB /* GitHubAPIRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitHubAPIRequest.m; sourceTree = "<group>"; };
@@ -171,6 +174,8 @@
 				94CD4AFF1745E007009A88EB /* CDWindow.m */,
 				94CD4B021745F8EE009A88EB /* CDMenuItem.h */,
 				94CD4B031745F8EE009A88EB /* CDMenuItem.m */,
+				949AAC5D174A74A70013D3A5 /* CDAPITextField.h */,
+				949AAC5E174A74A70013D3A5 /* CDAPITextField.m */,
 			);
 			name = "Sub Classes";
 			sourceTree = "<group>";
@@ -487,6 +492,7 @@
 				94CD4AFD1745CF3A009A88EB /* GitHubResponseProcessor.m in Sources */,
 				94CD4B001745E007009A88EB /* CDWindow.m in Sources */,
 				94CD4B041745F8EE009A88EB /* CDMenuItem.m in Sources */,
+				949AAC5F174A74A70013D3A5 /* CDAPITextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

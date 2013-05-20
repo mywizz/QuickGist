@@ -283,7 +283,7 @@
     if ([self.options.anonGists count])
     {
         auth = NO;
-        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"anonymous"
+        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"anonymous gists"
                                                       action:nil
                                                keyEquivalent:@""];
         
@@ -323,12 +323,23 @@
         NSString *filename = self.filenameTF.stringValue;
         NSString *description = self.descriptionTF.stringValue;
         
+        /** Let's give some defalt values incase the user didn't provide any. */
         if ([filename isEqualToString:@""])
             filename = @"gistfile1";
             
-        if ([description isEqualToString:@""])
-            description = filename;
+        if ([description isEqualToString:@""]) {
+            
+            NSString *comma = @", ";
+            NSRange range = [filename rangeOfString:comma];
+            
+            if (range.location != NSNotFound)
+                description = @"Multiple files";
+            else
+                description = filename;
+        }
         
+        /** The user may have not named the gist filename. In this case, we've already
+         set the filename above, but now we need to apply it the the GistFile. */
         if ([gist.files count] == 1)
         {
             GistFile *gistFile = (GistFile*)[gist.files objectAtIndex:0];
@@ -432,12 +443,9 @@
 
 - (void)invalidFileTypeAlert
 {
-    NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid file type"
-                                     defaultButton:@"OK"
-                                   alternateButton:nil
-                                       otherButton:nil
-                         informativeTextWithFormat:@"No text files detected."];
-    [alert runModal];
+    NSString *title = @"Invalid file type";
+    NSString *subtitle = @"QuickGist only supports text based files.";
+    [self postUserNotification:title subtitle:subtitle];
 }
 
 
@@ -503,8 +511,9 @@
     self.launchAtLoginSegCell.selectedSegment      = self.options.login;
     self.notificationCenterSegCell.selectedSegment = self.options.notice;
     self.openURLSegCell.selectedSegment            = self.options.openURL;
-    self.anonymousCheckBox.state                   = !self.options.user.useAccount;
-    self.secretCheckBox.state                      = self.options.secret;
+    self.anonymousCheckBox.state                   = self.options.user.useAccount;
+    self.anonymousCheckBox.hidden                  = !self.options.user;
+    self.secretCheckBox.state                      = !self.options.secret;
     
     [self setGistHistoryMenu];
     [self updateApiCallsLabel];
@@ -529,6 +538,12 @@
         NSUserNotificationCenter *nc = [NSUserNotificationCenter defaultUserNotificationCenter];
         [nc setDelegate:self];
         [nc deliverNotification:notice];
+    }
+    
+    if (self.options.openURL)
+    {
+        NSURL *url = [NSURL URLWithString:subtitle];
+        [[NSWorkspace sharedWorkspace] openURL:url];
     }
 }
 
@@ -853,10 +868,24 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
                 _url = [_url stringByAppendingString:@"/edit"];
             }
             
-            if (delete)
-                [self deleteGistId:item.gistId];
+            if (delete) {
+                [self.options.gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    Gist *gist = (Gist*)[self.options.gists objectAtIndex:idx];
+                    
+                    if ([gist.gistId isEqualToString:item.gistId])
+                    {
+                        [self deleteGistId:item.gistId];
+                        [self.options.gists removeObjectAtIndex:idx];
+                        NSData *gistsData = [NSKeyedArchiver archivedDataWithRootObject:self.options.gists];
+                        [[NSUserDefaults standardUserDefaults] setObject:gistsData forKey:kHistory];
+                        *stop = YES;
+                    }
+                }];
+            }
         }
     }
+    else if ([sender isKindOfClass:[NSTextField class]])
+        _url = @"http://developer.github.com/v3/#rate-limiting";
     
     if (_url && !delete) {
         NSURL *url = [NSURL URLWithString:_url];

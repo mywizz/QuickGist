@@ -212,15 +212,15 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
                 
                 addToGistsHistory(gist);
                 
-                NSString *title = [NSString stringWithFormat:@"%@ created", gist.description];
-                [self.delegate update];
-                [self.delegate postUserNotification:title subtitle:gist.html_url];
-                
                 /** Copy the new gist url to the clipboard */
                 NSPasteboard *pboard = [NSPasteboard generalPasteboard];
                 NSArray *objectsToCopy = [[NSArray alloc] initWithObjects:gist.html_url, nil];
                 [pboard clearContents];
                 [pboard writeObjects:objectsToCopy];
+                
+                NSString *title = [NSString stringWithFormat:@"%@ created", gist.description];
+                [self.delegate update];
+                [self.delegate postUserNotification:title subtitle:gist.html_url];
             }
             break;
             
@@ -267,9 +267,8 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
                 NSArray *filteredArray = [self.options.gists filteredArrayUsingPredicate:predicate];
 
                 if (![filteredArray count])
-                {
                     [self.options.gists addObject:gist];
-                }
+
                 else if ([filteredArray count] > 0)
                 {
                     __block Gist *_gist = (Gist*)[filteredArray objectAtIndex:0];
@@ -317,7 +316,7 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
                     
                     [self requestDataForType:GitHubRequestTypeGetAllGists
                                     withData:nil
-                              cachedResponse:NO];
+                              cachedResponse:YES];
                 }
             }
             break;
