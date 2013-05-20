@@ -244,10 +244,20 @@
         [gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             Gist *gist = (Gist *)[gists objectAtIndex:idx];
             CDMenuItem *item = [[CDMenuItem alloc] init];
-            NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
-            if (gist.pub) image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
             
-            __block NSString *tooltip = @"files:\n";
+            NSString *dateStr = [NSString stringWithFormat:@"%@", gist.created_at];
+            dateStr = [dateStr stringByReplacingOccurrencesOfString:@"T" withString:@"\nTime: "];
+            dateStr = [dateStr stringByReplacingOccurrencesOfString:@"Z" withString:@""];
+            
+            NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
+            __block NSString *tooltip = [NSString stringWithFormat:@"Private\nDate: %@\nFiles:\n", dateStr];
+            
+            if (gist.pub) {
+                image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
+                tooltip = [NSString stringWithFormat:@"Public\nDate: %@\nFiles:\n", dateStr];
+            }
+
+            
             [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 GistFile *file = (GistFile *)[gist.files objectAtIndex:idx];
                 NSString *filename = [NSString stringWithFormat:@"%@", file.filename];
