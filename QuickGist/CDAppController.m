@@ -135,7 +135,6 @@
     [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setMenu:self.menu];
     
-    
     /** Set selected tab */
     self.toolbar.selectedItemIdentifier = @"Account";
     self.prefsWindow.title = @"GitHub Account";
@@ -479,7 +478,7 @@
             
             [self performSelector:@selector(downloadGists)
                        withObject:nil
-                       afterDelay:1.0];
+                       afterDelay:0.5];
         }
         else if (self.options.user.avatar)
         {
