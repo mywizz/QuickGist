@@ -38,7 +38,7 @@
 @protocol StatusViewDelegate <NSObject>
 
 - (void)createGistFromDrop:(NSPasteboard *)pboard;
-- (void)downloadGists;
+- (IBAction)downloadGists:(id)sender;
 
 @end
 

@@ -107,7 +107,7 @@
 
 - (void)menuWillOpen:(NSMenu *)menu
 {
-    [self.delegate downloadGists];
+    [self.delegate downloadGists:self];
     [self setHighlighted:YES];
     [self setNeedsDisplay:YES];
 }

@@ -275,7 +275,8 @@
                     tooltip = [tooltip stringByAppendingString:[NSString stringWithFormat:@"\n%@", filename]];
             }];
             
-            [item setTitle:gist.description];
+            NSString *title = gist.description;
+            
             [item setUrl:gist.html_url];
             [item setGistId:gist.gistId];
             [item setAuthedUser:auth];
@@ -283,6 +284,16 @@
             [item setImage:image];
             [item setAction:@selector(openURL:)];
             [item setTarget:self];
+            
+            /** Hopefully the user doen't see this, but if they do, 
+             something went wrong. So we're going to set the selector to
+             downloadAllGists for the menu items with no description.*/
+            
+            if ([title isEqualToString:@""] || title == nil) {
+                title = @"Click to reload...";
+                [item setAction:@selector(downloadGists:)];
+            }
+            [item setTitle:title];
             [submenu addItem:item];
         }];
         
@@ -483,7 +494,7 @@
                                    withData:nil
                              cachedResponse:NO];
             
-            [self performSelector:@selector(downloadGists)
+            [self performSelector:@selector(downloadGists:)
                        withObject:nil
                        afterDelay:0.5];
         }
@@ -581,7 +592,7 @@
 
 #pragma mark - StatusView Delegate
 /** ------------------------------------------------------------------------- */
-- (void)downloadGists
+- (IBAction)downloadGists:(id)sender
 {
     /** Close the popover if it's shown */
     if (self.popoverIsShown)
@@ -590,6 +601,13 @@
     /** Download the gists when status menu item clicked */
     if (self.options.user)
     {
+        /** Something went wrong so we need to remove all the gists, and re-download
+         from the web. */
+        if ([sender isKindOfClass:[CDMenuItem class]]) {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kHistory];
+            [self update];
+        }
+        
         if (![self.options.gists count])
         {
             /** Remove the last check on launch so we can do a fresh ckeck
