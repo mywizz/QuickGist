@@ -95,7 +95,12 @@
 #endif
     
     /** Keep track of remaing api calls for the user */
-    NSString *remainingApiCallsStr = [NSString stringWithFormat:@"Remaining api calls: %@", [headers objectForKey:@"X-RateLimit-Remaining"]];
+    NSString *apiCalls = [headers objectForKey:@"X-RateLimit-Remaining"];
+    NSString *remainingApiCallsStr = @"Remaining api calls: ";
+    
+    if (apiCalls)
+        remainingApiCallsStr = [remainingApiCallsStr stringByAppendingString:apiCalls];
+    
     [self.delegate processRemainingApiCalls:remainingApiCallsStr];
     
     switch (status) {
@@ -151,12 +156,16 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+    /** Not sure how I want to handle this yet. */
+    
+    /*
     NSAlert *alert = [NSAlert alertWithMessageText:@"No response from GitHub"
                                      defaultButton:@"OK"
                                    alternateButton:nil
                                        otherButton:nil
                          informativeTextWithFormat:@"Check your Internet connection to make sure you're connected."];
     [alert runModal];
+     */
 }
 
 @end

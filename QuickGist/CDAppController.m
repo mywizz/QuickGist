@@ -146,6 +146,13 @@
     
     /** Update views and prefs */
     [self update];
+    
+    /** If we have an authenticated user, download all Gists on app
+     startup. */
+    if (self.options.user)
+        [self.github requestDataForType:GitHubRequestTypeGetAllGists
+                               withData:nil
+                         cachedResponse:NO];
 }
 
 
@@ -189,8 +196,6 @@
     
     if ([[submenu itemArray] count])
         [submenu removeAllItems];
-    
-    
     
     if ([self.options.gists count] || [self.options.anonGists count])
     {
@@ -236,10 +241,9 @@
     __block BOOL auth = NO;
     
     void(^setMenuItems)(NSArray *) = ^(NSArray *gists)
-    {    
-        for (int i=0; i<[gists count]; i++)
-        {    
-            Gist *gist = (Gist *)[gists objectAtIndex:i];
+    {
+        [gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            Gist *gist = (Gist *)[gists objectAtIndex:idx];
             CDMenuItem *item = [[CDMenuItem alloc] init];
             NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
             if (gist.pub) image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
@@ -264,7 +268,9 @@
             [item setAction:@selector(openURL:)];
             [item setTarget:self];
             [submenu addItem:item];
-        }
+        }];
+        
+        
     };
     
     /** Set the menu items for the logged in user. */
@@ -358,18 +364,13 @@
 
 - (Gist *)processGistForMultipleFiles:(NSArray *)files
 {
-    Gist *gist;
-    __block NSMutableArray *fileList;
-    __block BOOL noText = NO;
+    __block Gist *gist;
     
     [files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
     {
-        if (noText) return;
-        
         id item = [files objectAtIndex:idx];
         if ([item isKindOfClass:[NSURL class]])
         {
-            GistFile *gistFile = [[GistFile alloc] init];
             NSString *filename = [[item path] lastPathComponent];
             NSData *data = [[NSData alloc] initWithContentsOfURL:item];
             NSString *content = [StringCleaner cleanGistContentString:
@@ -378,23 +379,22 @@
             
             /** Only add the files if they have content */
             if (content) {
-                if (!fileList) fileList = [[NSMutableArray alloc] init];
+                if (!gist) {
+                    gist = [[Gist alloc] init];
+                    gist.files = [[NSMutableArray alloc] init];
+                }
+                GistFile *gistFile = [[GistFile alloc] init];
                 gistFile.filename = filename;
                 gistFile.content = content;
-                [fileList addObject:gistFile];
+                [gist.files addObject:gistFile];
             }
             else {
-                noText = YES;
                 [self invalidFileTypeAlert];
-                return;
+                *stop = YES;
             }
         }
     }];
     
-    if ([fileList count] && !noText) {
-        gist = [[Gist alloc] init];
-        gist.files = fileList;
-    }
     return gist;
 }
 
@@ -454,10 +454,10 @@
     /** If the user is authenticated with GitHub... */
     if (self.options.user)
     {
-        if ([self.authWindow isKeyWindow])
+        /** Close the auth window if we're coming back from
+         an authorization request. */
+        if ([self.authWindow isVisible])
         {
-            /** Close the auth window if we're coming back from
-             an authorization request. */
             [self.authWindow close];
             
             [self postUserNotification:@"QuickGist authorized"
@@ -467,24 +467,20 @@
             self.options.user.useAccount = YES;
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.options.user];
             [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
-            
-            /** Download the users gists after authentication success. */
-            [self downloadGists];
         }
         
         [self.githubLoginBtn setTitle:@"Logout"];
-        if (self.options.user.login)
-            [self.loginDescriptionTextField setStringValue:self.options.user.login];
-        else
-            [self.loginDescriptionTextField setStringValue:@"Logout of GitHub:"];
+        [self.loginDescriptionTextField setStringValue:self.options.user.login];
         
-        
-        
-        
-        if (self.options.user && !self.options.user.avatar)
+        if (!self.options.user.avatar) {
             [self.github requestDataForType:GitHubRequestTypeGetUserAvatar
                                    withData:nil
                              cachedResponse:NO];
+            
+            [self performSelector:@selector(downloadGists)
+                       withObject:nil
+                       afterDelay:1.0];
+        }
         else if (self.options.user.avatar)
         {
             NSImage *image = [[NSImage alloc] initWithData:self.options.user.avatar];
@@ -492,7 +488,7 @@
             [self.avatarImageView setNeedsDisplay];
         }
     }
-    else if (![self.options.token isEqualToString:@"anonymous"] && !self.options.user)
+    else if (self.options.token && !self.options.user)
     {
         [self.github requestDataForType:GitHubRequestTypeGetUser
                                withData:nil
@@ -518,8 +514,9 @@
 - (void)updateApiCallsLabel
 {
     /** Update remaining api calls for the user. */
-    if (self.options.remainingAPICalls)
-        self.apiCallsCount.stringValue = self.options.remainingAPICalls;
+    NSString *apiCalls = self.options.remainingAPICalls;
+    if (apiCalls)
+        self.apiCallsCount.stringValue = apiCalls;
 }
 
 - (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
@@ -535,8 +532,6 @@
         [nc deliverNotification:notice];
     }
 }
-
-
 
 
 #pragma mark - User Notification Delegate
@@ -573,11 +568,21 @@
         [self.popover close];
     
     /** Download the gists when status menu item clicked */
-    if (self.options.user ||
-        ![self.options.token isEqualToString:@"anonymous"])
+    if (self.options.user)
+    {
+        if (![self.options.gists count])
+        {
+            /** Remove the last check on launch so we can do a fresh ckeck
+             for authed users gists. */
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastRequest];
+            
+            /** Update views and prefs */
+            [self update];
+        }
         [self.github requestDataForType:GitHubRequestTypeGetAllGists
                                withData:nil
                          cachedResponse:([self.options.gists count])];
+    }
 }
 
 - (void)createGistFromDrop:(NSPasteboard *)pboard
@@ -670,8 +675,10 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         
         
         /** Multiple files to be processed. */
-        if ([items count] > 1)
+        if ([items count] > 1) {
+            if (!gist) gist = [[Gist alloc] init];
             gist = [self processGistForMultipleFiles:items];
+        }
         
         if ([items count] == 1)
         {
@@ -692,8 +699,11 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
             }
             if (content)
             {
-                if (!gist) gist = [[Gist alloc] init];
                 GistFile *gistFile = [[GistFile alloc] init];
+                if (!gist) {
+                    gist = [[Gist alloc] init];
+                    gist.files = [[NSMutableArray alloc] init];
+                }
                 
                 gistFile.filename = filename;
                 gistFile.content = content;
@@ -712,7 +722,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
                 [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     GistFile *gistfile = (GistFile*)[gist.files objectAtIndex:idx];
                     
-                    /** Only add comma and filename if there are more than one files. */
+                    /** Only add comma and filename if there are more than 1 files. */
                     if (idx > 0 )
                         filename = [filename stringByAppendingString:[NSString stringWithFormat:@", %@", gistfile.filename]];
                     else filename = gistfile.filename;
@@ -734,14 +744,16 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 
 - (IBAction)createGist:(id)sender
 {
-    if (self.popoverIsShown)
+    /** Close the popover if it's shown */
+    if ([self.popover isShown])
         [self.popover close];
     [self createGist];
 }
 
 - (IBAction)cancelGist:(id)sender
 {
-    if (self.popoverIsShown)
+    /** Close the popover if it's shown */
+    if ([self.popover isShown])
         [self.popover close];
     [self cleanup];
 }
@@ -803,16 +815,14 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         [self.authWindow makeKeyAndOrderFront:self];
     }
     else {
-        /** Remove all account related info from user prefs. */
-        NSData *data = [@"anonymous" dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSUserDefaults standardUserDefaults] setValue:data forKey:kOAuthToken];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kOAuthToken];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kHistory];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kGitHubUser];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastRequest];
         
         self.avatarImageView.image = [NSImage imageNamed:NSImageNameUser];
-        
         self.options.remainingAPICalls = @"Remaining api calls: 60";
+        
         [self update];
         [self postUserNotification:@"QuickGist de-authorized"
                           subtitle:@"QuickGist has been de-authorized from your GitHub account."];

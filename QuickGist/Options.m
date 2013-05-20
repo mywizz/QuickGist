@@ -64,14 +64,14 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     self.token       = [self tokenFromPrefs];
-    self.user        = [self userFromPrefs:kGitHubUser];
+    self.user        = [self userFromPrefs];
     self.gists       = [NSMutableArray arrayWithArray:[self arrayFrom:kHistory]];
     self.anonGists   = [NSMutableArray arrayWithArray:[self arrayFrom:kAnonHistory]];
     
     /** Sort with newest gists first */
     NSSortDescriptor *sorter = [NSSortDescriptor sortDescriptorWithKey:@"created_at" ascending:NO];
-    self.gists = [NSMutableArray arrayWithArray:[self.gists sortedArrayUsingDescriptors:@[ sorter]]];
-    self.anonGists = [NSMutableArray arrayWithArray:[self.anonGists sortedArrayUsingDescriptors:@[ sorter]]];
+    self.gists       = [NSMutableArray arrayWithArray:[self.gists sortedArrayUsingDescriptors:@[ sorter]]];
+    self.anonGists   = [NSMutableArray arrayWithArray:[self.anonGists sortedArrayUsingDescriptors:@[ sorter]]];
     
     self.lastRequest = [[NSUserDefaults standardUserDefaults] valueForKey:kLastRequest];
     
@@ -111,11 +111,11 @@
     return arr;
 }
 
-- (GitHubUser *)userFromPrefs:(NSString *)userPrefsKey
+- (GitHubUser *)userFromPrefs
 {
     GitHubUser *user;
     NSData *data = [[NSUserDefaults standardUserDefaults]
-                    objectForKey:userPrefsKey];
+                    objectForKey:kGitHubUser];
     if (data)
         user = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     
@@ -130,8 +130,6 @@
     if (data)
         token = [[NSString alloc] initWithData:data
                                       encoding:NSUTF8StringEncoding];
-    else
-        token = @"anonymous";
     
     return token;
 }

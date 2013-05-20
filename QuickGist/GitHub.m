@@ -235,7 +235,11 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
         case GitHubRequestTypeGetUser:
             if ([responseData isKindOfClass:[GitHubUser class]])
             {
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:responseData];
+                GitHubUser *user = (GitHubUser*)responseData;
+                /** Set the users initial option to post gists to the users account. */
+                user.useAccount = YES;
+                self.options.user = user;
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:user];
                 [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
             }
             break;
@@ -255,7 +259,38 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
         case GitHubRequestTypeGetGist:
             if ([responseData isKindOfClass:[Gist class]])
             {
-                /** Not sure what to do here yet */
+                __block Gist *gist = (Gist*)responseData;
+                if (![self.options.gists count])
+                    [self.options.gists addObject:gist];
+                
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"gistId == %@", gist.gistId];
+                NSArray *filteredArray = [self.options.gists filteredArrayUsingPredicate:predicate];
+
+                if (![filteredArray count])
+                {
+                    [self.options.gists addObject:gist];
+                }
+                else if ([filteredArray count] > 0)
+                {
+                    __block Gist *_gist = (Gist*)[filteredArray objectAtIndex:0];
+                    
+                    [self.options.gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                        Gist *exitingGist = (Gist*)[self.options.gists objectAtIndex:idx];
+                        
+                        if ([gist.gistId isEqualToString:exitingGist.gistId])
+                        {
+                            if (![gist.updated_at isEqualToString:exitingGist.updated_at])
+                            {
+                                [self.options.gists removeObjectAtIndex:idx];
+                                [self.options.gists addObject:_gist];
+                                *stop = YES;
+                            }
+                        }
+                    }];
+                }
+                
+                NSData *gistsData = [NSKeyedArchiver archivedDataWithRootObject:self.options.gists];
+                [[NSUserDefaults standardUserDefaults] setObject:gistsData forKey:kHistory];
             }
             break;
             
@@ -263,8 +298,13 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
             if ([responseData isKindOfClass:[NSArray class]])
             {
                 NSArray *gists = (NSArray *)responseData;
-                NSData *gistsData = [NSKeyedArchiver archivedDataWithRootObject:gists];
-                [[NSUserDefaults standardUserDefaults] setObject:gistsData forKey:kHistory];
+                
+                [gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    Gist *gist = (Gist*)[gists objectAtIndex:idx];
+                    [self requestDataForType:GitHubRequestTypeGetGist
+                                    withData:gist.gistId
+                              cachedResponse:YES];
+                }];
             }
             break;
             
