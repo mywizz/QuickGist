@@ -146,8 +146,12 @@
     /** Update views and prefs */
     [self update];
     
+    
     /** If we have an authenticated user, download all Gists on app
-     startup. */
+     startup. This will hit the api rate pretty hard if the user has
+     a lot of gists and gist files, but it's only at app startup,
+     and if the user logs out and back in during the app runtime. */
+    
     if (self.options.user)
         [self.github requestDataForType:GitHubRequestTypeGetAllGists
                                withData:nil
@@ -245,16 +249,19 @@
             Gist *gist = (Gist *)[gists objectAtIndex:idx];
             CDMenuItem *item = [[CDMenuItem alloc] init];
             
+            
             NSString *dateStr = [NSString stringWithFormat:@"%@", gist.created_at];
-            dateStr = [dateStr stringByReplacingOccurrencesOfString:@"T" withString:@"\nTime: "];
-            dateStr = [dateStr stringByReplacingOccurrencesOfString:@"Z" withString:@""];
+            NSRange range = [dateStr rangeOfString:@"T"];
+            
+            if (range.location != NSNotFound)
+                dateStr = [dateStr substringToIndex:range.location];
             
             NSImage *image = [NSImage imageNamed:NSImageNameLockLockedTemplate];
-            __block NSString *tooltip = [NSString stringWithFormat:@"Private\nDate: %@\nFiles:\n", dateStr];
+            __block NSString *tooltip = [NSString stringWithFormat:@"Private\nCreated: %@\nFiles:\n", dateStr];
             
             if (gist.pub) {
                 image = [NSImage imageNamed:NSImageNameLockUnlockedTemplate];
-                tooltip = [NSString stringWithFormat:@"Public\nDate: %@\nFiles:\n", dateStr];
+                tooltip = [NSString stringWithFormat:@"Public\nCreated: %@\nFiles:\n", dateStr];
             }
 
             
@@ -303,24 +310,6 @@
         [submenu addItem:item];
         setMenuItems(self.options.anonGists);
     }
-}
-
-- (NSArray* )items
-{
-    NSArray *_items;
-    
-    NSPasteboard *pboard = _pboard;
-    if (!pboard)
-        pboard = [NSPasteboard generalPasteboard];
-    
-    NSArray *allowedClasses = @[ [NSString class], [NSURL class] ];
-    NSArray *copiedItems = [pboard readObjectsForClasses:allowedClasses
-                                                 options:nil];
-    
-    if ([copiedItems count])
-        _items = [NSArray arrayWithArray:copiedItems];
-    
-    return _items;
 }
 
 - (void)createGist
@@ -533,8 +522,15 @@
 {
     /** Update remaining api calls for the user. */
     NSString *apiCalls = self.options.remainingAPICalls;
-    if (apiCalls)
+    if (apiCalls) {
+        if (self.options.user)
+            apiCalls = [apiCalls stringByAppendingString:@"/5000"];
+        else
+            apiCalls = [apiCalls stringByAppendingString:@"/60"];
+        
+        /** Set the label string value */
         self.apiCallsCount.stringValue = apiCalls;
+    }
 }
 
 - (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
@@ -670,6 +666,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 - (void)webView:(WebView *)sender didReceiveTitle:(NSString *)title
        forFrame:(WebFrame *)frame
 {
+    /** Show the web URL at the bottom of the Auth window */
     self.loactionLabel.stringValue = frame.dataSource.request.URL.absoluteString;
 }
 
@@ -680,12 +677,17 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
 /** ------------------------------------------------------------------------- */
 - (IBAction)showPopover:(id)sender
 {
-    
+    /** Make sure the filename section is enabled before we start. */
     [self.filenameTF setEnabled:YES];
     
-    if ([[self items] count])
+    if (!_pboard)
+        _pboard = [NSPasteboard generalPasteboard];
+    NSArray *allowedClasses = @[ [NSString class], [NSURL class] ];
+    NSArray *items = [_pboard readObjectsForClasses:allowedClasses
+                                                 options:nil];
+    
+    if ([items count])
     {
-        NSArray *items = [self items];
         Gist *gist;
         
         /** Close the popover if it's shown */
