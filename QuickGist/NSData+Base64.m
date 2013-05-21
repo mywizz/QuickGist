@@ -312,7 +312,9 @@ char *NewBase64Encode(
 // added by Hiroshi Hashiguchi
 - (NSString *)base64EncodedStringWithSeparateLines:(BOOL)separateLines
 {
-	size_t outputLength;
+    /** edit by Rob Johnson 05/20/13
+     added outputLength = 0 to satisfy analizer. */
+	size_t outputLength = 0;
 	char *outputBuffer =
     NewBase64Encode([self bytes], [self length], separateLines, &outputLength);
 	

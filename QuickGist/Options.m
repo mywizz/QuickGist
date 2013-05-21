@@ -82,22 +82,6 @@
     self.openURL     = [[NSUserDefaults standardUserDefaults] boolForKey:kOpenURL];
 }
 
-- (NSString *)useragent
-{
-    if (!_useragent) {
-        NSString *app = [[[NSBundle mainBundle] infoDictionary]
-                         objectForKey:@"CFBundleName"];
-        
-        NSString *ver = [[[NSBundle mainBundle] infoDictionary]
-                         objectForKey:@"CFBundleShortVersionString"];
-        
-        NSString *build = [[[NSBundle mainBundle] infoDictionary]
-                           objectForKey:@"CFBundleVersion"];
-        
-        _useragent = [NSString stringWithFormat:@"%@ version-%@ (%@)", app, ver, build];
-    }
-    return _useragent;
-}
 
 - (NSArray *)arrayFrom:(NSString *)userPrefsKey
 {

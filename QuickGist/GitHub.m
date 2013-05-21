@@ -36,9 +36,34 @@
 #import "GitHub.h"
 #import "GitHubAPIRequest.h"
 
+/** api URLS */
 static NSString *const apiGistsURL = @"https://api.github.com/gists";
 static NSString *const apiUserURL  = @"https://api.github.com/user";
 static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_token";
+static NSString *const apiAuthURL = @"https://github.com/login/oauth/authorize?client_id=%@&scope=gist";
+static NSString *const apiGistIdURL = @"%@/%@";
+
+/** api data */
+static NSString *const apiBearer = @"bearer %@";
+static NSString *const gistFileAndContent = @"\"%@\": { \"content\": \"%@\" } ";
+static NSString *const apiTokenRequest = @"client_id=%@&client_secret=%@&code=%@";
+
+/** Request header methods */
+static NSString *const HeaderMethodGet = @"GET";
+static NSString *const HeaderMethodPost = @"POST";
+static NSString *const HeaderMethodDelete = @"DELETE";
+static NSString *const HeaderAuth = @"Authorization";
+
+/** Request header fields */
+static NSString *const HeaderFieldContent = @"Content-Type";
+static NSString *const HeaderFieldModifiedSince = @"If-Modified-Since";
+static NSString *const HeaderFieldAcceptEncoding = @"Accept-Encoding";
+static NSString *const HeaderFieldUserAgent = @"User-Agent";
+
+/** Request header values */
+static NSString *const HeaderValueJSON = @"text/json";
+static NSString *const HeaderValueGistJSONData = @"{ \"description\":\"%@\", \"public\": \"%@\", \"files\": { %@ }}";
+static NSString *const HeaderValueGzip = @"gzip";
 
 @interface GitHub() <GitHubRequestDelegate>
 
@@ -56,35 +81,26 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
     return self;
 }
 
-#pragma mark - Getters
 - (NSString *)apiTokenRequestURL
 {
-    if (!_apiGistRequestURL)
-    {
-        if (self.clientId)
-        {
-            _apiGistRequestURL = [NSString stringWithFormat:
-                                  @"https://github.com/login/oauth/authorize?client_id=%@&scope=gist",
-                                  self.clientId];
-        }
-    }
+    if (!_apiGistRequestURL && self.options.clientId)
+        _apiGistRequestURL = [NSString stringWithFormat:apiAuthURL, self.options.clientId];
     
     return _apiGistRequestURL;
-}
-
-- (NSString *)bearer
-{
-    return [NSString stringWithFormat:@"bearer %@", self.options.token];
 }
 
 #pragma mark - Public
 - (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data cachedResponse:(BOOL)cached
 {
-    NSMutableURLRequest *req = [[NSMutableURLRequest alloc] init];
-    NSString * HTTPMethod;
-    id postData;
+    /** Construct a url request based on dataType, 
+     cacheing option and any passed in params */
     
-    switch (dataType) {
+    __block NSMutableURLRequest *req = [[NSMutableURLRequest alloc] init];
+    __block NSString * HTTPMethod;
+    __block id postData;
+    
+    switch (dataType)
+    {
         case GitHubRequestTypeCreateGist:
             if ([data isKindOfClass:[Gist class]])
             {
@@ -92,105 +108,106 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
                 NSString __block *files = @"";
                 
                 
-                for (int i =0; i<[gist.files count]; i++) {
-                    GistFile *gistfile = (GistFile *)[gist.files objectAtIndex:i];
-                    NSString *file = [NSString stringWithFormat:@"\"%@\": { \"content\": \"%@\" } ",
+                [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    GistFile *gistfile = (GistFile *)[gist.files objectAtIndex:idx];
+                    NSString *file = [NSString stringWithFormat:gistFileAndContent,
                                       gistfile.filename, gistfile.content];
                     
-                    if (i > 0) file = [NSString stringWithFormat:@", %@", file];
+                    if (idx > 0) file = [NSString stringWithFormat:@", %@", file];
                     files = [files stringByAppendingString:file];
-                }
+                }];
                 
                 [req setURL:[NSURL URLWithString:apiGistsURL]];
-                HTTPMethod = @"POST";
+                HTTPMethod = HeaderMethodPost;
                 
                 NSString *public = @"true";
-                if (self.options.secret) public = @"false";
+                if (self.options.secret)
+                    public = @"false";
                 
-                postData = [NSString stringWithFormat:@"{ \"description\":\"%@\", \"public\": \"%@\", \"files\": { %@ }}",
+                postData = [NSString stringWithFormat:HeaderValueGistJSONData,
                             gist.description, public, files ];
                 
                 if (self.options.user.useAccount)
-                    [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
+                    [req setValue:[NSString stringWithFormat:apiBearer, self.options.token] forHTTPHeaderField:HeaderAuth];
                 
-                [req setValue:@"text/json" forHTTPHeaderField:@"Content-Type"];
+                [req setValue:HeaderValueJSON forHTTPHeaderField:HeaderFieldContent];
             }
             break;
             
         case GitHubRequestTypeAccessToken:
             if ([data isKindOfClass:[NSString class]])
             {
+                NSString *code = (NSString*)data;
                 [req setURL:[NSURL URLWithString:apiTokenURL]];
-                HTTPMethod = @"POST";
-                postData = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@",
-                            self.clientId, self.clientSecret, data];
-                
+                HTTPMethod = HeaderMethodPost;
+                postData = [NSString stringWithFormat:apiTokenRequest, self.options.clientId, self.options.clientSecret, code];
             }
             break;
             
         case GitHubRequestTypeGetUser:
             [req setURL:[NSURL URLWithString:apiUserURL]];
-            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
-            HTTPMethod = @"GET";
+            [req setValue:[NSString stringWithFormat:apiBearer, self.options.token] forHTTPHeaderField:HeaderAuth];
+            HTTPMethod = HeaderMethodGet;
             break;
             
         case GitHubRequestTypeGetUserAvatar:
             [req setURL:[NSURL URLWithString:self.options.user.avatar_url]];
-            HTTPMethod = @"GET";
+            HTTPMethod = HeaderMethodGet;
             break;
             
         case GitHubRequestTypeGetGist:
             if ([data isKindOfClass:[NSString class]])
             {
-                NSString *url = [NSString stringWithFormat:@"%@/%@", apiGistsURL, data];
+                NSString *gistId = (NSString*)data;
+                NSString *url = [NSString stringWithFormat:apiGistIdURL, apiGistsURL, gistId];
                 [req setURL:[NSURL URLWithString:url]];
             }
-            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
-            HTTPMethod = @"GET";
+            [req setValue:[NSString stringWithFormat:apiBearer, self.options.token] forHTTPHeaderField:HeaderAuth];
+            HTTPMethod = HeaderMethodGet;
             break;
             
         case GitHubRequestTypeGetAllGists:
             [req setURL:[NSURL URLWithString:apiGistsURL]];
-            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
-            HTTPMethod = @"GET";
+            [req setValue:[NSString stringWithFormat:apiBearer, self.options.token] forHTTPHeaderField:HeaderAuth];
+            HTTPMethod = HeaderMethodGet;
             break;
             
         case GitHubRequestTypeDeleteGist:
             if ([data isKindOfClass:[NSString class]])
             {
-                NSString *url = [NSString stringWithFormat:@"%@/%@", apiGistsURL, data];
-                [req setURL:[NSURL URLWithString:url]];
+                NSString *gistId = (NSString*)data;
+                [req setURL:[NSURL URLWithString:[NSString stringWithFormat:apiGistIdURL, apiGistsURL, gistId]]];
             }
-            [req setValue:[self bearer] forHTTPHeaderField:@"Authorization"];
-            HTTPMethod = @"DELETE";
+            [req setValue:[NSString stringWithFormat:apiBearer, self.options.token] forHTTPHeaderField:HeaderAuth];
+            HTTPMethod = HeaderMethodDelete;
             break;
             
         default:
             break;
     }
     
-    if (req)
-    {
-        if (postData)
-            [req setHTTPBody:[postData dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        if (cached)
-            [req setValue:self.options.lastRequest forHTTPHeaderField:@"If-Modified-Since"];
-        
-        [req setHTTPMethod:HTTPMethod];
-        [req setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
-        [req addValue:self.options.useragent forHTTPHeaderField:@"User-Agent"];
-        
-        GitHubAPIRequest *apiReq = [[GitHubAPIRequest alloc] init];
-        [apiReq setDelegate:self];
-        [apiReq submitRequest:req forDataType:dataType];
-    }
+    if (postData)
+        [req setHTTPBody:[postData dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    if (cached)
+        [req setValue:self.options.lastRequest forHTTPHeaderField:HeaderFieldModifiedSince];
+    
+    [req setHTTPMethod:HTTPMethod];
+    [req setValue:HeaderValueGzip forHTTPHeaderField:HeaderFieldAcceptEncoding];
+    [req addValue:self.options.useragent forHTTPHeaderField:HeaderFieldUserAgent];
+    
+    GitHubAPIRequest *apiReq = [[GitHubAPIRequest alloc] init];
+    [apiReq setDelegate:self];
+    [apiReq submitRequest:req forDataType:dataType];
 }
 
 
 #pragma mark - GitHub Request Delegate
 - (void)handleData:(id)responseData forDataType:(GitHubRequestType)requestType fromLastRequest:(NSString *)lastRequest
 {
+    /** Handle processed data based on data type
+     and expected return type. */
+    
     switch (requestType)
     {
         case GitHubRequestTypeCreateGist:
@@ -198,7 +215,9 @@ static NSString *const apiTokenURL = @"https://github.com/login/oauth/access_tok
             {
                 Gist* gist = (Gist*)responseData;
                 
-                void(^addToGistsHistory)(Gist*) = ^(Gist* gist) {
+                void(^addToGistsHistory)(Gist*) = ^(Gist* gist)
+                {
+                    /** If the gist to the correct array based on gist.anonymous */
                     (gist.anonymous) ? [self.options.anonGists addObject:gist]
                                      : [self.options.gists addObject:gist];
                     

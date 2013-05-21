@@ -5,6 +5,12 @@
 
 Use QuickGist to post and manage your GitHub Gists. QuickGist runs in your Mac menubar and allows you to drag and drop text or text files right onto the menubar icon to quickly create a GitHub Gist!
 
+## Important build notes
+
+Before you can succesfully build QuicGist, you need to comment out or remove the '#import "Config.h"' in CDAppController.m. This is for my build setup to add the clientId and clientSecret whithout accidently pushing it to GitHub.
+
+You also need to add your client id and secret.
+
 
 ## Features 
 

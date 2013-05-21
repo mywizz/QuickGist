@@ -49,12 +49,14 @@
 @interface Config : NSObject
 + (NSString *)clientId;
 + (NSString *)clientSecret;
++ (NSString *)userAgent;
 @end
 
 @implementation Config
 #error - Define you app id and secret
 + (NSString *)clientId { return @"<YOUR GITHUB APP ID>"; }
 + (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
++ (NSString *)userAgent { return @"<CREATE SOME USER-AGENT STRING FRO YOUR APP>"; }
 @end
 #endif
 /** ------------------------------------------------------------------------- */
@@ -112,13 +114,13 @@
     
     /** Initialize the runtime options singleton */
     self.options = [Options sharedInstance];
-    
+    self.options.useragent = [Config userAgent];
+    self.options.clientId = [Config clientId];
+    self.options.clientSecret = [Config clientSecret];
     
     /** Our github object to handle api calls */
     self.github = [[GitHub alloc] init];
     [self.github setDelegate:self];
-    self.github.clientId = [Config clientId];
-    self.github.clientSecret = [Config clientSecret];
     
     
     /** Let the system know we have a service. */
@@ -477,8 +479,8 @@
         {
             [self.authWindow close];
             
-            [self postUserNotification:@"QuickGist authorized"
-                              subtitle:@"QuickGist is now authorized with your GitHub account!"];
+            [self postUserNotification:@"GitHub authorization"
+                              subtitle:@"QuickGist is now authorized with GitHub!"];
             
             /** Set the users initial option to post gists to the users account. */
             self.options.user.useAccount = YES;
@@ -868,8 +870,8 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         self.options.remainingAPICalls = @"Remaining api calls: 60";
         
         [self update];
-        [self postUserNotification:@"QuickGist de-authorized"
-                          subtitle:@"QuickGist has been de-authorized from your GitHub account."];
+        [self postUserNotification:@"GitHub de-authorization"
+                          subtitle:@"QuickGist has been de-authorized."];
     }
 }
 

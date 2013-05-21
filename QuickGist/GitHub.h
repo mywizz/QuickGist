@@ -49,9 +49,6 @@
 @interface GitHub : NSObject
 @property (nonatomic, strong) id<GitHubAPIDelegate> delegate;
 
-@property (nonatomic, strong) NSString *clientId;
-@property (nonatomic, strong) NSString *clientSecret;
-
 @property (nonatomic, strong) NSString *apiGistRequestURL;
 @property (nonatomic, strong) NSString *apiGistsRequestURL;
 @property (nonatomic, strong) NSString *apiTokenRequestURL;

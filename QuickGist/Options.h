@@ -49,6 +49,8 @@
 @interface Options : NSObject
 
 @property (nonatomic, strong) NSString *token;
+@property (nonatomic, strong) NSString *clientId;
+@property (nonatomic, strong) NSString *clientSecret;
 @property (nonatomic, strong) NSString *useragent;
 @property (nonatomic, strong) NSString *lastRequest;
 @property (nonatomic, strong) NSString *remainingAPICalls;
