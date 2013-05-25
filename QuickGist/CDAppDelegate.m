@@ -47,8 +47,7 @@
     /** User Notification handeler for no-running app.
      Basically, if the app was NOT running, and the user
      clicked a notice in the system Notification Center
-     to start the app.
-     */
+     to start the app. */
     
     NSUserNotification *notification = [[aNotification userInfo]
                                         objectForKey:NSApplicationLaunchUserNotificationKey];

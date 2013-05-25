@@ -68,11 +68,6 @@
               fromLastRequest:_lastRequest];
 }
 
-- (void)postUserNotification:(NSString *)title subtitle:(NSString *)subtitle
-{
-    [self.delegate postUserNotification:title subtitle:subtitle];
-}
-
 - (void)cleanup
 {
     [_connection cancel];

@@ -56,7 +56,7 @@
 #error - Define you app id and secret
 + (NSString *)clientId { return @"<YOUR GITHUB APP ID>"; }
 + (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
-+ (NSString *)userAgent { return @"<CREATE SOME USER-AGENT STRING FRO YOUR APP>"; }
++ (NSString *)userAgent { return @"<CREATE SOME USER-AGENT STRING FOR YOUR APP>"; }
 @end
 #endif
 /** ------------------------------------------------------------------------- */
@@ -102,6 +102,7 @@
 
 @property (nonatomic, strong) NSStatusItem *statusItem;
 @property (nonatomic) BOOL popoverIsShown;
+@property (nonatomic) BOOL authChange;
 
 @end
 
@@ -455,9 +456,13 @@
 
 - (void)invalidFileTypeAlert
 {
-    NSString *title = @"Invalid file type";
-    NSString *subtitle = @"QuickGist only supports text based files.";
-    [self postUserNotification:title subtitle:subtitle];
+    NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid file type"
+                                     defaultButton:@"Okay"
+                                   alternateButton:nil
+                                       otherButton:nil
+                         informativeTextWithFormat:@"QuickGist only supports text based files."];
+    
+    [alert runModal];
 }
 
 
@@ -479,13 +484,12 @@
         {
             [self.authWindow close];
             
-            [self postUserNotification:@"GitHub authorization"
-                              subtitle:@"QuickGist is now authorized with GitHub!"];
-            
             /** Set the users initial option to post gists to the users account. */
             self.options.user.useAccount = YES;
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.options.user];
             [[NSUserDefaults standardUserDefaults] setValue:data forKey:kGitHubUser];
+            
+            self.authChange = YES;
         }
         
         [self.githubLoginBtn setTitle:@"Logout"];
@@ -529,6 +533,23 @@
     
     [self setGistHistoryMenu];
     [self updateApiCallsLabel];
+    
+    if (self.authChange)
+    {
+        self.authChange = NO;
+        
+        double delayInSeconds = 0.5;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            NSAlert *alert = [NSAlert alertWithMessageText:@"GitHub authorization"
+                                             defaultButton:@"Okay"
+                                           alternateButton:nil
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"QuickGist is now authorized with GitHub!"];
+            
+            [alert runModal];
+        });
+    }
 }
 
 - (void)updateApiCallsLabel
@@ -870,8 +891,16 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         self.options.remainingAPICalls = @"Remaining api calls: 60";
         
         [self update];
-        [self postUserNotification:@"GitHub de-authorization"
-                          subtitle:@"QuickGist has been de-authorized."];
+        
+        /*
+        NSAlert *alert = [NSAlert alertWithMessageText:@"GitHub de-authorization"
+                                         defaultButton:@"Okay"
+                                       alternateButton:nil
+                                           otherButton:nil
+                             informativeTextWithFormat:@"QuickGist has been de-authorized."];
+        
+        [alert runModal];
+        */
     }
 }
 
