@@ -43,7 +43,6 @@
 #import <WebKit/WebPolicyDelegate.h>
 
 #import "Config.h" /** COMMENT OUT OR REMOVE THIS LINE. */
-
 /** ------------------------------------------------------------------------- */
 #ifndef CONFIG
 @interface Config : NSObject
@@ -54,9 +53,9 @@
 
 @implementation Config
 #error - Define you app id and secret
-+ (NSString *)clientId { return @"<YOUR GITHUB APP ID>"; }
-+ (NSString *)clientSecret { return @"<YOUR GITHUB APP SECRET>"; }
-+ (NSString *)userAgent { return @"<CREATE SOME USER-AGENT STRING FOR YOUR APP>"; }
++ (NSString *)clientId      { return @"<YOUR GITHUB APP ID>"; }
++ (NSString *)clientSecret  { return @"<YOUR GITHUB APP SECRET>"; }
++ (NSString *)userAgent     { return @"<CREATE SOME USER-AGENT STRING FOR YOUR APP>"; }
 @end
 #endif
 /** ------------------------------------------------------------------------- */
@@ -175,6 +174,7 @@
     /** cleanup instance vars */
     _pboard = nil;
     _gist   = nil;
+    _url    = nil;
 }
 
 - (void)setGistHistoryMenu
@@ -187,7 +187,7 @@
      It's ugly, but it works pretty well right now.
      */
     
-    NSMenuItem *yourGists = [[self.menu itemArray] objectAtIndex:1];
+    NSMenuItem *yourGists = [self.menu itemArray][1];
     NSMenu     *submenu   = [yourGists submenu];
     NSMenuItem *loginItem = [[NSMenuItem alloc] initWithTitle:@"Login to GitHub"
                                                        action:@selector(toggleGitHubLogin:)
@@ -248,11 +248,10 @@
     
     void(^setMenuItems)(NSArray *) = ^(NSArray *gists)
     {
-        [gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            Gist *gist = (Gist *)[gists objectAtIndex:idx];
+        [gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+        {
+            Gist *gist = gists[idx];
             CDMenuItem *item = [[CDMenuItem alloc] init];
-            
-            
             NSString *dateStr = [NSString stringWithFormat:@"%@", gist.created_at];
             NSRange range = [dateStr rangeOfString:@"T"];
             
@@ -268,8 +267,9 @@
             }
 
             
-            [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                GistFile *file = (GistFile *)[gist.files objectAtIndex:idx];
+            [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+            {
+                GistFile *file = gist.files[idx];
                 NSString *filename = [NSString stringWithFormat:@"%@", file.filename];
                 
                 if (idx == 0)
@@ -288,7 +288,7 @@
             [item setAction:@selector(openURL:)];
             [item setTarget:self];
             
-            /** Hopefully the user doen't see this, but if they do, 
+            /** Hopefully the user doesn't see this, but if they do, 
              something went wrong. So we're going to set the selector to
              downloadAllGists for the menu items with no description.*/
             
@@ -355,7 +355,7 @@
          set the filename above, but now we need to apply it the the GistFile. */
         if ([gist.files count] == 1)
         {
-            GistFile *gistFile = (GistFile*)[gist.files objectAtIndex:0];
+            GistFile *gistFile = gist.files[0];
             gistFile.filename = filename;
         }
         gist.description = description;
@@ -391,7 +391,7 @@
     
     [files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
     {
-        id item = [files objectAtIndex:idx];
+        id item = files[idx];
         if ([item isKindOfClass:[NSURL class]])
         {
             NSString *filename = [[item path] lastPathComponent];
@@ -556,7 +556,8 @@
 {
     /** Update remaining api calls for the user. */
     NSString *apiCalls = self.options.remainingAPICalls;
-    if (apiCalls) {
+    if (apiCalls)
+    {
         if (self.options.user)
             apiCalls = [apiCalls stringByAppendingString:@"/5000"];
         else
@@ -749,7 +750,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         
         if ([items count] == 1)
         {
-            id item = [items objectAtIndex:0];
+            id item = items[0];
             NSString *filename;
             NSString *content;
             
@@ -786,13 +787,15 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
             if ([gist.files count] > 1)
             {
                 __block NSString *filename = @"";
-                [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    GistFile *gistfile = (GistFile*)[gist.files objectAtIndex:idx];
+                [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+                {
+                    GistFile *gistfile = gist.files[idx];
                     
                     /** Only add comma and filename if there are more than 1 files. */
                     if (idx > 0 )
                         filename = [filename stringByAppendingString:[NSString stringWithFormat:@", %@", gistfile.filename]];
-                    else filename = gistfile.filename;
+                    else
+                        filename = gistfile.filename;
                 }];
                 
                 /** set multiple filenames and disable user input. */
@@ -891,16 +894,6 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         self.options.remainingAPICalls = @"Remaining api calls: 60";
         
         [self update];
-        
-        /*
-        NSAlert *alert = [NSAlert alertWithMessageText:@"GitHub de-authorization"
-                                         defaultButton:@"Okay"
-                                       alternateButton:nil
-                                           otherButton:nil
-                             informativeTextWithFormat:@"QuickGist has been de-authorized."];
-        
-        [alert runModal];
-        */
     }
 }
 
@@ -914,7 +907,8 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
     if (NSCommandKeyMask & [NSEvent modifierFlags]) delete = YES;
     
     
-    if ([sender isKindOfClass:[CDMenuItem class]]) {
+    if ([sender isKindOfClass:[CDMenuItem class]])
+    {
         item = (CDMenuItem *)sender;
         _url = item.url;
         
@@ -931,7 +925,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
             
             if (delete) {
                 [self.options.gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    Gist *gist = (Gist*)[self.options.gists objectAtIndex:idx];
+                    Gist *gist = self.options.gists[idx];
                     
                     if ([gist.gistId isEqualToString:item.gistId])
                     {
@@ -948,7 +942,8 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
     else if ([sender isKindOfClass:[NSTextField class]])
         _url = @"http://developer.github.com/v3/#rate-limiting";
     
-    if (_url && !delete) {
+    if (_url && !delete)
+    {
         NSURL *url = [NSURL URLWithString:_url];
         [[NSWorkspace sharedWorkspace] openURL:url];
         _url = nil;

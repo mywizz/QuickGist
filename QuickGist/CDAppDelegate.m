@@ -52,11 +52,13 @@
     NSUserNotification *notification = [[aNotification userInfo]
                                         objectForKey:NSApplicationLaunchUserNotificationKey];
     
-    if (notification) {
+    if (notification)
+    {
         NSString *http = @"http";
         NSRange range = [notification.subtitle rangeOfString:http];
         
-        if (range.location != NSNotFound) {
+        if (range.location != NSNotFound)
+        {
             NSURL *url = [NSURL URLWithString:notification.subtitle];
             [[NSWorkspace sharedWorkspace] openURL:url];
         }

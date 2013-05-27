@@ -114,7 +114,9 @@
         NSDictionary *json;
         
         if (![data isKindOfClass:[NSDictionary class]])
-            json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            json = [NSJSONSerialization JSONObjectWithData:data
+                                                   options:kNilOptions
+                                                     error:&error];
         else json = data;
         
         if (!user) user = [[GitHubUser alloc] init];
@@ -161,7 +163,9 @@
     NSDictionary *json;
     
     if (![data isKindOfClass:[NSDictionary class]])
-         json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+         json = [NSJSONSerialization JSONObjectWithData:data
+                                                options:kNilOptions
+                                                  error:&error];
     else json = data;
     
     if (json)
@@ -199,7 +203,7 @@
         if (![[json objectForKey:@"user"] isKindOfClass:[NSNull class]])
             gist.user = [self processGetUserResponse:[json objectForKey:@"user"]];
         
-        gist.comments = [[json objectForKey:@"comments"] integerValue];
+        gist.comments       = [[json objectForKey:@"comments"] integerValue];
         gist.pub            = [[json objectForKey:@"public"] boolValue];
         gist.anonymous      = (gist.user.login == nil);
     }
@@ -212,13 +216,15 @@
 {
     NSMutableArray *gists;
     NSError *error;
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
+                                                         options:kNilOptions
+                                                           error:&error];
     
     if ([json isKindOfClass:[NSArray class]]) {
         gists = [[NSMutableArray alloc] init];
         NSArray *jsonArray = (NSArray *)json;
         [jsonArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSDictionary *dict = (NSDictionary*)[jsonArray objectAtIndex:idx];
+            NSDictionary *dict = jsonArray[idx];
             Gist *gist = [self processGetGistResponse:dict];
             [gists addObject:gist];
         }];

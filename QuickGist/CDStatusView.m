@@ -85,7 +85,11 @@
     CGFloat iconX = roundf((NSWidth(bounds) - iconSize.width) / 2);
     CGFloat iconY = roundf((NSHeight(bounds) - iconSize.height) / 2);
     NSPoint iconPoint = NSMakePoint(iconX, iconY);
-    [icon drawAtPoint:iconPoint fromRect:self.bounds operation:NSCompositeSourceOver fraction:iconX];
+    
+    [icon drawAtPoint:iconPoint
+             fromRect:self.bounds
+            operation:NSCompositeSourceOver
+             fraction:iconX];
 }
 
 
@@ -130,7 +134,6 @@
 }
 
 
-#pragma mark -
 - (void)setImage:(NSImage *)newImage
 {
     _image = newImage;
@@ -159,10 +162,11 @@
 {
     NSPasteboard *pboard = [sender draggingPasteboard];
     
-    if( ![[pboard pasteboardItems] count] )
+    if (![[pboard pasteboardItems] count])
         return NO;
     
-    if ([[sender draggingPasteboard] availableTypeFromArray:self.types]) {
+    if ([[sender draggingPasteboard] availableTypeFromArray:self.types])
+    {
         [self.delegate createGistFromDrop:pboard];
         return YES;
     }

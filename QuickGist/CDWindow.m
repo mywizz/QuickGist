@@ -48,7 +48,7 @@
     {
 		alpha -= 0.1;
 		[self setAlphaValue:alpha];
-		[NSThread sleepForTimeInterval:0.020];
+		[NSThread sleepForTimeInterval:0.02];
 	}
 
     [super close];
@@ -62,10 +62,11 @@
     
     [super makeKeyAndOrderFront:self];
     
-	for (int i=0; i<10; i++) {
+	for (int i=0; i<10; i++)
+    {
 		alpha += 0.1;
 		[self setAlphaValue:alpha];
-		[NSThread sleepForTimeInterval:0.020];
+		[NSThread sleepForTimeInterval:0.02];
 	}
 }
 

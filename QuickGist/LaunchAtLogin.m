@@ -42,11 +42,13 @@
 #pragma mark - Public
 + (void)toggleLaunchAtLogin:(BOOL)toggle
 {
-    if (toggle) {
+    if (toggle)
+    {
         if (!SMLoginItemSetEnabled ((__bridge CFStringRef)@"com.corndogcomputers.QuickGistHelper", YES))
             NSLog(@"Couldn't add Helper App to launch at login item list.");
     }    
-    else {
+    else
+    {
         if (!SMLoginItemSetEnabled ((__bridge CFStringRef)@"com.corndogcomputers.QuickGistHelper", NO))
             NSLog(@"Couldn't remove Helper App from launch at login item list.");
     }

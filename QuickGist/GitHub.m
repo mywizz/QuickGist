@@ -109,7 +109,7 @@ static NSString *const HeaderValueGzip = @"gzip";
                 
                 
                 [gist.files enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    GistFile *gistfile = (GistFile *)[gist.files objectAtIndex:idx];
+                    GistFile *gistfile = gist.files[idx];
                     NSString *file = [NSString stringWithFormat:gistFileAndContent,
                                       gistfile.filename, gistfile.content];
                     
@@ -290,14 +290,14 @@ static NSString *const HeaderValueGzip = @"gzip";
 
                 else if ([filteredArray count] > 0)
                 {
-                    __block Gist *_gist = (Gist*)[filteredArray objectAtIndex:0];
+                    __block Gist *_gist = filteredArray[0];
                     
                     [self.options.gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                        Gist *exitingGist = (Gist*)[self.options.gists objectAtIndex:idx];
+                        Gist *existingGist = self.options.gists[idx];
                         
-                        if ([gist.gistId isEqualToString:exitingGist.gistId])
+                        if ([gist.gistId isEqualToString:existingGist.gistId])
                         {
-                            if (![gist.updated_at isEqualToString:exitingGist.updated_at])
+                            if (![gist.updated_at isEqualToString:existingGist.updated_at])
                             {
                                 [self.options.gists removeObjectAtIndex:idx];
                                 [self.options.gists addObject:_gist];
@@ -318,7 +318,7 @@ static NSString *const HeaderValueGzip = @"gzip";
                 NSArray *gists = (NSArray *)responseData;
                 
                 [gists enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    Gist *gist = (Gist*)[gists objectAtIndex:idx];
+                    Gist *gist = gists[idx];
                     [self requestDataForType:GitHubRequestTypeGetGist
                                     withData:gist.gistId
                               cachedResponse:YES];

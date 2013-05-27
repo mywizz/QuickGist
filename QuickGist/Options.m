@@ -95,6 +95,7 @@
     return arr;
 }
 
+
 - (GitHubUser *)userFromPrefs
 {
     GitHubUser *user;
@@ -105,6 +106,7 @@
     
     return user;
 }
+
 
 - (NSString *)tokenFromPrefs
 {
@@ -118,11 +120,13 @@
     return token;
 }
 
+
 - (void)registerUserDefaults
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:
      [NSDictionary dictionaryWithContentsOfFile:
       [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]]];
 }
+
 
 @end
