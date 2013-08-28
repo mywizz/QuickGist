@@ -40,16 +40,16 @@
 #pragma mark - Public
 + (NSString *)cleanGistContentString:(NSString *)string
 {
-    string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
-    string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
-    string = [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    string = [string stringByReplacingOccurrencesOfString:@"\\"   withString:@"\\\\"];
+    string = [string stringByReplacingOccurrencesOfString:@"\n"   withString:@"\\n"];
+    string = [string stringByReplacingOccurrencesOfString:@"\""   withString:@"\\\""];
     string = [string stringByReplacingOccurrencesOfString:@"	" withString:@"    "]; // strange white space
     return string;
 }
 
 + (NSString *)cleanGistNameAndDescriptionString:(NSString *)string
 {
-    string = [string stringByReplacingOccurrencesOfString:@"," withString:@"."];
+    string = [string stringByReplacingOccurrencesOfString:@","  withString:@"."];
     string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
     return string;
 }
