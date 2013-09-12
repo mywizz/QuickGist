@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4504" systemVersion="13A558" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4510" systemVersion="13A569" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4504"/>
-        <plugIn identifier="com.apple.WebKitIBPlugin" version="3335"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4510"/>
+        <plugIn identifier="com.apple.WebKitIBPlugin" version="3336"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -707,7 +707,7 @@
                     <rect key="frame" x="20" y="49" width="341" height="39"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="39" id="583"/>
+                        <constraint firstAttribute="height" constant="39" id="Qbh-l7-l5u"/>
                     </constraints>
                     <textFieldCell key="cell" selectable="YES" editable="YES" state="on" borderStyle="bezel" placeholderString="description: My awesome Gist" drawsBackground="YES" id="584">
                         <font key="font" metaFont="system"/>
@@ -723,7 +723,7 @@
                     <rect key="frame" x="285" y="13" width="82" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="70" id="1348"/>
+                        <constraint firstAttribute="width" constant="70" id="xqL-R8-QRw"/>
                     </constraints>
                     <buttonCell key="cell" type="push" title="Create" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="586">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -751,7 +751,7 @@ Gw
                     <rect key="frame" x="18" y="21" width="61" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="57" id="1298"/>
+                        <constraint firstAttribute="width" constant="57" id="CWm-6a-hDy"/>
                     </constraints>
                     <buttonCell key="cell" type="check" title="public" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="587">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -778,20 +778,20 @@ Gw
                 </button>
             </subviews>
             <constraints>
-                <constraint firstItem="559" firstAttribute="leading" secondItem="550" secondAttribute="leading" constant="20" symbolic="YES" id="565"/>
-                <constraint firstAttribute="trailing" secondItem="559" secondAttribute="trailing" constant="20" symbolic="YES" id="566"/>
-                <constraint firstItem="553" firstAttribute="top" secondItem="550" secondAttribute="top" constant="20" id="632"/>
-                <constraint firstItem="553" firstAttribute="leading" secondItem="550" secondAttribute="leading" constant="20" symbolic="YES" id="633"/>
-                <constraint firstAttribute="trailing" secondItem="553" secondAttribute="trailing" constant="20" symbolic="YES" id="634"/>
-                <constraint firstItem="559" firstAttribute="top" secondItem="553" secondAttribute="bottom" constant="10" id="635"/>
-                <constraint firstAttribute="trailing" secondItem="558" secondAttribute="trailing" constant="20" symbolic="YES" id="656"/>
-                <constraint firstItem="558" firstAttribute="leading" secondItem="551" secondAttribute="trailing" constant="12" symbolic="YES" id="657"/>
-                <constraint firstAttribute="bottom" secondItem="551" secondAttribute="bottom" constant="20" symbolic="YES" id="733"/>
-                <constraint firstAttribute="bottom" secondItem="558" secondAttribute="bottom" constant="20" symbolic="YES" id="734"/>
-                <constraint firstItem="557" firstAttribute="leading" secondItem="550" secondAttribute="leading" constant="20" symbolic="YES" id="1279"/>
-                <constraint firstItem="556" firstAttribute="baseline" secondItem="557" secondAttribute="baseline" id="1281"/>
-                <constraint firstItem="556" firstAttribute="centerY" secondItem="551" secondAttribute="centerY" id="1295"/>
-                <constraint firstItem="551" firstAttribute="leading" secondItem="556" secondAttribute="trailing" constant="8" symbolic="YES" id="1349"/>
+                <constraint firstItem="553" firstAttribute="top" secondItem="550" secondAttribute="top" constant="20" symbolic="YES" id="0Y1-UO-AFd"/>
+                <constraint firstItem="557" firstAttribute="baseline" secondItem="556" secondAttribute="baseline" id="Doo-fk-iZH"/>
+                <constraint firstItem="551" firstAttribute="baseline" secondItem="558" secondAttribute="baseline" id="EhG-tY-9Mf"/>
+                <constraint firstItem="558" firstAttribute="leading" secondItem="551" secondAttribute="trailing" constant="12" symbolic="YES" id="G6Y-w3-kYj"/>
+                <constraint firstItem="559" firstAttribute="trailing" secondItem="558" secondAttribute="trailing" id="M8T-5p-1FC"/>
+                <constraint firstItem="553" firstAttribute="leading" secondItem="550" secondAttribute="leading" constant="20" symbolic="YES" id="UQO-U0-Y43"/>
+                <constraint firstItem="551" firstAttribute="top" secondItem="559" secondAttribute="bottom" constant="8" symbolic="YES" id="YUk-LQ-aEK"/>
+                <constraint firstAttribute="trailing" secondItem="553" secondAttribute="trailing" constant="20" symbolic="YES" id="a71-aC-qWs"/>
+                <constraint firstItem="559" firstAttribute="leading" secondItem="553" secondAttribute="leading" id="flA-jW-sCN"/>
+                <constraint firstItem="551" firstAttribute="leading" secondItem="556" secondAttribute="trailing" constant="8" symbolic="YES" id="kb0-FD-sHi"/>
+                <constraint firstItem="557" firstAttribute="leading" secondItem="559" secondAttribute="leading" id="pbj-Wm-ovr"/>
+                <constraint firstItem="559" firstAttribute="top" secondItem="553" secondAttribute="bottom" constant="10" symbolic="YES" id="rwm-0N-nM5"/>
+                <constraint firstItem="556" firstAttribute="centerY" secondItem="551" secondAttribute="centerY" id="tkb-OI-WGI"/>
+                <constraint firstItem="553" firstAttribute="trailing" secondItem="559" secondAttribute="trailing" id="toV-dx-srX"/>
             </constraints>
         </customView>
         <menu id="541" userLabel="StatusItem Menu">
@@ -830,39 +830,33 @@ Gw
         <window title="Account" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="371" userLabel="Window - Preferences" customClass="CDWindow">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="335" y="600" width="330" height="160"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
             <view key="contentView" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="330" height="160"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <tabView type="noTabsNoBorder" initialItem="1002" translatesAutoresizingMaskIntoConstraints="NO" id="1000">
+                    <tabView fixedFrame="YES" type="noTabsNoBorder" initialItem="1002" translatesAutoresizingMaskIntoConstraints="NO" id="1000">
                         <rect key="frame" x="0.0" y="-2" width="335" height="162"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Account" identifier="Account" id="1002">
-                                <view key="view" id="1003">
+                                <view key="view" ambiguous="YES" id="1003">
                                     <rect key="frame" x="0.0" y="0.0" width="335" height="162"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="797">
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="797">
                                             <rect key="frame" x="9" y="23" width="210" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="206" id="1204"/>
-                                            </constraints>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Login to GitHub:" id="801">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="798">
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="798">
                                             <rect key="frame" x="225" y="18" width="82" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="82" id="1242"/>
-                                            </constraints>
                                             <buttonCell key="cell" type="roundTextured" title="Login" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="799">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -871,30 +865,19 @@ Gw
                                                 <action selector="toggleGitHubLogin:" target="539" id="889"/>
                                             </connections>
                                         </button>
-                                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="1096">
+                                        <imageView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1096">
                                             <rect key="frame" x="223" y="57" width="88" height="88"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="82" id="1126"/>
-                                                <constraint firstAttribute="height" constant="82" id="1185"/>
-                                            </constraints>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" image="NSUser" id="1097"/>
                                         </imageView>
-                                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="1149">
+                                        <imageView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1149">
                                             <rect key="frame" x="12" y="86" width="139" height="56"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="139" id="1263"/>
-                                                <constraint firstAttribute="height" constant="56" id="1264"/>
-                                            </constraints>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="github" id="1150"/>
                                         </imageView>
-                                        <textField toolTip="Click for more info." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1244" customClass="CDAPITextField">
+                                        <textField toolTip="Click for more info." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1244" customClass="CDAPITextField">
                                             <rect key="frame" x="18" y="65" width="174" height="13"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="170" id="1252"/>
-                                            </constraints>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Remaining api calls: 60" id="1245">
                                                 <font key="font" metaFont="system" size="10"/>
                                                 <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
@@ -902,24 +885,12 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                     </subviews>
-                                    <constraints>
-                                        <constraint firstItem="1096" firstAttribute="top" secondItem="1003" secondAttribute="top" constant="20" symbolic="YES" id="1161"/>
-                                        <constraint firstItem="798" firstAttribute="leading" secondItem="797" secondAttribute="trailing" constant="8" symbolic="YES" id="1202"/>
-                                        <constraint firstAttribute="bottom" secondItem="798" secondAttribute="bottom" constant="20" symbolic="YES" id="1222"/>
-                                        <constraint firstItem="1149" firstAttribute="top" secondItem="1003" secondAttribute="top" constant="20" symbolic="YES" id="1239"/>
-                                        <constraint firstAttribute="trailing" secondItem="1096" secondAttribute="trailing" constant="27" id="1240"/>
-                                        <constraint firstItem="797" firstAttribute="leading" secondItem="1003" secondAttribute="leading" constant="11" id="1241"/>
-                                        <constraint firstItem="1244" firstAttribute="leading" secondItem="1003" secondAttribute="leading" constant="20" symbolic="YES" id="1253"/>
-                                        <constraint firstItem="797" firstAttribute="baseline" secondItem="798" secondAttribute="baseline" id="1254"/>
-                                        <constraint firstItem="1149" firstAttribute="leading" secondItem="1003" secondAttribute="leading" constant="12" id="1265"/>
-                                        <constraint firstItem="1244" firstAttribute="top" secondItem="1149" secondAttribute="bottom" constant="8" symbolic="YES" id="1267"/>
-                                    </constraints>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Advanced" identifier="Advanced" id="1001">
                                 <view key="view" id="1004">
                                     <rect key="frame" x="0.0" y="0.0" width="335" height="162"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="791">
                                             <rect key="frame" x="18" y="63" width="154" height="17"/>
@@ -957,7 +928,7 @@ Gw
                                             <rect key="frame" x="220" y="118" width="95" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="95" id="853"/>
+                                                <constraint firstAttribute="width" constant="95" id="X2Y-nL-6k0"/>
                                             </constraints>
                                             <segmentedCell key="cell" alignment="left" style="texturedSquare" trackingMode="selectOne" id="804">
                                                 <font key="font" metaFont="system"/>
@@ -995,21 +966,22 @@ Gw
                                         </segmentedControl>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="796" firstAttribute="top" secondItem="794" secondAttribute="bottom" constant="8" symbolic="YES" id="1026"/>
-                                        <constraint firstItem="795" firstAttribute="trailing" secondItem="791" secondAttribute="trailing" id="1033"/>
-                                        <constraint firstItem="796" firstAttribute="leading" secondItem="792" secondAttribute="leading" id="1034"/>
-                                        <constraint firstItem="796" firstAttribute="leading" secondItem="794" secondAttribute="leading" id="1038"/>
-                                        <constraint firstItem="792" firstAttribute="top" secondItem="796" secondAttribute="bottom" constant="8" symbolic="YES" id="1039"/>
-                                        <constraint firstItem="791" firstAttribute="leading" secondItem="1004" secondAttribute="leading" constant="20" symbolic="YES" id="1068"/>
-                                        <constraint firstItem="794" firstAttribute="top" secondItem="1004" secondAttribute="top" constant="20" symbolic="YES" id="1070"/>
-                                        <constraint firstItem="793" firstAttribute="top" secondItem="1004" secondAttribute="top" constant="20" symbolic="YES" id="1072"/>
-                                        <constraint firstItem="793" firstAttribute="leading" secondItem="1004" secondAttribute="leading" constant="20" symbolic="YES" id="1075"/>
-                                        <constraint firstAttribute="trailing" secondItem="792" secondAttribute="trailing" constant="20" symbolic="YES" id="1219"/>
-                                        <constraint firstAttribute="trailing" secondItem="796" secondAttribute="trailing" constant="20" symbolic="YES" id="1220"/>
-                                        <constraint firstAttribute="trailing" secondItem="794" secondAttribute="trailing" constant="20" symbolic="YES" id="1221"/>
-                                        <constraint firstItem="795" firstAttribute="baseline" secondItem="796" secondAttribute="baseline" id="1352"/>
-                                        <constraint firstItem="795" firstAttribute="leading" secondItem="1004" secondAttribute="leading" constant="20" symbolic="YES" id="1353"/>
-                                        <constraint firstItem="791" firstAttribute="baseline" secondItem="792" secondAttribute="baseline" id="1354"/>
+                                        <constraint firstItem="793" firstAttribute="leading" secondItem="795" secondAttribute="leading" id="7ay-Qg-oyy"/>
+                                        <constraint firstItem="791" firstAttribute="trailing" secondItem="795" secondAttribute="trailing" id="8t7-Pe-abd"/>
+                                        <constraint firstItem="796" firstAttribute="leading" secondItem="794" secondAttribute="leading" id="CJn-AD-acP"/>
+                                        <constraint firstItem="792" firstAttribute="top" secondItem="796" secondAttribute="bottom" constant="8" symbolic="YES" id="DrL-ac-IS7"/>
+                                        <constraint firstItem="796" firstAttribute="top" secondItem="794" secondAttribute="bottom" constant="8" symbolic="YES" id="GtB-8w-ycH"/>
+                                        <constraint firstItem="793" firstAttribute="leading" secondItem="1004" secondAttribute="leading" constant="20" symbolic="YES" id="Gu3-k8-yfg"/>
+                                        <constraint firstItem="794" firstAttribute="top" secondItem="793" secondAttribute="top" id="IaA-CL-Ip0"/>
+                                        <constraint firstItem="791" firstAttribute="baseline" secondItem="792" secondAttribute="baseline" id="PLZ-ul-Yra"/>
+                                        <constraint firstItem="796" firstAttribute="leading" secondItem="792" secondAttribute="leading" id="RnQ-RQ-7b0"/>
+                                        <constraint firstItem="794" firstAttribute="leading" secondItem="793" secondAttribute="trailing" constant="40" id="ZlR-0O-HJJ"/>
+                                        <constraint firstItem="796" firstAttribute="trailing" secondItem="794" secondAttribute="trailing" id="dh6-eL-vdS"/>
+                                        <constraint firstItem="795" firstAttribute="baseline" secondItem="796" secondAttribute="baseline" id="gB1-in-lZ3"/>
+                                        <constraint firstAttribute="trailing" secondItem="794" secondAttribute="trailing" constant="20" symbolic="YES" id="iEd-Pb-4fd"/>
+                                        <constraint firstItem="796" firstAttribute="trailing" secondItem="792" secondAttribute="trailing" id="j6D-eQ-teu"/>
+                                        <constraint firstItem="793" firstAttribute="top" secondItem="1004" secondAttribute="top" constant="20" symbolic="YES" id="qfS-rU-1oy"/>
+                                        <constraint firstItem="791" firstAttribute="leading" secondItem="795" secondAttribute="leading" id="uuh-2M-c98"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -1019,12 +991,6 @@ Gw
                         </connections>
                     </tabView>
                 </subviews>
-                <constraints>
-                    <constraint firstItem="1000" firstAttribute="leading" secondItem="372" secondAttribute="leading" id="1059"/>
-                    <constraint firstItem="1000" firstAttribute="top" secondItem="372" secondAttribute="top" id="1066"/>
-                    <constraint firstAttribute="trailing" secondItem="1000" secondAttribute="trailing" constant="-5" id="1223"/>
-                    <constraint firstAttribute="bottom" secondItem="1000" secondAttribute="bottom" constant="-2" id="1224"/>
-                </constraints>
             </view>
             <toolbar key="toolbar" implicitIdentifier="FDC0B761-2622-40E1-BF42-F36053468548" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="1077">
                 <allowedToolbarItems>
@@ -1048,7 +1014,7 @@ Gw
         <window title="Login to GitHub" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="868" customClass="CDWindow">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="960" height="500"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
             <view key="contentView" id="869">
                 <rect key="frame" x="0.0" y="0.0" width="960" height="500"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1075,13 +1041,13 @@ Gw
                     </textField>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="870" firstAttribute="top" secondItem="869" secondAttribute="top" id="871"/>
-                    <constraint firstItem="870" firstAttribute="leading" secondItem="869" secondAttribute="leading" id="872"/>
-                    <constraint firstAttribute="bottom" secondItem="870" secondAttribute="bottom" constant="22" id="875"/>
-                    <constraint firstItem="870" firstAttribute="trailing" secondItem="869" secondAttribute="trailing" id="876"/>
-                    <constraint firstItem="879" firstAttribute="leading" secondItem="869" secondAttribute="leading" constant="20" symbolic="YES" id="883"/>
-                    <constraint firstAttribute="trailing" secondItem="879" secondAttribute="trailing" constant="20" symbolic="YES" id="885"/>
-                    <constraint firstAttribute="bottom" secondItem="879" secondAttribute="bottom" constant="4" id="892"/>
+                    <constraint firstItem="879" firstAttribute="leading" secondItem="869" secondAttribute="leading" constant="20" symbolic="YES" id="5ya-cx-vQq"/>
+                    <constraint firstItem="870" firstAttribute="top" secondItem="869" secondAttribute="top" id="8Fl-XQ-cmI"/>
+                    <constraint firstAttribute="bottom" secondItem="870" secondAttribute="bottom" constant="22" id="HWJ-TM-ALf"/>
+                    <constraint firstAttribute="trailing" secondItem="879" secondAttribute="trailing" constant="20" symbolic="YES" id="Haj-Iw-CpY"/>
+                    <constraint firstItem="870" firstAttribute="leading" secondItem="869" secondAttribute="leading" id="La7-Yd-DiH"/>
+                    <constraint firstItem="879" firstAttribute="top" secondItem="870" secondAttribute="bottom" constant="4" id="XPg-Me-D6r"/>
+                    <constraint firstItem="870" firstAttribute="centerX" secondItem="879" secondAttribute="centerX" id="o39-RK-7r6"/>
                 </constraints>
             </view>
             <contentBorderThickness minY="22"/>

@@ -103,9 +103,11 @@
 #pragma mark - Mouse tracking
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    NSMenu *menu = [super menu];
-    [_statusItem popUpStatusItemMenu:menu];
-    [NSApp sendAction:self.action to:self.target from:self];
+    if ([theEvent type] == NSLeftMouseDown) {
+        NSMenu *menu = [super menu];
+        [_statusItem popUpStatusItemMenu:menu];
+        [NSApp sendAction:self.action to:self.target from:self];
+    }
 }
 
 

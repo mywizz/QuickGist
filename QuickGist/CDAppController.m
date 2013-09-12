@@ -136,7 +136,7 @@
     [self.statusView setImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setAlternateImage:[NSImage imageNamed:@"menu-icon"]];
     [self.statusView setMenu:self.menu];
-    
+     
     /** Set selected tab */
     self.toolbar.selectedItemIdentifier = @"Account";
     self.prefsWindow.title = @"GitHub Account";
