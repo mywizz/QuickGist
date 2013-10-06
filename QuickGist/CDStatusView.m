@@ -113,7 +113,10 @@
 
 - (void)menuWillOpen:(NSMenu *)menu
 {
-    [self.delegate downloadGists:self];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self.delegate downloadGists:self];
+    });
     [self setHighlighted:YES];
     [self setNeedsDisplay:YES];
 }

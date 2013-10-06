@@ -744,7 +744,7 @@ decidePolicyForNavigationAction:(NSDictionary *)actionInformation
         
         /** Multiple files to be processed. */
         if ([items count] > 1) {
-            if (!gist) gist = [[Gist alloc] init];
+            // if (!gist) gist = [[Gist alloc] init];
             gist = [self processGistForMultipleFiles:items];
         }
         
