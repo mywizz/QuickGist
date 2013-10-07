@@ -214,21 +214,25 @@
         {
             /** Using our sub-classed NSMenuItem to provide a few
              extra properties. */
-            CDMenuItem *item = [[CDMenuItem alloc] initWithTitle:self.options.user.login
+            CDMenuItem *item = [[CDMenuItem alloc] initWithTitle:self.options.user.name
                                                           action:nil
                                                    keyEquivalent:@""];
-            NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@",
-                             self.options.user.login];
-            NSImage *avatar = [[NSImage alloc] initWithData:self.options.user.avatar];
-            NSSize avatarSize;
-            avatarSize.width = 18.00;
-            avatarSize.height = 18.00;
-            [avatar setSize:avatarSize];
             
-            [item setImage:avatar];
-            [item setUrl:url];
-            [item setAction:@selector(openURL:)];
-            [item setTarget:self];
+            if (self.options.user.avatar)
+            {
+                NSString *url = [NSString stringWithFormat:@"https://gist.github.com/%@",
+                                 self.options.user.login];
+                NSImage *avatar = [[NSImage alloc] initWithData:self.options.user.avatar];
+                NSSize avatarSize;
+                avatarSize.width = 18.00;
+                avatarSize.height = 18.00;
+                [avatar setSize:avatarSize];
+                
+                [item setImage:avatar];
+                [item setUrl:url];
+                [item setAction:@selector(openURL:)];
+                [item setTarget:self];
+            }
             [submenu addItem:item];
         }
         
