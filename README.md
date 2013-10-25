@@ -11,6 +11,9 @@ Before you can succesfully build QuickGist, you need to comment out or remove th
 
 You also need to add your client id and secret.
 
+## Support QuickGist Development
+
+QuickGist is available on the Mac App Store for .99¢. If you find it useful then buy a copy to encourage me to continue development on it for public use.
 
 ## Features 
 

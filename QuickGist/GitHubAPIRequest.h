@@ -47,3 +47,4 @@
 - (void)submitRequest:(NSURLRequest *)req forDataType:(GitHubRequestType)requestType;
 
 @end
+

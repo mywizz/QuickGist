@@ -42,3 +42,4 @@ enum {
     GitHubRequestTypeGetAllGists   = 5, /** GET  */
     GitHubRequestTypeDeleteGist    = 6  /** DELETE */
 } typedef GitHubRequestType;
+

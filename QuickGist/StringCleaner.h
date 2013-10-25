@@ -41,3 +41,4 @@
 + (NSString *)cleanGistNameAndDescriptionString:(NSString *)string;
 
 @end
+

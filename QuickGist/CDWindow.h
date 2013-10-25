@@ -38,3 +38,4 @@
 @interface CDWindow : NSWindow
 
 @end
+

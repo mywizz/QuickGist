@@ -40,3 +40,4 @@
 + (void)toggleLaunchAtLogin:(BOOL)toggle;
 
 @end
+

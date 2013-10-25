@@ -38,3 +38,4 @@
 @interface NSWindow (canBecomeKeyWindow)
 
 @end
+

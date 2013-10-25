@@ -56,3 +56,4 @@
 - (void)requestDataForType:(GitHubRequestType)dataType withData:(id)data cachedResponse:(BOOL)cached;
 
 @end
+

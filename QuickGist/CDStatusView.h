@@ -50,3 +50,4 @@
 - (id)initWithStatusItem:(NSStatusItem *)statusItem;
 
 @end
+

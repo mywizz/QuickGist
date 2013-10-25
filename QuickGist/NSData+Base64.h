@@ -43,3 +43,4 @@ char *NewBase64Encode(
 - (NSString *)base64EncodedStringWithSeparateLines:(BOOL)separateLines;
 
 @end
+
