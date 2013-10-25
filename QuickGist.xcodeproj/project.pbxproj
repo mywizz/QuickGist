@@ -376,6 +376,11 @@
 				TargetAttributes = {
 					94E101221744699E005F1C51 = {
 						DevelopmentTeam = 8A33M93L2E;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -607,7 +612,7 @@
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
 				INFOPLIST_FILE = "QuickGist/QuickGist-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0A149309-DB02-4A61-B2CE-579F5979DC30";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -628,7 +633,7 @@
 				GCC_PREFIX_HEADER = "QuickGist/QuickGist-Prefix.pch";
 				INFOPLIST_FILE = "QuickGist/QuickGist-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0A149309-DB02-4A61-B2CE-579F5979DC30";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
