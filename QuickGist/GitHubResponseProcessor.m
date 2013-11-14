@@ -100,6 +100,11 @@
         if (range.location!=NSNotFound) {
             token = [token stringByReplacingOccurrencesOfString:@"access_token=" withString:@""];
             token = [token stringByReplacingOccurrencesOfString:@"&token_type=bearer" withString:@""];
+            /** 
+             Added for token response change 11/12/13
+             Thanks @blofton
+             */
+            token = [token stringByReplacingOccurrencesOfString:@"&scope=gist" withString:@""];
         }
     }
     return token;
